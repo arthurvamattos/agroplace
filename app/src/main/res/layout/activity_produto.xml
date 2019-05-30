@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/formulario_id">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include android:id="@+id/toolbar"
+            layout="@layout/toolbar"></include>
+
+        <ImageView
+            android:id="@+id/produto_foto"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/colorPrimary"
+            android:scaleType="centerCrop"
+            android:src="@drawable/form_background"/>
+
+        //Nome
+        <TextView
+            android:id="@+id/produto_nome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nome do Produto"
+            android:layout_margin="16dp"
+            android:textFontWeight="600dp"
+            android:textSize="26sp"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_horizontal"/>
+
+        //Valor
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:id="@+id/produto_valor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00,00"
+                android:textFontWeight="600dp"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=" (Kg)"
+                android:textFontWeight="600dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        //Descricao
+        <TextView
+            android:id="@+id/produto_descricao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descrição do Produto"
+            android:layout_margin="20dp"
+            android:textFontWeight="600dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_horizontal"/>
+
+        //Vendedor
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vendido por "
+                android:textFontWeight="600dp"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/produto_vendedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nome Vendedor"
+                android:textFontWeight="600dp"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/produto_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/btn_circle"
+            android:elevation="2dp"
+            android:paddingHorizontal="60dp"
+            android:text="ENTRAR EM CONTATO"
+            android:textColor="#fff"
+            android:layout_marginBottom="20dp"/>
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FAFFFE"
+    android:id="@+id/conversa_id">
+
+    <include android:id="@+id/tb_conversa"
+        layout="@layout/toolbar"></include>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:id="@+id/lv_conversas"
+        android:layout_below="@+id/tb_conversa"
+        android:layout_above="@+id/box_msg"
+        android:transcriptMode="alwaysScroll"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/box_msg">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/msg_holder"
+            android:elevation="2dp"
+            android:hint="Digite aqui..."
+            android:padding="12dp"
+            android:paddingHorizontal="14dp"
+            android:layout_margin="8dp"
+            android:layout_marginBottom="16dp"
+            android:textColor="@android:color/black"
+            android:id="@+id/edit_mensagem"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send_black_24dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_circle"
+            android:padding="12dp"
+            android:layout_marginRight="8dp"
+            android:tint="#fff"
+            android:elevation="2dp"
+            android:id="@+id/btn_enviar"/>
+    </LinearLayout>
+</RelativeLayout>
