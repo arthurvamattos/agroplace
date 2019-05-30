@@ -112,7 +112,11 @@ public class ProdutosFragment extends Fragment {
             }
         });
 
+        registerForContextMenu(listView);
+
         return  view;
     }
+
+
 
 }

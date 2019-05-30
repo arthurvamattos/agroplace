@@ -2,6 +2,7 @@ package br.edu.ifro.feirarondonia.activity;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -9,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -206,7 +208,10 @@ public class FormularioVendaActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_formulario, menu);
+        if (extra == null)
+            inflater.inflate(R.menu.menu_formulario, menu);
+        else
+            inflater.inflate(R.menu.menu_formulario_edicao, menu);
         return true;
     }
 
@@ -219,6 +224,25 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 } else {
                     publicarVenda();
                 }
+                return true;
+            case R.id.menu_formulario_deletar:
+                new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Deletar Venda")
+                        .setMessage("Você tem certeza que deseja remover esta venda?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(preferencias.getIdentificador()).child(produto.getId());
+                                firebase.removeValue();
+                                Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
                 return true;
             default: return super.onOptionsItemSelected(item);
         }

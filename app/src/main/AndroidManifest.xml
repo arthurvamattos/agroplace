@@ -13,8 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.ProdutoActivity"
-            android:parentActivityName=".activity.MainActivity"></activity>
+        <activity android:name=".activity.FormularioUsuarioActivity"></activity>
+        <activity
+            android:name=".activity.ProdutoActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.FormularioVendaActivity"
             android:parentActivityName=".activity.MainActivity" />
@@ -26,7 +28,7 @@
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppTheme.Conversas" />
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.CadastroUsuarioActivity"/>
+        <activity android:name=".activity.CadastroUsuarioActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

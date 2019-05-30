@@ -2,6 +2,6 @@
 <resources>
     <color name="colorPrimary">#31E981</color>
     <color name="colorPrimaryDark">#20CE6C</color>
-    <color name="colorAccent">#31E981</color>
+    <color name="colorAccent">#148545</color>
     <color name="slidingIndicator">#20CE6C</color>
 </resources>
