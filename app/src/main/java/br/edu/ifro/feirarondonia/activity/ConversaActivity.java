@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -32,6 +34,7 @@ import br.edu.ifro.feirarondonia.model.Contato;
 import br.edu.ifro.feirarondonia.model.Conversa;
 import br.edu.ifro.feirarondonia.model.Mensagem;
 import br.edu.ifro.feirarondonia.model.Usuario;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversaActivity extends AppCompatActivity {
 
@@ -76,8 +79,10 @@ public class ConversaActivity extends AppCompatActivity {
         }
 
         //Configurar a toobar
-        toolbar.setTitle(nomeUsuarioDestinatario);
+        toolbar.setTitle("");
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        TextView tituloToolbar = findViewById(R.id.toolbar_nome);
+        tituloToolbar.setText(nomeUsuarioDestinatario);
         setSupportActionBar(toolbar);
 
         //Montar a listview e adapter
@@ -152,6 +157,20 @@ public class ConversaActivity extends AppCompatActivity {
                     editMensagem.setText("");
                 }
             }
+        });
+
+        DatabaseReference firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(idUsuarioDestinatario);
+        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Usuario usuarioRecuperdado = dataSnapshot.getValue(Usuario.class);
+                if (usuarioRecuperdado.getUrlImagem() != null) {
+                    CircleImageView campoFoto = findViewById(R.id.toolbar_foto);
+                    Picasso.get().load(usuarioRecuperdado.getUrlImagem()).fit().centerCrop().into(campoFoto);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 

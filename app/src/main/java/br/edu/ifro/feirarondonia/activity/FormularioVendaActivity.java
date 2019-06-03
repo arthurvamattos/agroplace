@@ -44,7 +44,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private static final int REQUISICAO_IMAGEM = 86;
-    private FloatingActionButton novaVenda;
+    private FloatingActionButton btnFoto;
     private ImageView imageView;
     private TextInputEditText nomeField;
     private TextInputEditText valorField;
@@ -82,8 +82,8 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
         descricaoField = findViewById(R.id.formulario_descricao);
 
-        novaVenda = findViewById(R.id.formulario_btn_foto);
-        novaVenda.setOnClickListener(new View.OnClickListener() {
+        btnFoto = findViewById(R.id.formulario_btn_foto);
+        btnFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 abrirSeletorDeImagens();
@@ -117,7 +117,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
             if (requestCode == REQUISICAO_IMAGEM && data != null && data.getData() != null) {
                 //recuperar local do recurso
                 localImagemRecuperada = data.getData();
-                Picasso.get().load(localImagemRecuperada).into(imageView);
+                Picasso.get().load(localImagemRecuperada).fit().centerCrop().into(imageView);
             }
         }
     }
@@ -227,10 +227,10 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_formulario_deletar:
                 new AlertDialog.Builder(this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.ic_warning)
                         .setTitle("Deletar Venda")
                         .setMessage("Você tem certeza que deseja remover esta venda?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener()
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -241,7 +241,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
                             }
 
                         })
-                        .setNegativeButton("No", null)
+                        .setNegativeButton("Não", null)
                         .show();
                 return true;
             default: return super.onOptionsItemSelected(item);

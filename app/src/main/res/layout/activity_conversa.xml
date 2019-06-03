@@ -7,7 +7,7 @@
     android:id="@+id/conversa_id">
 
     <include android:id="@+id/tb_conversa"
-        layout="@layout/toolbar"></include>
+        layout="@layout/toolbar_conversa"></include>
 
     <ListView
         android:layout_width="match_parent"

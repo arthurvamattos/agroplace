@@ -6,14 +6,13 @@
     android:gravity="center_vertical">
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/lista_conversa_personalizada_foto"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:background="@drawable/photo_round"
         android:src="@drawable/ic_person"
-        android:layout_margin="10dp"
-        android:padding="5dp"/>
+        android:layout_margin="10dp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

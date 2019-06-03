@@ -81,8 +81,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                             String identificadoUsuario = Base64Custom.codificarBase64(usuario.getEmail());
                             usuario.setId(identificadoUsuario);
                             usuario.salvar();
-
-
                             String identificadorUsuario = Base64Custom.codificarBase64( usuario.getEmail() );
                             Preferencias preferencias = new Preferencias(CadastroUsuarioActivity.this);
                             preferencias.salvarDados(identificadorUsuario, usuario.getNome());
