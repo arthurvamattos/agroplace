@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +32,7 @@ public class ProdutoActivity extends AppCompatActivity {
     private TextView descricaoField;
     private TextView vendedorField;
     private Button btnContato;
+    private LinearLayout linkVendedor;
 
     private Produto produto;
 
@@ -50,6 +52,7 @@ public class ProdutoActivity extends AppCompatActivity {
         descricaoField = findViewById(R.id.produto_descricao);
         vendedorField = findViewById(R.id.produto_vendedor);
         btnContato = findViewById(R.id.produto_btn);
+        linkVendedor = findViewById(R.id.produto_vendedor_link);
 
         Bundle extra = getIntent().getExtras();
         if (extra != null){
@@ -73,6 +76,21 @@ public class ProdutoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        linkVendedor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                abrirPerfil();
+            }
+        });
+    }
+
+    private void abrirPerfil() {
+        Intent intent =  new Intent(ProdutoActivity.this, PerfilActivity.class);
+        intent.putExtra("idVendedor",produto.getIdVendedor());
+        intent.putExtra("nome", produto.getVendedor());
+        startActivity(intent);
+        finish();
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import br.edu.ifro.feirarondonia.R;
 import br.edu.ifro.feirarondonia.activity.ConversaActivity;
@@ -75,6 +76,7 @@ public class ConversasFragment extends Fragment {
                     Conversa conversa = dado.getValue(Conversa.class);
                     conversas.add(conversa);
                 }
+                Collections.reverse(conversas);
                 adapter.notifyDataSetChanged();
             }
 

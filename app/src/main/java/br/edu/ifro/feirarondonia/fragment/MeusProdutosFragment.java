@@ -46,7 +46,7 @@ public class MeusProdutosFragment extends Fragment {
 
     private DatabaseReference firebase;
     private ValueEventListener valueEventListenerContatos;
-    FloatingActionButton btnNovaVenda;
+    private FloatingActionButton btnNovaVenda;
 
     public MeusProdutosFragment() {
         // Required empty public constructor
@@ -71,6 +71,7 @@ public class MeusProdutosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_meus_produtos, container, false);
 
         produtos = new ArrayList();
+        produtos.clear();
 
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
