@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -22,6 +23,8 @@ import java.util.Collections;
 import br.edu.ifro.feirarondonia.R;
 import br.edu.ifro.feirarondonia.adapter.ProdutoAdapter;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
+import br.edu.ifro.feirarondonia.helper.Base64Custom;
+import br.edu.ifro.feirarondonia.helper.ExpandableHeightListView;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
@@ -33,6 +36,7 @@ public class PerfilActivity extends AppCompatActivity {
 
     private CircleImageView imageView;
     private TextView nomeField;
+    private TextView contato;
     private ListView listView;
     private ProdutoAdapter adapter;
     private ArrayList<Produto> produtos;
@@ -68,20 +72,21 @@ public class PerfilActivity extends AppCompatActivity {
         imageView = findViewById(R.id.perfil_foto);
         nomeField = findViewById(R.id.perfil_nome);
         listView = findViewById(R.id.perfil_lista);
+        contato = findViewById(R.id.perfil_contato);
 
         Bundle extra = getIntent().getExtras();
         if (extra != null){
             nome = extra.getString("nome");
             idVendedor = extra.getString("idVendedor");
-            toolbar.setTitle(nome);
             nomeField.setText(nome);
+            setTitle(nome);
         }
 
         produtos = new ArrayList();
-        produtos.clear();
 
         adapter = new ProdutoAdapter(produtos, PerfilActivity.this);
-        listView = findViewById(R.id.perfil_lista);
+        listView = (ListView) findViewById(R.id.perfil_lista);
+        ((ExpandableHeightListView)listView).setExpanded(true);
         listView.setAdapter(adapter);
 
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(idVendedor);
@@ -94,8 +99,7 @@ public class PerfilActivity extends AppCompatActivity {
                     Produto produto = dado.getValue(Produto.class);
                     produtos.add(produto);
                 }
-                if (produtos != null)
-                    Collections.reverse(produtos);
+                Collections.reverse(produtos);
                 adapter.notifyDataSetChanged();
             }
 
@@ -104,20 +108,13 @@ public class PerfilActivity extends AppCompatActivity {
 
             }
         };
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Produto produto = produtos.get(position);
-            }
-        });
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Produto produto = produtos.get(position);
 
-                Intent intent = new Intent(PerfilActivity.this, FormularioVendaActivity.class);
+                Intent intent = new Intent(PerfilActivity.this, ProdutoActivity.class);
                 intent.putExtra("produto", produto);
                 startActivity(intent);
                 finish();
@@ -137,6 +134,16 @@ public class PerfilActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
+        contato.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PerfilActivity.this, ConversaActivity.class);
+                intent.putExtra("nome", nome);
+                intent.putExtra("email", Base64Custom.decodificarBase64(idVendedor));
+                startActivity(intent);
+                finish();
+            }
+        });
 
     }
 }

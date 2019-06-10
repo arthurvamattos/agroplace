@@ -1,66 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/perfil_id">
+    android:orientation="vertical"
+    android:id="@+id/perfil_id"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        >
 
-        <include android:id="@+id/toolbar"
-            layout="@layout/toolbar"></include>
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="275dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar"></include>
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:background="@color/colorPrimary">
+                android:layout_height="275dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="175dp"
+                    android:background="@color/colorPrimary"></RelativeLayout>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/perfil_foto"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/photo_round"
+                    android:src="@drawable/ic_person" />
             </RelativeLayout>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/perfil_foto"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/photo_round"
-                android:src="@drawable/ic_person" />
-        </RelativeLayout>
+            //Nome
 
-    //Nome
-    <TextView
-        android:id="@+id/perfil_nome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nome Completo"
-        android:layout_margin="16dp"
-        android:textFontWeight="600dp"
-        android:textSize="26sp"
-        android:textColor="@android:color/black"
-        android:layout_gravity="center_horizontal"/>
+            <TextView
+                android:id="@+id/perfil_nome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="16dp"
+                android:text="Nome Completo"
+                android:textColor="@android:color/black"
+                android:textFontWeight="600dp"
+                android:textSize="26sp" />
 
-    //Produtos
-    <TextView
-        android:id="@+id/perfil_produtos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Produtos deste vendedor"
-        android:layout_margin="20dp"
-        android:textFontWeight="600dp"
-        android:textSize="18sp"
-        android:layout_gravity="center_horizontal"/>
+            //Contato
 
-    <ListView
-        android:id="@+id/perfil_lista"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/perfil_contato"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:text="Entrar em contato"
+                android:textColor="@android:color/black"
+                android:textFontWeight="600dp"
+                android:textSize="18sp" />
 
-    </ListView>
-    </LinearLayout>
+            //Produtos
 
-</ScrollView>
+            <TextView
+                android:id="@+id/perfil_produtos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:text="Produtos deste vendedor"
+                android:textFontWeight="600dp"
+                android:textSize="18sp" />
+
+            <br.edu.ifro.feirarondonia.helper.ExpandableHeightListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/perfil_lista">
+
+            </br.edu.ifro.feirarondonia.helper.ExpandableHeightListView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

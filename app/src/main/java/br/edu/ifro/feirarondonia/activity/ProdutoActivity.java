@@ -64,7 +64,7 @@ public class ProdutoActivity extends AppCompatActivity {
             valorField.setText(produto.getValor());
             descricaoField.setText(produto.getDescricao());
             vendedorField.setText(produto.getVendedor());
-            toolbar.setTitle(produto.getNome());
+            setTitle(produto.getNome());
         }
 
         btnContato.setOnClickListener(new View.OnClickListener() {
