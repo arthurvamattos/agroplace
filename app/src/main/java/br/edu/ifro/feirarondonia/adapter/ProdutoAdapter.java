@@ -1,14 +1,14 @@
 package br.edu.ifro.feirarondonia.adapter;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import android.widget.BaseAdapter;
 
@@ -20,7 +20,6 @@ import com.squareup.picasso.Picasso;
 
 import br.edu.ifro.feirarondonia.R;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
-import br.edu.ifro.feirarondonia.model.Conversa;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -80,4 +79,39 @@ public class ProdutoAdapter extends BaseAdapter {
 
         return view;
     }
+
+    public Filter getFilter() {
+        return filtroProdutos;
+    }
+
+    private Filter filtroProdutos = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence restricao) {
+            List<Produto> listaFiltrada = new ArrayList<>();
+
+            if (restricao == null || restricao.length() == 0) {
+                listaFiltrada.addAll(produtos);
+            } else {
+                String filtroPattern = restricao.toString().toLowerCase().trim();
+
+                for (Produto produto : produtos) {
+                    if (produto.getNome().toLowerCase().contains(filtroPattern)) {
+                        listaFiltrada.add(produto);
+                    }
+                }
+            }
+
+            FilterResults resultados = new FilterResults();
+            resultados.values = listaFiltrada;
+
+            return resultados;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            produtos.clear();
+            produtos.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
 }

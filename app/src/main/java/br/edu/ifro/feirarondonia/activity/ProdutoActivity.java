@@ -96,7 +96,7 @@ public class ProdutoActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_produto, menu);
         return true;
     }
 
@@ -108,8 +108,6 @@ public class ProdutoActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_main_nova_venda:
                 abrirFormularioVenda();
-                return true;
-            case R.id.menu_main_pesquisa:
                 return true;
             case R.id.menu_main_conversas:
                 irParaConversas();

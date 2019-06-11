@@ -22,7 +22,8 @@
         android:title="Pesquisar"
         android:orderInCategory="400"
         app:showAsAction="ifRoom|withText"
-        android:icon="@drawable/ic_search"/>
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/ic_search" />
 
     <item android:id="@+id/menu_main_conversas"
         android:title="Abrir conversas"
