@@ -41,13 +41,14 @@ import br.edu.ifro.feirarondonia.helper.Base64Custom;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FormularioUsuarioActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private static final int REQUISICAO_IMAGEM = 86;
     private FloatingActionButton btnFoto;
-    private ImageView imageView;
+    private CircleImageView imageView;
     private TextInputEditText nomeField;
     private TextInputEditText emailField;
     private TextInputEditText senhaField;

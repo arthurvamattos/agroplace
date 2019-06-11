@@ -15,26 +15,34 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="255dp">
+            android:layout_height="275dp">
 
-            <ImageView
-                android:id="@+id/formulario_usuario_foto"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:background="@color/colorPrimary"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_person"/>
+                android:layout_height="175dp"
+                android:background="@color/colorPrimary"></RelativeLayout>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/formulario_usuario_foto"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/photo_round"
+                android:src="@drawable/ic_person" />
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/formulario_usuario_btn_foto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_camera"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:id="@+id/formulario_usuario_btn_foto"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="70dp"
                 android:elevation="0dp"
-                app:elevation="0dp"
-                android:layout_margin="8dp"/>
+                android:src="@drawable/ic_camera"
+                app:elevation="0dp" />
         </RelativeLayout>
         //Nome
         <android.support.design.widget.TextInputLayout

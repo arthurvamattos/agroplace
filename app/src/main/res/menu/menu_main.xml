@@ -21,7 +21,7 @@
     <item android:id="@+id/menu_main_pesquisa"
         android:title="Pesquisar"
         android:orderInCategory="400"
-        app:showAsAction="ifRoom"
+        app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_search"/>
 
     <item android:id="@+id/menu_main_conversas"
