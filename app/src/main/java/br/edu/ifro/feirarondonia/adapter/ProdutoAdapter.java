@@ -50,7 +50,7 @@ public class ProdutoAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = activity.getLayoutInflater().inflate(R.layout.imagem_produto, parent,false);
+        View view = activity.getLayoutInflater().inflate(R.layout.card_produto, parent,false);
 
         ImageView campoFoto = view.findViewById(R.id.imagem_produto_foto);
         TextView campoNome = view.findViewById(R.id.imagem_produto_nome);

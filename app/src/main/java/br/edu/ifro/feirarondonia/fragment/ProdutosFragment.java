@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -37,6 +38,7 @@ import br.edu.ifro.feirarondonia.activity.LoginActivity;
 import br.edu.ifro.feirarondonia.activity.ProdutoActivity;
 import br.edu.ifro.feirarondonia.adapter.ProdutoAdapter;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
+import br.edu.ifro.feirarondonia.helper.ExpandableHeightListView;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
@@ -54,6 +56,7 @@ public class ProdutosFragment extends Fragment {
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListenerContatos;
+    private ListView listViewCategorias;
 
 
     public ProdutosFragment() {
@@ -89,6 +92,7 @@ public class ProdutosFragment extends Fragment {
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
         listView.setAdapter(adapter);
+        listView.setDivider(null);
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
 

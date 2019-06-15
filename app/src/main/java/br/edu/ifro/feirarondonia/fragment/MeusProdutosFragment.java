@@ -96,6 +96,7 @@ public class MeusProdutosFragment extends Fragment {
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
         listView.setAdapter(adapter);
+        listView.setDivider(null);
 
         Preferencias preferencias = new Preferencias(getActivity());
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(preferencias.getIdentificador());
