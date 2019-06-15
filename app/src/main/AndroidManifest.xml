@@ -30,8 +30,10 @@
             android:parentActivityName=".activity.MainActivity"
             android:theme="@style/AppTheme.Conversas" />
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.CadastroUsuarioActivity" />
-        <activity android:name=".activity.LoginActivity">
+        <activity android:name=".activity.CadastroUsuarioActivity"
+            android:theme="@style/AppTheme.Auth"/>
+        <activity android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.Auth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

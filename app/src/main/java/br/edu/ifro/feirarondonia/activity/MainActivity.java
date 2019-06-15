@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("AGRO");
+        toolbar.setTitle("AGROPLACE");
         setSupportActionBar(toolbar);
 
         slidingTabLayout = findViewById(R.id.main_stl_tabs);

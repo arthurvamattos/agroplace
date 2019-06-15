@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".activity.LoginActivity"
     android:id="@+id/cadastro_usuario_id"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,7 +23,7 @@
                 android:id="@+id/cadstro_usuario_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AGRO"
+                android:text="AGROPLACE"
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="50dp"
@@ -121,8 +122,6 @@
             android:layout_height="wrap_content"
             android:text="Já é cadastrado? Faça login"
             android:textColor="#757575"
-            android:textFontWeight="600dp"
-            android:layout_gravity="center"
             android:onClick="abrirLogin"/>
     </RelativeLayout>
 
