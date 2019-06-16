@@ -29,7 +29,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="175dp"
-                    android:background="@color/colorPrimary"></RelativeLayout>
+                    android:background="@drawable/perfil_background"></RelativeLayout>
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/perfil_foto"

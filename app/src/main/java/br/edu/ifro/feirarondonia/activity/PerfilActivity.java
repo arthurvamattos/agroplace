@@ -88,6 +88,7 @@ public class PerfilActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.perfil_lista);
         ((ExpandableHeightListView)listView).setExpanded(true);
         listView.setAdapter(adapter);
+        listView.setDivider(null);
 
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(idVendedor);
 

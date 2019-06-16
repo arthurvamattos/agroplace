@@ -31,6 +31,7 @@ public class ProdutoActivity extends AppCompatActivity {
     private TextView valorField;
     private TextView descricaoField;
     private TextView vendedorField;
+    private TextView categoriaField;
     private Button btnContato;
     private LinearLayout linkVendedor;
 
@@ -51,6 +52,7 @@ public class ProdutoActivity extends AppCompatActivity {
         valorField = findViewById(R.id.produto_valor);
         descricaoField = findViewById(R.id.produto_descricao);
         vendedorField = findViewById(R.id.produto_vendedor);
+        categoriaField = findViewById(R.id.produto_categoria);
         btnContato = findViewById(R.id.produto_btn);
         linkVendedor = findViewById(R.id.produto_vendedor_link);
 
@@ -64,6 +66,7 @@ public class ProdutoActivity extends AppCompatActivity {
             valorField.setText(produto.getValor());
             descricaoField.setText(produto.getDescricao());
             vendedorField.setText(produto.getVendedor());
+            categoriaField.setText(produto.getCategoria());
             setTitle(produto.getNome());
         }
 

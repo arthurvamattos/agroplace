@@ -11,16 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <!--<HorizontalScrollView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content">-->
-            <!--<br.edu.ifro.feirarondonia.helper.ExpandableHeightListView-->
-                <!--android:id="@+id/categorias_lisview"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="50dp">-->
-
-            <!--</br.edu.ifro.feirarondonia.helper.ExpandableHeightListView>-->
-        <!--</HorizontalScrollView>-->
 
         <ListView
             android:id="@+id/produtos_listview"

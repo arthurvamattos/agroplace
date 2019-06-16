@@ -19,7 +19,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
@@ -36,6 +38,7 @@ import com.squareup.picasso.Picasso;
 import java.util.Date;
 
 import br.edu.ifro.feirarondonia.R;
+import br.edu.ifro.feirarondonia.config.Categorias;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
@@ -57,6 +60,8 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private StorageTask tarefaUpload;
     private Bundle extra;
+    private Spinner categorias;
+    private ArrayAdapter adapterCategorias;
 
 
     @Override
@@ -89,6 +94,10 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 abrirSeletorDeImagens();
             }
         });
+
+        categorias = findViewById(R.id.formulario_categorias);
+        adapterCategorias = new ArrayAdapter(this, android.R.layout.simple_list_item_1, Categorias.getCategoriasCasdastro());
+        categorias.setAdapter(adapterCategorias);
 
         extra = getIntent().getExtras();
         if (extra != null){
@@ -158,7 +167,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 }
             });
         } else if (produto.getUrlImagem() != null) {
-            salvarProduto(montaProdutoAlterado());
+            salvarProduto(montaProduto());
             finish();
             Toast.makeText(FormularioVendaActivity.this, "Venda alterada com sucesso", Toast.LENGTH_SHORT).show();
         } else {
@@ -183,10 +192,11 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
+        produto.setCategoria(categorias.getSelectedItem().toString());
         return produto;
     }
 
-    private Produto montaProdutoAlterado() {
+    private Produto montaProduto() {
         Produto produto = new Produto();
         produto.setId(this.produto.getId());
         produto.setNome(nomeField.getText().toString());
@@ -198,6 +208,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
+        produto.setCategoria(categorias.getSelectedItem().toString());
         return produto;
     }
 

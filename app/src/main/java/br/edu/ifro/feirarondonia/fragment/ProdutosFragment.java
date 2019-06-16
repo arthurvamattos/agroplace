@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +20,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +42,7 @@ import br.edu.ifro.feirarondonia.activity.ProdutoActivity;
 import br.edu.ifro.feirarondonia.adapter.ProdutoAdapter;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
 import br.edu.ifro.feirarondonia.helper.ExpandableHeightListView;
+import br.edu.ifro.feirarondonia.helper.HorizontalListView;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
@@ -56,7 +60,7 @@ public class ProdutosFragment extends Fragment {
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListenerContatos;
-    private ListView listViewCategorias;
+    private HorizontalListView listViewCategorias;
 
 
     public ProdutosFragment() {
@@ -66,6 +70,13 @@ public class ProdutosFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        firebase.addValueEventListener(valueEventListenerContatos);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        firebase.removeEventListener(valueEventListenerContatos);
         firebase.addValueEventListener(valueEventListenerContatos);
     }
 

@@ -91,6 +91,18 @@
 
         </LinearLayout>
 
+        //Categoria
+        <TextView
+            android:id="@+id/produto_categoria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categoria"
+            android:layout_margin="10dp"
+            android:textFontWeight="600dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_horizontal"/>
+
         <Button
             android:id="@+id/produto_btn"
             android:layout_width="wrap_content"

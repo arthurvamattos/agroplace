@@ -12,6 +12,7 @@ public class Produto implements Serializable {
     private String vendedor;
     private String idVendedor;
     private String dataPublicacao;
+    private String categoria;
 
     public Produto(){
     }
@@ -78,5 +79,13 @@ public class Produto implements Serializable {
 
     public void setDataPublicacao(String dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }
