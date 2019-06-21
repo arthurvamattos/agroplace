@@ -100,6 +100,7 @@ public class MeusProdutosFragment extends Fragment {
 
         Preferencias preferencias = new Preferencias(getActivity());
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(preferencias.getIdentificador());
+        firebase.keepSynced(true);
 
         valueEventListenerContatos = new ValueEventListener() {
             @Override

@@ -13,8 +13,10 @@ public final class ConfiguracaoFirebase {
     private static StorageReference storage;
 
     public static DatabaseReference getFirebase(){
-        if (referenciaFirebase == null)
+        if (referenciaFirebase == null){
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             referenciaFirebase = FirebaseDatabase.getInstance().getReference();
+        }
         return referenciaFirebase;
     }
 

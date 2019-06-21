@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,14 +100,15 @@ public class ProdutosFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_produtos, container, false);
 
         produtos = new ArrayList();
+        produtos.clear();
 
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
         listView.setAdapter(adapter);
         listView.setDivider(null);
-        firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
-        firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
 
+        firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
+        firebase.keepSynced(true);
         valueEventListenerContatos = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,6 +124,21 @@ public class ProdutosFragment extends Fragment {
                         return prod2.getDataPublicacao().compareTo(prod1.getDataPublicacao());
                     }
                 });
+                Preferencias preferencias = new Preferencias(getActivity());
+                String categoria = preferencias.getCategoria();
+                ArrayList<Produto> listaPorCategoria = new ArrayList<>();
+                if (!categoria.equals("Mostrar todos")){
+                    for (Produto produto : produtos){
+                        try {
+                            if (produto.getCategoria().equals(categoria)){
+                                listaPorCategoria.add(produto);
+                            }
+                        } catch (Exception e){
+
+                        }
+                    }
+                    produtos = listaPorCategoria;
+                }
                 produtosPesquisa = produtos;
                 adapter.notifyDataSetChanged();
             }

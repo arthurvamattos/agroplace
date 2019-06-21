@@ -94,6 +94,8 @@ public class ConversaActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         //Recuperar as mensagens do firebase
         firebase = ConfiguracaoFirebase.getFirebase().child("mensagens").child(idUsuarioRemetente).child(idUsuarioDestinatario);
+        firebase.keepSynced(true);
+
         valueEventListenerMensagem = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

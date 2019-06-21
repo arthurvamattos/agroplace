@@ -7,7 +7,7 @@ public class Preferencias {
 
     private Context contexto;
     private SharedPreferences preferences;
-    private final String NOME_ARQUIVO = "feirarondonia.preferencias";
+    private final String NOME_ARQUIVO = "agroplace.preferencias";
     private final int MODE = 0;
     private SharedPreferences.Editor editor;
 
@@ -41,7 +41,7 @@ public class Preferencias {
         return preferences.getString(CHAVE_NOME, null);
     }
     public String getCategoria(){
-        return preferences.getString(CHAVE_CATEGORIA, "Todos");
+        return preferences.getString(CHAVE_CATEGORIA, "Mostrar todos");
     }
 
 }

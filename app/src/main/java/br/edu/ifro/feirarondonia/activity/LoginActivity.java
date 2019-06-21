@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        identificadorUsuarioLogado = Base64Custom.codificarBase64(usuario.getEmail());
+                        identificadorUsuarioLogado = Base64Custom.codificarBase64(emailField.getText().toString());
                         firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(identificadorUsuarioLogado);
                         firebase.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -105,11 +105,11 @@ public class LoginActivity extends AppCompatActivity {
                                 Preferencias preferencias = new Preferencias(LoginActivity.this);
                                 Usuario usuarioRecuperdado = dataSnapshot.getValue(Usuario.class);
                                 preferencias.salvarDados(identificadorUsuarioLogado, usuarioRecuperdado.getNome());
+                                abrirMain();
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {}
                         });
-                        abrirMain();
                     } else {
                         Snackbar.make(findViewById(R.id.login_id), "Usuário ou senha inválidos!", Snackbar.LENGTH_SHORT).show();
                     }

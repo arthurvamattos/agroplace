@@ -67,6 +67,7 @@ public class ConversasFragment extends Fragment {
 
         Preferencias preferencias = new Preferencias(getActivity());
         firebase = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
+        firebase.keepSynced(true);
 
         valueEventListenerContatos = new ValueEventListener() {
             @Override

@@ -75,6 +75,7 @@ public class ContatosFragment extends Fragment {
 
         Preferencias preferencias = new Preferencias(getActivity());
         firebase = ConfiguracaoFirebase.getFirebase().child("contatos").child(preferencias.getIdentificador());
+        firebase.keepSynced(true);
 
         valueEventListenerContatos = new ValueEventListener() {
             @Override
