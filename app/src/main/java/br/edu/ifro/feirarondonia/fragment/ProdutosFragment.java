@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,12 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,11 +34,12 @@ import br.edu.ifro.feirarondonia.activity.ConversasActivity;
 import br.edu.ifro.feirarondonia.activity.FormularioUsuarioActivity;
 import br.edu.ifro.feirarondonia.activity.FormularioVendaActivity;
 import br.edu.ifro.feirarondonia.activity.LoginActivity;
+import br.edu.ifro.feirarondonia.activity.MainActivity;
 import br.edu.ifro.feirarondonia.activity.ProdutoActivity;
 import br.edu.ifro.feirarondonia.adapter.ProdutoAdapter;
+import br.edu.ifro.feirarondonia.config.Categorias;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
-import br.edu.ifro.feirarondonia.helper.ExpandableHeightListView;
-import br.edu.ifro.feirarondonia.helper.HorizontalListView;
+import br.edu.ifro.feirarondonia.helper.CategoriaObserver;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
@@ -51,7 +47,7 @@ import br.edu.ifro.feirarondonia.model.Usuario;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProdutosFragment extends Fragment {
+public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
     private ListView listView;
     private ProdutoAdapter adapter;
@@ -60,37 +56,35 @@ public class ProdutosFragment extends Fragment {
 
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
-    private ValueEventListener valueEventListenerContatos;
-    private HorizontalListView listViewCategorias;
-
+    private ValueEventListener valueEventListener;
 
     public ProdutosFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        firebase.addValueEventListener(valueEventListenerContatos);
+        firebase.addValueEventListener(valueEventListener);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        firebase.removeEventListener(valueEventListenerContatos);
-        firebase.addValueEventListener(valueEventListenerContatos);
+        firebase.removeEventListener(valueEventListener);
+        firebase.addValueEventListener(valueEventListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebase.removeEventListener(valueEventListenerContatos);
+        firebase.removeEventListener(valueEventListener);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        MainActivity.adicionarObserver(this);
     }
 
     @Override
@@ -102,6 +96,8 @@ public class ProdutosFragment extends Fragment {
         produtos = new ArrayList();
         produtos.clear();
 
+        produtosPesquisa = new ArrayList<>();
+
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
         listView.setAdapter(adapter);
@@ -109,7 +105,7 @@ public class ProdutosFragment extends Fragment {
 
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
         firebase.keepSynced(true);
-        valueEventListenerContatos = new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 produtos.clear();
@@ -124,22 +120,6 @@ public class ProdutosFragment extends Fragment {
                         return prod2.getDataPublicacao().compareTo(prod1.getDataPublicacao());
                     }
                 });
-                Preferencias preferencias = new Preferencias(getActivity());
-                String categoria = preferencias.getCategoria();
-                ArrayList<Produto> listaPorCategoria = new ArrayList<>();
-                if (!categoria.equals("Mostrar todos")){
-                    for (Produto produto : produtos){
-                        try {
-                            if (produto.getCategoria().equals(categoria)){
-                                listaPorCategoria.add(produto);
-                            }
-                        } catch (Exception e){
-
-                        }
-                    }
-                    produtos = listaPorCategoria;
-                }
-                produtosPesquisa = produtos;
                 adapter.notifyDataSetChanged();
             }
 
@@ -193,18 +173,18 @@ public class ProdutosFragment extends Fragment {
                 if (count > anterior){
                     adapter.getFilter().filter(newText);
                 } else {
-                    firebase.addValueEventListener(valueEventListenerContatos);
+                    firebase.addValueEventListener(valueEventListener);
                     adapter.getFilter().filter(newText);
                 }
                 if (count == 0){
-                    firebase.addValueEventListener(valueEventListenerContatos);
+                    firebase.addValueEventListener(valueEventListener);
                 }
                 return false;
             }
         });
     }
 
-        @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_main_sair:
@@ -256,6 +236,16 @@ public class ProdutosFragment extends Fragment {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @Override
+    public void update(String categoria) {
+        if (categoria.equals(Categorias.getCategoriasLista()[0])){
+            firebase.addValueEventListener(valueEventListener);
+        } else {
+
+            adapter.getFilterCategory().filter(categoria);
+        }
     }
 
 }

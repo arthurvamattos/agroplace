@@ -1,5 +1,6 @@
 package br.edu.ifro.feirarondonia.activity;
 
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,15 +12,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.edu.ifro.feirarondonia.R;
 import br.edu.ifro.feirarondonia.adapter.MainTabAdapter;
 import br.edu.ifro.feirarondonia.config.Categorias;
+import br.edu.ifro.feirarondonia.helper.CategoriaObserver;
 import br.edu.ifro.feirarondonia.helper.HorizontalListView;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.helper.SlidingTabLayout;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private SlidingTabLayout slidingTabLayout;
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity{
     private HorizontalListView listViewCategorias;
     private ArrayAdapter adapterCategorias;
 
+    private static List<CategoriaObserver> observers = new ArrayList<CategoriaObserver>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +60,27 @@ public class MainActivity extends AppCompatActivity{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Preferencias preferencias = new Preferencias(MainActivity.this);
                 preferencias.trocarCategoria(adapterCategorias.getItem(position).toString());
+                notifyObservers();
             }
         });
 
-
     }
+
+    public static void adicionarObserver(CategoriaObserver obs) {
+        observers.add(obs);
+    }
+
+    private void notifyObservers() {
+        Preferencias preferencias = new Preferencias(MainActivity.this);
+        for (CategoriaObserver observer : this.observers) {
+            observer.update(preferencias.getCategoria());
+        }
+        if (preferencias.getCategoria().equals(Categorias.getCategoriasLista()[0]))
+            Snackbar.make(findViewById(R.id.main_id), "Mostrando todos os produtos", Snackbar.LENGTH_SHORT).show();
+        else
+            Snackbar.make(findViewById(R.id.main_id), "Mostrandos os produtos da categoria "+preferencias.getCategoria(), Snackbar.LENGTH_SHORT).show();
+    }
+
+
 }
 

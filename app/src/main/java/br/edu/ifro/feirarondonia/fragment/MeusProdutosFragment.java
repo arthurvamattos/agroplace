@@ -40,9 +40,11 @@ import br.edu.ifro.feirarondonia.activity.ConversasActivity;
 import br.edu.ifro.feirarondonia.activity.FormularioUsuarioActivity;
 import br.edu.ifro.feirarondonia.activity.FormularioVendaActivity;
 import br.edu.ifro.feirarondonia.activity.LoginActivity;
+import br.edu.ifro.feirarondonia.activity.MainActivity;
 import br.edu.ifro.feirarondonia.activity.ProdutoActivity;
 import br.edu.ifro.feirarondonia.adapter.ProdutoAdapter;
 import br.edu.ifro.feirarondonia.config.ConfiguracaoFirebase;
+import br.edu.ifro.feirarondonia.helper.CategoriaObserver;
 import br.edu.ifro.feirarondonia.helper.Preferencias;
 import br.edu.ifro.feirarondonia.model.Produto;
 import br.edu.ifro.feirarondonia.model.Usuario;
@@ -50,7 +52,7 @@ import br.edu.ifro.feirarondonia.model.Usuario;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MeusProdutosFragment extends Fragment {
+public class MeusProdutosFragment extends Fragment implements CategoriaObserver {
 
 
     private ListView listView;
@@ -82,6 +84,7 @@ public class MeusProdutosFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        MainActivity.adicionarObserver(this);
     }
 
     @Override
@@ -227,6 +230,15 @@ public class MeusProdutosFragment extends Fragment {
     public void abrirFormularioVenda() {
         Intent intent = new Intent(getActivity(), FormularioVendaActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void update(String categoria) {
+        if (categoria.equals("Mostrar todos")){
+            firebase.addValueEventListener(valueEventListenerContatos);
+        } else {
+            adapter.getFilterCategory().filter(categoria);
+        }
     }
 
 
