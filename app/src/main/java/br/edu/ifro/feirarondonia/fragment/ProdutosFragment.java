@@ -4,6 +4,7 @@ package br.edu.ifro.feirarondonia.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -57,6 +58,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListener;
+    private Handler handler;
 
     public ProdutosFragment() {
     }
@@ -97,6 +99,9 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         produtos.clear();
 
         produtosPesquisa = new ArrayList<>();
+
+        handler = new Handler();
+
 
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
@@ -167,14 +172,18 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             int count = 0;
             int anterior = 0;
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(final String newText) {
                 anterior = count;
                 count = newText.length();
                 if (count > anterior){
                     adapter.getFilter().filter(newText);
                 } else {
                     firebase.addValueEventListener(valueEventListener);
-                    adapter.getFilter().filter(newText);
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            adapter.getFilter().filter(newText);
+                        }
+                    }, 100);
                 }
                 if (count == 0){
                     firebase.addValueEventListener(valueEventListener);
@@ -239,13 +248,19 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
     }
 
     @Override
-    public void update(String categoria) {
+    public void update(final String categoria) {
         if (categoria.equals(Categorias.getCategoriasLista()[0])){
             firebase.addValueEventListener(valueEventListener);
         } else {
+            firebase.addValueEventListener(valueEventListener);
 
-            adapter.getFilterCategory().filter(categoria);
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    adapter.getFilterCategory().filter(categoria);
+                }
+            }, 100);
         }
     }
+
 
 }
