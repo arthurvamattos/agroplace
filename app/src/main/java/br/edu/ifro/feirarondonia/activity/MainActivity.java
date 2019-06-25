@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +71,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void notifyObservers() {
         Preferencias preferencias = new Preferencias(MainActivity.this);
+        String categoria = preferencias.getCategoria();
         for (CategoriaObserver observer : this.observers) {
-            observer.update(preferencias.getCategoria());
+            observer.update(categoria);
         }
         if (preferencias.getCategoria().equals(Categorias.getCategoriasLista()[0]))
             Snackbar.make(findViewById(R.id.main_id), "Mostrando todos os produtos", Snackbar.LENGTH_SHORT).show();
-        else
-            Snackbar.make(findViewById(R.id.main_id), "Mostrandos os produtos da categoria "+preferencias.getCategoria(), Snackbar.LENGTH_SHORT).show();
+        else{
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.main_id), "Mostrando "+categoria, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("Mostrar todos", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    for (CategoriaObserver observer : observers) {
+                        observer.update(Categorias.getCategoriasLista()[0]);
+                    }
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
     }
 
 
