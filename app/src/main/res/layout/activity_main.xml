@@ -11,7 +11,7 @@ android:orientation="vertical"
 <include android:id="@+id/toolbar"
     layout="@layout/toolbar"></include>
 
-<br.edu.ifro.feirarondonia.helper.HorizontalListView
+<br.edu.ifro.agroplace.helper.HorizontalListView
     android:id="@+id/categorias_lisview"
     android:layout_width="match_parent"
     android:layout_height="50dp"
@@ -19,7 +19,7 @@ android:orientation="vertical"
     android:elevation="2dp"
     android:layout_gravity="center">
 
-</br.edu.ifro.feirarondonia.helper.HorizontalListView>
+</br.edu.ifro.agroplace.helper.HorizontalListView>
 <android.support.v4.view.ViewPager
     android:id="@+id/vp_main"
     android:layout_width="match_parent"
@@ -28,11 +28,11 @@ android:orientation="vertical"
     android:background="@color/gray">
 </android.support.v4.view.ViewPager>
 
-<br.edu.ifro.feirarondonia.helper.SlidingTabLayout
+<br.edu.ifro.agroplace.helper.SlidingTabLayout
     android:id="@+id/main_stl_tabs"
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:background="@android:color/white">
-</br.edu.ifro.feirarondonia.helper.SlidingTabLayout>
+</br.edu.ifro.agroplace.helper.SlidingTabLayout>
 
 </LinearLayout>

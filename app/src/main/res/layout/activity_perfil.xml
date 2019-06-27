@@ -79,12 +79,12 @@
                 android:textFontWeight="600dp"
                 android:textSize="18sp" />
 
-            <br.edu.ifro.feirarondonia.helper.ExpandableHeightListView
+            <br.edu.ifro.agroplace.helper.ExpandableHeightListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/perfil_lista">
 
-            </br.edu.ifro.feirarondonia.helper.ExpandableHeightListView>
+            </br.edu.ifro.agroplace.helper.ExpandableHeightListView>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

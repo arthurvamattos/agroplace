@@ -10,14 +10,14 @@
     <include android:id="@+id/toolbar"
         layout="@layout/toolbar"></include>
 
-    <br.edu.ifro.feirarondonia.helper.SlidingTabLayout
+    <br.edu.ifro.agroplace.helper.SlidingTabLayout
         android:id="@+id/stl_tabs"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary"
         >
 
-    </br.edu.ifro.feirarondonia.helper.SlidingTabLayout>
+    </br.edu.ifro.agroplace.helper.SlidingTabLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_pagina"
