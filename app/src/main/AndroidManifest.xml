@@ -24,7 +24,8 @@
         <activity
             android:name=".activity.PerfilActivity"
             android:parentActivityName=".activity.MainActivity" />
-        <activity android:name=".activity.FormularioUsuarioActivity" />
+        <activity android:name=".activity.FormularioUsuarioActivity"
+            android:parentActivityName=".activity.MainActivity"/>
         <activity
             android:name=".activity.ProdutoActivity"
             android:parentActivityName=".activity.MainActivity" />

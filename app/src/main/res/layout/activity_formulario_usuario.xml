@@ -66,7 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/formulario_usuario_nome"
-                android:inputType="textPersonName"/>
+                android:inputType="textPersonName"
+                android:textColor="@android:color/black"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -79,7 +80,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="E-mail"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/black"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -92,7 +94,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nova senha"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@android:color/black"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -105,7 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Confirmar senha"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@android:color/black"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -118,7 +122,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Telefone"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:textColor="@android:color/black"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
