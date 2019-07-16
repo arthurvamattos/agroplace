@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,7 +61,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private StorageTask tarefaUpload;
     private Bundle extra;
-    private Spinner categorias;
+    private Spinner categoriasSpinner;
     private ArrayAdapter adapterCategorias;
 
 
@@ -95,9 +96,9 @@ public class FormularioVendaActivity extends AppCompatActivity {
             }
         });
 
-        categorias = findViewById(R.id.formulario_categorias);
-        adapterCategorias = new ArrayAdapter(this, android.R.layout.simple_list_item_1, Categorias.getCategoriasCasdastro());
-        categorias.setAdapter(adapterCategorias);
+        categoriasSpinner = findViewById(R.id.formulario_categorias);
+        adapterCategorias = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasCasdastro());
+        categoriasSpinner.setAdapter(adapterCategorias);
 
         extra = getIntent().getExtras();
         if (extra != null){
@@ -137,42 +138,55 @@ public class FormularioVendaActivity extends AppCompatActivity {
         return mime.getExtensionFromMimeType(cr.getType(uri));
     }
 
-    private void publicarVenda(){
-        if (localImagemRecuperada != null) {
-            referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("produtos").child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
-            tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
-            Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return referenciaStorage.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        finish();
-                        if (validaCampos()){
-                            Produto produto = montaProduto(task);
-                            salvarProduto(produto);
-                            Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Snackbar.make(findViewById(R.id.formulario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
+    private boolean publicarVenda(){
+        final boolean[] retorno = {false};
+        try {
+            if (localImagemRecuperada != null) {
+                referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("produtos").child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
+                tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
+                Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
                         }
-                    } else {
-                        Snackbar.make(findViewById(R.id.formulario_id), "Erro ao salvar venda, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                        return referenciaStorage.getDownloadUrl();
                     }
-                }
-            });
-        } else if (produto.getUrlImagem() != null) {
-            salvarProduto(montaProduto());
-            finish();
-            Toast.makeText(FormularioVendaActivity.this, "Venda alterada com sucesso", Toast.LENGTH_SHORT).show();
-        } else {
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            finish();
+                            if (validaCampos()){
+                                retorno[0] = true;
+                                Produto produto = montaProduto(task);
+                                salvarProduto(produto);
+                                Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Snackbar.make(findViewById(R.id.formulario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Snackbar.make(findViewById(R.id.formulario_id), "Erro ao salvar venda, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else if (produto.getUrlImagem() != null) {
+                bloqueiaMenuSalvar();
+                salvarProduto(montaProduto());
+                retorno[0] = true;
+                finish();
+                Toast.makeText(FormularioVendaActivity.this, "Venda alterada com sucesso", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e){
             Snackbar.make(findViewById(R.id.formulario_id), "Por favor, escolha uma foto para o produto!", Snackbar.LENGTH_SHORT).show();
         }
+        return retorno[0];
+
+    }
+
+    private void bloqueiaMenuSalvar() {
+        MenuItem menuItem = findViewById(R.id.menu_formulario_salvar);
+        menuItem.setEnabled(false);
     }
 
     private void salvarProduto(Produto produto) {
@@ -192,7 +206,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
-        produto.setCategoria(categorias.getSelectedItem().toString());
+        produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
         return produto;
     }
 
@@ -208,7 +222,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
-        produto.setCategoria(categorias.getSelectedItem().toString());
+        produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
         return produto;
     }
 

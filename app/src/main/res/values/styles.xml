@@ -21,9 +21,12 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:itemTextAppearance">@style/AparenciaMenuPersonalizda</item>
         <item name="actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
+    </style>
 
-
+    <style name="AparenciaMenuPersonalizda" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="AppTheme.Auth" parent="Theme.AppCompat.Light.NoActionBar">
