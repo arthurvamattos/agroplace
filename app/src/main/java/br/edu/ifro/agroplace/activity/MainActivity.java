@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
-    private HorizontalListView listViewCategorias;
-    private ArrayAdapter adapterCategorias;
+    private Spinner spinnerCategorias;
 
     private static List<CategoriaObserver> observers = new ArrayList<CategoriaObserver>();
 
@@ -48,18 +48,22 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(tabAdapter);
         slidingTabLayout.setViewPager(viewPager);
 
-        listViewCategorias = findViewById(R.id.categorias_lisview);
-        adapterCategorias = new ArrayAdapter(this, android.R.layout.simple_list_item_1, Categorias.getCategoriasLista());
-        listViewCategorias.setAdapter(adapterCategorias);
+        spinnerCategorias = findViewById(R.id.categorias_spinner);
+        ArrayAdapter adapterCategorias = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasLista());
+        spinnerCategorias.setAdapter(adapterCategorias);
 
-
-        listViewCategorias = findViewById(R.id.categorias_lisview);
-        listViewCategorias.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Preferencias preferencias = new Preferencias(MainActivity.this);
-                preferencias.trocarCategoria(adapterCategorias.getItem(position).toString());
+                preferencias.trocarCategoria(Categorias.getCategoriasLista()[i]);
                 notifyObservers();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         if (preferencias.getCategoria().equals(Categorias.getCategoriasLista()[0]))
             Snackbar.make(findViewById(R.id.main_id), "Mostrando todos os produtos", Snackbar.LENGTH_SHORT).show();
         else{
-            final Snackbar snackbar = Snackbar.make(findViewById(R.id.main_id), "Mostrando "+categoria, Snackbar.LENGTH_INDEFINITE);
+            final Snackbar snackbar = Snackbar.make(findViewById(R.id.main_id), "Mostrando "+categoria, Snackbar.LENGTH_SHORT);
             snackbar.setAction("Mostrar todos", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -15,7 +15,6 @@ import br.edu.ifro.agroplace.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private ImageView logo;
     private TextView textLogo;
 
     @Override
@@ -23,7 +22,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        logo = findViewById(R.id.splash_logo);
         textLogo = findViewById(R.id.splash_text);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -40,7 +38,6 @@ public class SplashActivity extends AppCompatActivity {
         },2000);
 
         Animation animacao = AnimationUtils.loadAnimation(this,R.anim.splash_animation);
-        logo.startAnimation(animacao);
         textLogo.startAnimation(animacao);
     }
 }

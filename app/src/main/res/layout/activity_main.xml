@@ -11,15 +11,26 @@ android:orientation="vertical"
 <include android:id="@+id/toolbar"
     layout="@layout/toolbar"></include>
 
-<br.edu.ifro.agroplace.helper.HorizontalListView
-    android:id="@+id/categorias_lisview"
+<LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:background="@android:color/white"
-    android:elevation="2dp"
-    android:layout_gravity="center">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Categoria:"
+        android:textSize="16dp"
+        android:textColor="#000"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/categorias_spinner"
+        android:layout_marginLeft="5dp"></Spinner>
+</LinearLayout>
 
-</br.edu.ifro.agroplace.helper.HorizontalListView>
+
 <android.support.v4.view.ViewPager
     android:id="@+id/vp_main"
     android:layout_width="match_parent"
