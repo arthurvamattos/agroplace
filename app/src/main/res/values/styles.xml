@@ -9,6 +9,8 @@
         <item name="actionBarItemBackground">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
         <item name="android:actionMenuTextColor">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
     </style>
 
     <style name="ActionButtonOverflow" parent="android:Widget.Holo.ActionButton.Overflow">

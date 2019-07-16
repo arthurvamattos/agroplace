@@ -146,9 +146,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         inflater.inflate(R.menu.menu_main, menu);
         MenuItem searchItem = menu.findItem(R.id.menu_main_pesquisa);
         SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        ImageView icon = searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
-        icon.setColorFilter(Color.WHITE);
+        configurarSearchView(searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -177,6 +175,15 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                 return false;
             }
         });
+    }
+
+    private void configurarSearchView(SearchView searchView) {
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        ImageView icon = searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
+        icon.setColorFilter(Color.WHITE);
+        ImageView iconClose = searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        iconClose.setColorFilter(Color.WHITE);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
     }
 
     @Override
