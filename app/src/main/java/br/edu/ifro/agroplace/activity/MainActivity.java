@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("AGROPLACE");
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         slidingTabLayout = findViewById(R.id.main_stl_tabs);
         viewPager = findViewById(R.id.vp_main);

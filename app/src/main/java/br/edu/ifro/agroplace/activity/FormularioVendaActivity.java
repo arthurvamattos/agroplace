@@ -5,6 +5,8 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +31,8 @@ import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -36,6 +40,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.Date;
 
 import br.edu.ifro.agroplace.R;
@@ -48,6 +53,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private static final int REQUISICAO_IMAGEM = 86;
+    private static final int REQUISICAO_CAMERA = 87;
     private FloatingActionButton btnFoto;
     private ImageView imageView;
     private TextInputEditText nomeField;
@@ -63,6 +69,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
     private Bundle extra;
     private Spinner categoriasSpinner;
     private ArrayAdapter adapterCategorias;
+    private String caminhoFoto;
 
 
     @Override
@@ -92,7 +99,20 @@ public class FormularioVendaActivity extends AppCompatActivity {
         btnFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                abrirSeletorDeImagens();
+                AlertDialog.Builder builder = new AlertDialog.Builder(FormularioVendaActivity.this);
+                builder.setTitle("Foto do produto")
+                        .setMessage("Foto nova ou existente?")
+                        .setNegativeButton("Usar a câmera", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                abrirCamera();
+                            }
+                        })
+                        .setPositiveButton("Abrir a galeria", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                abrirSeletorDeImagens();
+                            }
+                        }).show();
             }
         });
 
@@ -114,6 +134,19 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     }
 
+    private void abrirCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        caminhoFoto = getExternalFilesDir(null)+"/agroplace"+System.currentTimeMillis()+".jpg";
+        File arquivoFoto = new File(caminhoFoto);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(arquivoFoto));
+
+        //Não faço ideia, mas funciona
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+        startActivityForResult(intent, REQUISICAO_CAMERA);
+    }
+
     private void abrirSeletorDeImagens() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
@@ -129,6 +162,11 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 localImagemRecuperada = data.getData();
                 Picasso.get().load(localImagemRecuperada).fit().centerCrop().into(imageView);
             }
+            if (requestCode == REQUISICAO_CAMERA && caminhoFoto != null) {
+                File foto = new File(caminhoFoto);
+                localImagemRecuperada = Uri.fromFile(foto);
+                Picasso.get().load(localImagemRecuperada).fit().centerCrop().into(imageView);
+            }
         }
     }
 
@@ -138,10 +176,12 @@ public class FormularioVendaActivity extends AppCompatActivity {
         return mime.getExtensionFromMimeType(cr.getType(uri));
     }
 
-    private boolean publicarVenda(){
-        final boolean[] retorno = {false};
+    private void publicarVenda(){
         try {
             if (localImagemRecuperada != null) {
+                bloqueiaCampos();
+                Snackbar snake = Snackbar.make(findViewById(R.id.formulario_id), "Estamos publicando sua venda, só mais um segundo", Snackbar.LENGTH_INDEFINITE);
+                snake.show();
                 referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("produtos").child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
                 Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -158,36 +198,49 @@ public class FormularioVendaActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             finish();
                             if (validaCampos()){
-                                retorno[0] = true;
                                 Produto produto = montaProduto(task);
                                 salvarProduto(produto);
                                 Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
                             } else {
+                                desbloqueiaCampos();
                                 Snackbar.make(findViewById(R.id.formulario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
                             }
                         } else {
+                            desbloqueiaCampos();
                             Snackbar.make(findViewById(R.id.formulario_id), "Erro ao salvar venda, tente novamente!", Snackbar.LENGTH_SHORT).show();
                         }
                     }
                 });
             } else if (produto.getUrlImagem() != null) {
-                bloqueiaMenuSalvar();
+                bloqueiaCampos();
+                Snackbar snake = Snackbar.make(findViewById(R.id.formulario_id), "Estamos publicando sua venda, só mais um segundo", Snackbar.LENGTH_INDEFINITE);
+                snake.show();
                 salvarProduto(montaProduto());
-                retorno[0] = true;
                 finish();
                 Toast.makeText(FormularioVendaActivity.this, "Venda alterada com sucesso", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e){
+            desbloqueiaCampos();
             Snackbar.make(findViewById(R.id.formulario_id), "Por favor, escolha uma foto para o produto!", Snackbar.LENGTH_SHORT).show();
         }
-        return retorno[0];
-
     }
 
-    private void bloqueiaMenuSalvar() {
-        MenuItem menuItem = findViewById(R.id.menu_formulario_salvar);
-        menuItem.setEnabled(false);
+    private void bloqueiaCampos() {
+        btnFoto.setClickable(false);
+        nomeField.setEnabled(false);
+        valorField.setEnabled(false);
+        descricaoField.setEnabled(false);
+        categoriasSpinner.setEnabled(false);
     }
+
+    private void desbloqueiaCampos() {
+        btnFoto.setClickable(true);
+        nomeField.setEnabled(true);
+        valorField.setEnabled(true);
+        descricaoField.setEnabled(true);
+        categoriasSpinner.setEnabled(true);
+    }
+
 
     private void salvarProduto(Produto produto) {
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
@@ -259,12 +312,24 @@ public class FormularioVendaActivity extends AppCompatActivity {
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(preferencias.getIdentificador()).child(produto.getId());
-                                firebase.removeValue();
-                                Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-
+                                bloqueiaCampos();
+                                firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(produto.getId());
+                                firebase.removeValue()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            desbloqueiaCampos();
+                                            Toast.makeText(FormularioVendaActivity.this, "Erro ao deletar venda, tente novamente mais tarde!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
                         })
                         .setNegativeButton("Não", null)
                         .show();

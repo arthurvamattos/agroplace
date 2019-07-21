@@ -125,7 +125,6 @@ public class PerfilActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Produto produto = produtos.get(position);
-
                 Intent intent = new Intent(PerfilActivity.this, ProdutoActivity.class);
                 intent.putExtra("produto", produto);
                 startActivity(intent);

@@ -41,6 +41,7 @@ import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
 
@@ -80,6 +81,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         setHasOptionsMenu(true);
         MainActivity.adicionarObserver(this);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -173,6 +175,37 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                     firebase.addValueEventListener(valueEventListener);
                 }
                 return false;
+            }
+        });
+
+        verificarConversasNaoLidas(menu);
+
+    }
+
+    public void verificarConversasNaoLidas(final Menu menu){
+        final boolean[] viewed = {true};
+        Preferencias preferencias = new Preferencias(getActivity());
+        DatabaseReference referenciaConversas = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
+        referenciaConversas.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    Conversa conversa = data.getValue(Conversa.class);
+                    if (!conversa.isVisualizada()){
+                        viewed[0] = false;
+                        MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                        menuConversa.setIcon(R.drawable.ic_announcement);
+                    }
+                }
+                if (viewed[0]) {
+                    MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                    menuConversa.setIcon(R.drawable.ic_message);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

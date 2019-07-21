@@ -31,7 +31,7 @@ public class ConversasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_conversas);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Feira Rondônia");
+        toolbar.setTitle("Conversas");
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         setSupportActionBar(toolbar);
 

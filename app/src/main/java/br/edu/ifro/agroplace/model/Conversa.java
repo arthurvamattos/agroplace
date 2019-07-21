@@ -8,6 +8,7 @@ public class Conversa {
     private String nome;
     private String mensagem;
     private String caminhoFoto;
+    private boolean visualizada;
 
     public Conversa() {
     }
@@ -43,5 +44,13 @@ public class Conversa {
 
     public void setCaminhoFoto(String caminhoFoto) {
         this.caminhoFoto = caminhoFoto;
+    }
+
+    public boolean isVisualizada() {
+        return visualizada;
+    }
+
+    public void setVisualizada(boolean visualizada) {
+        this.visualizada = visualizada;
     }
 }

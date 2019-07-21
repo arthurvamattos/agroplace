@@ -55,10 +55,15 @@ public class ConversasAdapter extends BaseAdapter {
         TextView campoNome = view.findViewById(R.id.lista_conversa_personalizada_nome);
         TextView campoMensagem = view.findViewById(R.id.lista_conversa_personalizada_mensagem);
         final CircleImageView campoFoto = view.findViewById(R.id.lista_conversa_personalizada_foto);
+        ImageView campoVizualizacao = view.findViewById(R.id.lista_contato_personalizado_vizualizacao);
 
         Conversa conversa = conversas.get(position);
         campoNome.setText(conversa.getNome());
         campoMensagem.setText(conversa.getMensagem());
+
+        if (conversa.isVisualizada()) {
+            campoVizualizacao.setVisibility(View.INVISIBLE);
+        }
 
         if (conversa.getCaminhoFoto() != null){
             Bitmap bitmap = BitmapFactory.decodeFile(conversa.getCaminhoFoto());

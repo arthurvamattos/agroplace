@@ -14,29 +14,41 @@
         android:src="@drawable/ic_person"
         android:layout_margin="10dp"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/lista_conversa_personalizada_nome"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nome"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:textColor="#202020"/>
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/lista_conversa_personalizada_nome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nome"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:textColor="#202020"/>
 
-        <TextView
-            android:id="@+id/lista_conversa_personalizada_mensagem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Mensagem"
-            android:textSize="14dp"
-            android:textColor="@android:color/black"/>
+            <TextView
+                android:id="@+id/lista_conversa_personalizada_mensagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mensagem"
+                android:textSize="14dp"
+                android:textColor="@android:color/black"/>
+        </LinearLayout>
 
-    </LinearLayout>
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/btn_circle"
+            android:layout_alignParentRight="true"
+            android:layout_margin="16dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/lista_contato_personalizado_vizualizacao"/>
+    </RelativeLayout>
 
 </LinearLayout>

@@ -9,13 +9,12 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import br.edu.ifro.agroplace.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private TextView textLogo;
+    private ImageView textLogo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

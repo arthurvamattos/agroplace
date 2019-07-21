@@ -2,10 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_conversa_contato"
+    <item android:id="@+id/menu_conversa_whatsapp"
         android:title="Adicionar Contato"
         android:orderInCategory="100"
         app:showAsAction="always"
+        android:icon="@drawable/ic_whatsapp"/>
+
+    <item android:id="@+id/menu_conversa_contato"
+        android:title="Adicionar Contato"
+        android:orderInCategory="200"
+        app:showAsAction="always"
         android:icon="@drawable/ic_person_add"/>
+
 
 </menu>

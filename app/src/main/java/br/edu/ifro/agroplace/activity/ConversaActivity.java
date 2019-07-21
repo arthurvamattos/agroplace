@@ -1,5 +1,7 @@
 package br.edu.ifro.agroplace.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,12 +27,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.MensagemAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Contato;
 import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Mensagem;
@@ -56,6 +61,8 @@ public class ConversaActivity extends AppCompatActivity {
     private String idUsuarioRemetente;
 
     private String identificadorContato;
+    private DatabaseReference mensagensDestinatario;
+    private ValueEventListener mensagensVisualiazadas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,22 +86,36 @@ public class ConversaActivity extends AppCompatActivity {
         }
 
         //Configurar a toobar
-        toolbar.setTitle("");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
-        TextView tituloToolbar = findViewById(R.id.toolbar_nome);
-        tituloToolbar.setText(nomeUsuarioDestinatario);
-        setSupportActionBar(toolbar);
+        configurarAToobar();
 
         //Montar a listview e adapter
         mensagens = new ArrayList<>();
 
         //Adapter customizado
-        adapter = new MensagemAdapter(ConversaActivity.this, mensagens);
-        listView.setDivider(null);
-        listView.setAdapter(adapter);
+        adapterCustomizado();
+
         //Recuperar as mensagens do firebase
-        firebase = ConfiguracaoFirebase.getFirebase().child("mensagens").child(idUsuarioRemetente).child(idUsuarioDestinatario);
-        firebase.keepSynced(true);
+        recuperarMensagens();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Mensagem mensagem = mensagens.get(i);
+                if (idUsuarioRemetente.equals( mensagem.getIdUsuario() )){
+                    final TextView indicadorVisualizacao = view.findViewById(R.id.indicador_visualizacao);
+                    if (mensagem.isVisualizada()) {
+                        indicadorVisualizacao.setText("Visualizada");
+                    }
+                    if (indicadorVisualizacao.getVisibility() == View.VISIBLE){
+                        indicadorVisualizacao.setVisibility(View.INVISIBLE);
+                        indicadorVisualizacao.setTextSize(0);
+                    } else {
+                        indicadorVisualizacao.setVisibility(View.VISIBLE);
+                        indicadorVisualizacao.setTextSize(14);
+                    }
+                }
+            }
+        });
 
         valueEventListenerMensagem = new ValueEventListener() {
             @Override
@@ -105,6 +126,7 @@ public class ConversaActivity extends AppCompatActivity {
                     mensagens.add(mensagem);
                 }
                 adapter.notifyDataSetChanged();
+                if (mensagens.size() > 0) marcarConversaComoVisualizada();
             }
 
             @Override
@@ -125,11 +147,13 @@ public class ConversaActivity extends AppCompatActivity {
                     mensagem.setIdUsuario(idUsuarioRemetente);
                     mensagem.setMensagem(textoMensagem);
                     //Salvar mensagem para o remetente
+                    mensagem.setVisualizada(false);
                     Boolean retornoMensagemRemetente =  salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
                     if (!retornoMensagemRemetente) {
                         Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem, tente novamente!", Snackbar.LENGTH_SHORT).show();
                     } else {
                         //Salvar mensagem para o destinatário
+                        mensagem.setVisualizada(true);
                         Boolean retornoMensagemDestinatario = salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
                         if (!retornoMensagemDestinatario) {
                             Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
@@ -141,6 +165,7 @@ public class ConversaActivity extends AppCompatActivity {
                     conversa.setIdUsuario(idUsuarioDestinatario);
                     conversa.setNome(nomeUsuarioDestinatario);
                     conversa.setMensagem(textoMensagem);
+                    conversa.setVisualizada(true);
                     Boolean retornoConversaRemetente = salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, conversa);
 
                     if (!retornoMensagemRemetente) {
@@ -160,7 +185,38 @@ public class ConversaActivity extends AppCompatActivity {
                 }
             }
         });
+        marcarMensagensComoVisualizadas();
+        buscarFotoPerfil();
 
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mensagensDestinatario.addValueEventListener(mensagensVisualiazadas);
+    }
+
+    private void recuperarMensagens() {
+        firebase = ConfiguracaoFirebase.getFirebase().child("mensagens").child(idUsuarioRemetente).child(idUsuarioDestinatario);
+        firebase.keepSynced(true);
+    }
+
+    private void adapterCustomizado() {
+        adapter = new MensagemAdapter(ConversaActivity.this, mensagens);
+        listView.setDivider(null);
+        listView.setAdapter(adapter);
+    }
+
+    private void configurarAToobar() {
+        toolbar.setTitle("");
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        TextView tituloToolbar = findViewById(R.id.toolbar_nome);
+        tituloToolbar.setText(nomeUsuarioDestinatario);
+        setSupportActionBar(toolbar);
+    }
+
+    private void buscarFotoPerfil() {
         DatabaseReference firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(idUsuarioDestinatario);
         firebase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -174,6 +230,44 @@ public class ConversaActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+
+
+    }
+
+    private void marcarConversaComoVisualizada() {
+        firebase = ConfiguracaoFirebase.getFirebase().child("conversas");
+        firebase.child(idUsuarioRemetente).child(idUsuarioDestinatario).child("visualizada").setValue(Boolean.TRUE);
+        firebase.keepSynced(true);
+    }
+
+    private void marcarMensagensComoVisualizadas() {
+        final List<String> mensagens = new ArrayList<>();
+        mensagens.clear();
+
+        mensagensVisualiazadas = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mensagens.clear();
+                for (DataSnapshot dado : dataSnapshot.getChildren()) {
+                    String id = dado.getKey();
+                    if (!id.equals(idUsuarioRemetente) && !id.equals(idUsuarioDestinatario))
+                        mensagens.add(dado.getKey());
+                }
+
+                for (String key : mensagens) {
+                    DatabaseReference mensagensDestinatario = ConfiguracaoFirebase.getFirebase().child("mensagens")
+                            .child(idUsuarioDestinatario).child(idUsuarioRemetente).child(key).child("visualizada");
+                    mensagensDestinatario.setValue(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        mensagensDestinatario = ConfiguracaoFirebase.getFirebase().child("mensagens").child(idUsuarioDestinatario).child(idUsuarioRemetente);
     }
 
     private boolean salvarMensagem(String idRemetente, String idDestinatario, Mensagem mensagem) {
@@ -189,8 +283,8 @@ public class ConversaActivity extends AppCompatActivity {
 
     private boolean salvarConversa(String idRemetente, String idDestinatario, Conversa conversa) {
         try {
-            firebase = ConfiguracaoFirebase.getFirebase().child("conversas");
-            firebase.child(idRemetente).child(idDestinatario).setValue(conversa);
+            firebase = ConfiguracaoFirebase.getFirebase().child("conversas").child(idRemetente).child(idDestinatario);
+            firebase.setValue(conversa);
             return true;
         } catch (Exception e){
             e.printStackTrace();
@@ -241,6 +335,37 @@ public class ConversaActivity extends AppCompatActivity {
                     }
                 });
                 return true;
+            case R.id.menu_conversa_whatsapp:
+                identificadorContato = idUsuarioDestinatario;
+                firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(identificadorContato);
+                firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        //Recuperar dados do contato
+                        Usuario usuarioContato = dataSnapshot.getValue(Usuario.class);
+
+                        //Recuperar identificador do usuário logado (base64)
+                        Preferencias preferencias = new Preferencias(ConversaActivity.this);
+                        String identificadorUsuarioLogado =  preferencias.getIdentificador();
+
+                        firebase = ConfiguracaoFirebase.getFirebase().child("contatos")
+                                .child(identificadorUsuarioLogado)
+                                .child(identificadorContato);
+
+                        if (usuarioContato.getTelefone() != null)
+                        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
+                        else
+                            Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                return true;
+
             default: return super.onOptionsItemSelected(item);
         }
     }
@@ -249,5 +374,6 @@ public class ConversaActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         firebase.removeEventListener(valueEventListenerMensagem);
+        mensagensDestinatario.removeEventListener(mensagensVisualiazadas);
     }
 }

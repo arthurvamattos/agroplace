@@ -20,14 +20,11 @@
             android:gravity="center_vertical"
             android:background="@drawable/background">
 
-            <TextView
+            <ImageView
                 android:id="@+id/login_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="AGROPLACE"
-                android:textColor="#fff"
-                android:textStyle="bold"
-                android:textSize="50dp"
+                android:layout_width="270dp"
+                android:layout_height="100dp"
+                android:src="@drawable/agroplace"
                 android:layout_centerHorizontal="true"/>
 
             <TextView
@@ -39,7 +36,8 @@
                 android:text="A feira agora na palma da sua mão"
                 android:textAlignment="center"
                 android:textColor="#fff"
-                android:textSize="18dp" />
+                android:textSize="18dp"
+                android:textStyle="bold"/>
 
             <ScrollView
                 android:layout_below="@+id/login_descript"
