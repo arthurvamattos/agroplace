@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.activity.ConversasActivity;
@@ -41,6 +43,7 @@ import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.helper.SearchViewObserver;
 import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
@@ -53,12 +56,14 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
     private ListView listView;
     private ProdutoAdapter adapter;
     private ArrayList<Produto> produtos;
-    private ArrayList<Produto> produtosPesquisa;
+    private boolean searchViewOpened;
 
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListener;
     private Handler handler;
+
+    private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
     public ProdutosFragment() {
     }
@@ -92,10 +97,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         produtos = new ArrayList();
         produtos.clear();
 
-        produtosPesquisa = new ArrayList<>();
-
         handler = new Handler();
-
 
         adapter = new ProdutoAdapter(produtos, getActivity());
         listView = view.findViewById(R.id.produtos_listview);
@@ -124,7 +126,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                Produto produto = produtos.get(position);
                Preferencias preferencias = new Preferencias(getActivity());
                if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
@@ -138,7 +139,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                }
             }
         });
-
         return  view;
     }
 
@@ -154,7 +154,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
-
             int count = 0;
             int anterior = 0;
             @Override
@@ -178,8 +177,23 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             }
         });
 
-        verificarConversasNaoLidas(menu);
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchViewOpened = true;
+                notifyObservers();
+            }
+        });
 
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchViewOpened = false;
+                notifyObservers();
+                return false;
+            }
+        });
+        verificarConversasNaoLidas(menu);
     }
 
     public void verificarConversasNaoLidas(final Menu menu){
@@ -248,7 +262,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         }
     }
 
-
     private void abrirPerfil(Usuario user) {
         Intent intent = new Intent(getActivity(), FormularioUsuarioActivity.class);
         intent.putExtra("usuario", user);
@@ -285,6 +298,16 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                     adapter.getFilterCategory().filter(categoria);
                 }
             }, 100);
+        }
+    }
+
+    public static void adicionarObserver(SearchViewObserver obs) {
+        observers.add(obs);
+    }
+
+    private void notifyObservers() {
+        for (SearchViewObserver observer : this.observers) {
+            observer.update(searchViewOpened);
         }
     }
 

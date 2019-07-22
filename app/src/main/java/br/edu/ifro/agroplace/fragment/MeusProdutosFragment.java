@@ -24,11 +24,13 @@ import android.widget.ListView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.activity.ConversasActivity;
@@ -41,6 +43,8 @@ import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.helper.SearchViewObserver;
+import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
 
@@ -53,11 +57,14 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     private ListView listView;
     private ProdutoAdapter adapter;
     private ArrayList<Produto> produtos;
+    private boolean searchViewOpened;
 
     private FirebaseAuth usuarioAutenticacao;
     private Query firebase;
     private ValueEventListener valueEventListener;
     private FloatingActionButton btnNovaVenda;
+
+    private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
     private Handler handler;
 
@@ -177,7 +184,53 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                 return false;
             }
         });
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchViewOpened = true;
+                notifyObservers();
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchViewOpened = false;
+                notifyObservers();
+                return false;
+            }
+        });
+        verificarConversasNaoLidas(menu);
     }
+
+    public void verificarConversasNaoLidas(final Menu menu){
+        final boolean[] viewed = {true};
+        Preferencias preferencias = new Preferencias(getActivity());
+        DatabaseReference referenciaConversas = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
+        referenciaConversas.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    Conversa conversa = data.getValue(Conversa.class);
+                    if (!conversa.isVisualizada()){
+                        viewed[0] = false;
+                        MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                        menuConversa.setIcon(R.drawable.ic_announcement);
+                    }
+                }
+                if (viewed[0]) {
+                    MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                    menuConversa.setIcon(R.drawable.ic_message);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void configurarSearchView(SearchView searchView) {
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -258,5 +311,13 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
         }
     }
 
+    public static void adicionarObserver(SearchViewObserver obs) {
+        observers.add(obs);
+    }
 
+    private void notifyObservers() {
+        for (SearchViewObserver observer : this.observers) {
+            observer.update(searchViewOpened);
+        }
+    }
 }

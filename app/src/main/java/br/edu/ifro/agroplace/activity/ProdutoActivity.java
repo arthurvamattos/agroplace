@@ -1,6 +1,7 @@
 package br.edu.ifro.agroplace.activity;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,11 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
+import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Produto;
 
 public class ProdutoActivity extends AppCompatActivity {
@@ -100,7 +107,36 @@ public class ProdutoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_produto, menu);
+        verificarConversasNaoLidas(menu);
         return true;
+    }
+
+    public void verificarConversasNaoLidas(final Menu menu){
+        final boolean[] viewed = {true};
+        Preferencias preferencias = new Preferencias(ProdutoActivity.this);
+        DatabaseReference referenciaConversas = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
+        referenciaConversas.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()){
+                    Conversa conversa = data.getValue(Conversa.class);
+                    if (!conversa.isVisualizada()){
+                        viewed[0] = false;
+                        MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                        menuConversa.setIcon(R.drawable.ic_announcement);
+                    }
+                }
+                if (viewed[0]) {
+                    MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+                    menuConversa.setIcon(R.drawable.ic_message);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

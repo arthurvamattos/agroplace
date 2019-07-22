@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
@@ -17,17 +18,21 @@ import java.util.List;
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.MainTabAdapter;
 import br.edu.ifro.agroplace.config.Categorias;
+import br.edu.ifro.agroplace.fragment.MeusProdutosFragment;
+import br.edu.ifro.agroplace.fragment.ProdutosFragment;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;
 import br.edu.ifro.agroplace.helper.HorizontalListView;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.helper.SearchViewObserver;
 import br.edu.ifro.agroplace.helper.SlidingTabLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchViewObserver {
 
     private Toolbar toolbar;
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
     private Spinner spinnerCategorias;
+    private ImageView toolbarLogo;
 
     private static List<CategoriaObserver> observers = new ArrayList<CategoriaObserver>();
 
@@ -41,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        ProdutosFragment.adicionarObserver(this);
+        MeusProdutosFragment.adicionarObserver(this);
 
         slidingTabLayout = findViewById(R.id.main_stl_tabs);
         viewPager = findViewById(R.id.vp_main);
@@ -50,9 +57,11 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(tabAdapter);
         slidingTabLayout.setViewPager(viewPager);
 
+        toolbarLogo = findViewById(R.id.toolbar_logo);
+
         spinnerCategorias = findViewById(R.id.categorias_spinner);
         ArrayAdapter adapterCategorias = new ArrayAdapter(this,
-                android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasLista());
+            android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasLista());
         spinnerCategorias.setAdapter(adapterCategorias);
 
         spinnerCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -99,5 +108,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void update(boolean opened) {
+        if (opened) {
+            toolbarLogo.setVisibility(View.INVISIBLE);
+        } else {
+            toolbarLogo.setVisibility(View.VISIBLE);
+        }
+    }
 }
 
