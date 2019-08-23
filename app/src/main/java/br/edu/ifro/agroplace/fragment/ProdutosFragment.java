@@ -193,6 +193,11 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         verificarConversasNaoLidas(menu);
     }
 
