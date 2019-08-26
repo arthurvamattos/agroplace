@@ -1,8 +1,12 @@
 package br.edu.ifro.agroplace.model;
 
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
 import java.io.Serializable;
 
-public class Produto implements Serializable {
+public class Produto  implements Serializable {
 
     private String id;
     private String nome;
@@ -11,10 +15,11 @@ public class Produto implements Serializable {
     private String urlImagem;
     private String vendedor;
     private String idVendedor;
+    private String urlFotoVendedor;
     private String dataPublicacao;
     private String categoria;
 
-    public Produto(){
+    public Produto() {
     }
 
     public String getNome() {
@@ -87,5 +92,13 @@ public class Produto implements Serializable {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getUrlFotoVendedor() {
+        return urlFotoVendedor;
+    }
+
+    public void setUrlFotoVendedor(String urlFotoVendedor) {
+        this.urlFotoVendedor = urlFotoVendedor;
     }
 }

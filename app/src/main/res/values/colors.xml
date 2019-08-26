@@ -4,5 +4,5 @@
     <color name="colorPrimaryDark">#149B50</color>
     <color name="colorAccent">#20CE6C</color>
     <color name="slidingIndicator">#149B50</color>
-    <color name="gray">#EEEEEE</color>
+    <color name="gray">#f8f8f8</color>
 </resources>

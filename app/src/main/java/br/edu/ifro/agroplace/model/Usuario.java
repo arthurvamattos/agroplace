@@ -16,6 +16,7 @@ public class Usuario implements Serializable {
     private String UrlImagem;
 
     public Usuario (){
+        this.setUrlImagem("https://firebasestorage.googleapis.com/v0/b/agroplace-project.appspot.com/o/usuarios%2Fno-img.png?alt=media&token=c4ea6a8d-b396-492b-9d9f-84dee85c0efa");
     }
 
     public void salvar(){

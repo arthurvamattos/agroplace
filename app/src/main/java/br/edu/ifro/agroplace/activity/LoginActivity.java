@@ -1,6 +1,5 @@
 package br.edu.ifro.agroplace.activity;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,10 +36,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText senhaField;
     private Button loginBtn;
     private DatabaseReference firebase;
-    private String[] permissoesNecessarias = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.CAMERA
-    };
     private Usuario usuario;
     private String identificadorUsuarioLogado;
 
@@ -59,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!emailField.getText().toString().trim().equals("") && !senhaField.getText().toString().trim().equals("")){
+                if (!emailField.getText().toString().trim().equals("") && !senhaField.getText().toString().trim().equals("")) {
                     usuario = new Usuario();
                     usuario.setEmail(emailField.getText().toString());
                     usuario.setSenha(senhaField.getText().toString());
@@ -73,7 +68,6 @@ public class LoginActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-
     }
 
     private void verficarUsuarioLogado() {

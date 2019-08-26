@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +40,7 @@ import br.edu.ifro.agroplace.activity.FormularioVendaActivity;
 import br.edu.ifro.agroplace.activity.LoginActivity;
 import br.edu.ifro.agroplace.activity.MainActivity;
 import br.edu.ifro.agroplace.activity.ProdutoActivity;
+import br.edu.ifro.agroplace.adapter.ProductsAdapter;
 import br.edu.ifro.agroplace.adapter.ProdutoAdapter;
 import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -53,14 +56,15 @@ import br.edu.ifro.agroplace.model.Usuario;
  */
 public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
-    private ListView listView;
-    private ProdutoAdapter adapter;
     private ArrayList<Produto> produtos;
     private boolean searchViewOpened;
 
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListener;
+    private RecyclerView productsRecyclerView;
+    private ProductsAdapter productsAdapter;
+
     private Handler handler;
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
@@ -99,12 +103,11 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
         handler = new Handler();
 
-        adapter = new ProdutoAdapter(produtos, getActivity());
-        listView = view.findViewById(R.id.produtos_listview);
-        listView.setAdapter(adapter);
-        listView.setDivider(null);
+        productsRecyclerView = view.findViewById(R.id.products_recycler_view);
+        productsAdapter = new ProductsAdapter(getContext(), produtos);
+        productsRecyclerView.setAdapter(productsAdapter);
+        productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        listView.setFooterDividersEnabled(false);
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
         firebase.keepSynced(true);
         valueEventListener = new ValueEventListener() {
@@ -115,7 +118,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                     produtos.add(dado.getValue(Produto.class));
                 }
                 Collections.reverse(produtos);
-                adapter.notifyDataSetChanged();
+                productsAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -123,22 +126,23 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
             }
         };
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               Produto produto = produtos.get(position);
-               Preferencias preferencias = new Preferencias(getActivity());
-               if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
-                   Intent intent = new Intent(getActivity(), FormularioVendaActivity.class);
-                   intent.putExtra("produto", produto);
-                   startActivity(intent);
-               } else {
-                   Intent intent = new Intent(getActivity(), ProdutoActivity.class);
-                   intent.putExtra("produto", produto);
-                   startActivity(intent);
-               }
-            }
-        });
+
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//               Produto produto = produtos.get(position);
+//               Preferencias preferencias = new Preferencias(getActivity());
+//               if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
+//                   Intent intent = new Intent(getActivity(), FormularioVendaActivity.class);
+//                   intent.putExtra("produto", produto);
+//                   startActivity(intent);
+//               } else {
+//                   Intent intent = new Intent(getActivity(), ProdutoActivity.class);
+//                   intent.putExtra("produto", produto);
+//                   startActivity(intent);
+//               }
+//            }
+//        });
         return  view;
     }
 
@@ -161,12 +165,12 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                 anterior = count;
                 count = newText.length();
                 if (count > anterior){
-                    adapter.getFilter().filter(newText);
+                    productsAdapter.getFilter().filter(newText);
                 } else {
                     firebase.addValueEventListener(valueEventListener);
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            adapter.getFilter().filter(newText);
+                            productsAdapter.getFilter().filter(newText);
                         }
                     }, 100);
                 }
@@ -300,7 +304,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    adapter.getFilterCategory().filter(categoria);
+                    productsAdapter.getFilterCategory().filter(categoria);
                 }
             }, 100);
         }

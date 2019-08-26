@@ -34,7 +34,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
@@ -48,6 +51,7 @@ import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Produto;
+import br.edu.ifro.agroplace.model.Usuario;
 
 public class FormularioVendaActivity extends AppCompatActivity {
 
@@ -70,7 +74,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
     private Spinner categoriasSpinner;
     private ArrayAdapter adapterCategorias;
     private String caminhoFoto;
-
+    private String sellerUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,6 @@ public class FormularioVendaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_formulario_venda);
 
         preferencias = new Preferencias(FormularioVendaActivity.this);
-
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Nova venda");
@@ -132,6 +135,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
             toolbar.setTitle(produto.getNome());
         }
 
+        getSellerImageUrl();
     }
 
     private void abrirCamera() {
@@ -254,12 +258,12 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setValor(valorField.getText().toString());
         produto.setDescricao(descricaoField.getText().toString());
         produto.setUrlImagem(task.getResult().toString());
-        Preferencias preferencias = new Preferencias(FormularioVendaActivity.this);
         produto.setVendedor(preferencias.getNome());
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
         produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
+        produto.setUrlFotoVendedor(sellerUrl);
         return produto;
     }
 
@@ -270,14 +274,28 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setValor(valorField.getText().toString());
         produto.setDescricao(descricaoField.getText().toString());
         produto.setUrlImagem(this.produto.getUrlImagem());
-        Preferencias preferencias = new Preferencias(FormularioVendaActivity.this);
         produto.setVendedor(preferencias.getNome());
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
         produto.setDataPublicacao(dataAutal.toString());
         produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
+        produto.setUrlFotoVendedor(sellerUrl);
         return produto;
     }
+
+    private void getSellerImageUrl() {
+        DatabaseReference userReference = ConfiguracaoFirebase.getFirebase().child("usuarios").child(preferencias.getIdentificador());
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Usuario user = dataSnapshot.getValue(Usuario.class);
+                sellerUrl = user.getUrlImagem();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
 
     private boolean validaCampos() {
         return !nomeField.getText().toString().trim().equals("") && !valorField.getText().toString().trim().equals("") && !descricaoField.getText().toString().trim().equals("");
