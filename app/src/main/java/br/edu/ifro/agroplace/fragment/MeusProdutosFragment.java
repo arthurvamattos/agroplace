@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +40,7 @@ import br.edu.ifro.agroplace.activity.FormularioUsuarioActivity;
 import br.edu.ifro.agroplace.activity.FormularioVendaActivity;
 import br.edu.ifro.agroplace.activity.LoginActivity;
 import br.edu.ifro.agroplace.activity.MainActivity;
+import br.edu.ifro.agroplace.adapter.ProductsAdapter;
 import br.edu.ifro.agroplace.adapter.ProdutoAdapter;
 import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -54,8 +57,6 @@ import br.edu.ifro.agroplace.model.Usuario;
 public class MeusProdutosFragment extends Fragment implements CategoriaObserver {
 
 
-    private ListView listView;
-    private ProdutoAdapter adapter;
     private ArrayList<Produto> produtos;
     private boolean searchViewOpened;
 
@@ -63,6 +64,9 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     private Query firebase;
     private ValueEventListener valueEventListener;
     private FloatingActionButton btnNovaVenda;
+
+    private RecyclerView productsRecyclerView;
+    private ProductsAdapter productsAdapter;
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
@@ -100,13 +104,12 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
         produtos = new ArrayList();
         produtos.clear();
 
-        handler = new Handler();
+        productsRecyclerView = view.findViewById(R.id.myproducts_recycler_view);
+        productsAdapter = new ProductsAdapter(getContext(), produtos);
+        productsRecyclerView.setAdapter(productsAdapter);
+        productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new ProdutoAdapter(produtos, getActivity());
-        listView = view.findViewById(R.id.produtos_listview);
-        listView.setAdapter(adapter);
-        listView.setDivider(null);
-        listView.setFooterDividersEnabled(false);
+        handler = new Handler();
 
         Preferencias preferencias = new Preferencias(getActivity());
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").orderByChild("idVendedor").equalTo(preferencias.getIdentificador());
@@ -121,7 +124,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                     produtos.add(produto);
                 }
                 Collections.reverse(produtos);
-                adapter.notifyDataSetChanged();
+                productsAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -135,16 +138,6 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
             @Override
             public void onClick(View v) {
                 abrirFormularioVenda();
-            }
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Produto produto = produtos.get(position);
-                Intent intent = new Intent(getActivity(), FormularioVendaActivity.class);
-                intent.putExtra("produto", produto);
-                startActivity(intent);
             }
         });
 
@@ -169,12 +162,12 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                 anterior = count;
                 count = newText.length();
                 if (count > anterior){
-                    adapter.getFilter().filter(newText);
+                    productsAdapter.getFilter().filter(newText);
                 } else {
                     firebase.addValueEventListener(valueEventListener);
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            adapter.getFilter().filter(newText);
+                            productsAdapter.getFilter().filter(newText);
                         }
                     }, 100);
                 }
@@ -305,7 +298,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    adapter.getFilterCategory().filter(categoria);
+                    productsAdapter.getFilterCategory().filter(categoria);
                 }
             }, 300);
         }

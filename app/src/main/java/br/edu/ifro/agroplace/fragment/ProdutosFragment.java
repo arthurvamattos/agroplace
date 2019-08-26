@@ -58,13 +58,11 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
     private ArrayList<Produto> produtos;
     private boolean searchViewOpened;
-
     private FirebaseAuth usuarioAutenticacao;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListener;
     private RecyclerView productsRecyclerView;
     private ProductsAdapter productsAdapter;
-
     private Handler handler;
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
@@ -126,23 +124,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
             }
         };
-
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//               Produto produto = produtos.get(position);
-//               Preferencias preferencias = new Preferencias(getActivity());
-//               if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
-//                   Intent intent = new Intent(getActivity(), FormularioVendaActivity.class);
-//                   intent.putExtra("produto", produto);
-//                   startActivity(intent);
-//               } else {
-//                   Intent intent = new Intent(getActivity(), ProdutoActivity.class);
-//                   intent.putExtra("produto", produto);
-//                   startActivity(intent);
-//               }
-//            }
-//        });
         return  view;
     }
 
