@@ -19,9 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +39,6 @@ import br.edu.ifro.agroplace.activity.FormularioVendaActivity;
 import br.edu.ifro.agroplace.activity.LoginActivity;
 import br.edu.ifro.agroplace.activity.MainActivity;
 import br.edu.ifro.agroplace.adapter.ProductsAdapter;
-import br.edu.ifro.agroplace.adapter.ProdutoAdapter;
 import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;

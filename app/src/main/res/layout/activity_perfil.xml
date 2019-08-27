@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:id="@+id/perfil_id"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:id="@+id/perfil_id">
 
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        >
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,18 +22,18 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="275dp">
+                android:layout_height="250dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="175dp"
+                    android:layout_height="160dp"
                     android:background="@drawable/perfil_background"></RelativeLayout>
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/perfil_foto"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_alignParentBottom="true"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_centerInParent="true"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/photo_round"
                     android:src="@drawable/ic_person" />
@@ -79,12 +77,12 @@
                 android:textFontWeight="600dp"
                 android:textSize="18sp" />
 
-            <br.edu.ifro.agroplace.helper.ExpandableHeightListView
+            <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/perfil_lista">
 
-            </br.edu.ifro.agroplace.helper.ExpandableHeightListView>
+            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

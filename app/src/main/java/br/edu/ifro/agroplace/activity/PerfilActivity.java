@@ -7,16 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,13 +22,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.regex.Pattern;
 
 import br.edu.ifro.agroplace.R;
-import br.edu.ifro.agroplace.adapter.ProdutoAdapter;
+import br.edu.ifro.agroplace.adapter.ProductsAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
-import br.edu.ifro.agroplace.helper.ExpandableHeightListView;
 import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
@@ -46,8 +39,8 @@ public class PerfilActivity extends AppCompatActivity {
     private CircleImageView imageView;
     private TextView nomeField;
     private TextView contato;
-    private ListView listView;
-    private ProdutoAdapter adapter;
+    private RecyclerView recyclerView;
+    private ProductsAdapter adapter;
     private ArrayList<Produto> produtos;
 
     private Query firebase;
@@ -81,7 +74,7 @@ public class PerfilActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.perfil_foto);
         nomeField = findViewById(R.id.perfil_nome);
-        listView = findViewById(R.id.perfil_lista);
+        recyclerView = findViewById(R.id.perfil_lista);
         contato = findViewById(R.id.perfil_contato);
 
         Bundle extra = getIntent().getExtras();
@@ -94,12 +87,10 @@ public class PerfilActivity extends AppCompatActivity {
 
         produtos = new ArrayList();
 
-        adapter = new ProdutoAdapter(produtos, PerfilActivity.this);
-        listView = (ListView) findViewById(R.id.perfil_lista);
-        ((ExpandableHeightListView)listView).setExpanded(true);
-        listView.setAdapter(adapter);
-        listView.setDivider(null);
-        listView.setFooterDividersEnabled(false);
+        adapter = new ProductsAdapter(PerfilActivity.this, produtos);
+        adapter = new ProductsAdapter(PerfilActivity.this, produtos);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(PerfilActivity.this));
 
         firebase = ConfiguracaoFirebase.getFirebase().child("produtos").orderByChild("idVendedor").equalTo(idVendedor);
         firebase.keepSynced(true);
@@ -120,17 +111,6 @@ public class PerfilActivity extends AppCompatActivity {
 
             }
         };
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Produto produto = produtos.get(position);
-                Intent intent = new Intent(PerfilActivity.this, ProdutoActivity.class);
-                intent.putExtra("produto", produto);
-                startActivity(intent);
-                finish();
-            }
-        });
 
         DatabaseReference firebaseFoto = ConfiguracaoFirebase.getFirebase().child("usuarios").child(idVendedor);
         firebaseFoto.addListenerForSingleValueEvent(new ValueEventListener() {

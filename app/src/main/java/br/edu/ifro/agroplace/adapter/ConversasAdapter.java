@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +57,11 @@ public class ConversasAdapter extends BaseAdapter {
         TextView campoMensagem = view.findViewById(R.id.lista_conversa_personalizada_mensagem);
         final CircleImageView campoFoto = view.findViewById(R.id.lista_conversa_personalizada_foto);
         ImageView campoVizualizacao = view.findViewById(R.id.lista_contato_personalizado_vizualizacao);
+
+
+        campoFoto.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_transition_animation));
+        campoNome.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_scale_animation));
+        campoMensagem.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_scale_animation));
 
         Conversa conversa = conversas.get(position);
         campoNome.setText(conversa.getNome());
