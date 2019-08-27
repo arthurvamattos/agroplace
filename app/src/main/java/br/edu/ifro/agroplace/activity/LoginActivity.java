@@ -3,6 +3,7 @@ package br.edu.ifro.agroplace.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -11,8 +12,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +30,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -77,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void logarUsuario() {
+        bloqueiaCampos();
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         autenticacao.signInWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -97,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                             public void onCancelled(@NonNull DatabaseError databaseError) {}
                         });
                     } else {
+                        desbloqueiaCampos();
                         Snackbar.make(findViewById(R.id.login_id), "Usuário ou senha inválidos!", Snackbar.LENGTH_SHORT).show();
                     }
                 }
@@ -137,5 +150,15 @@ public class LoginActivity extends AppCompatActivity {
     public void abrirCadastroUsuario(View view) {
         Intent intent = new Intent(LoginActivity.this, CadastroUsuarioActivity.class);
         startActivity(intent);
+    }
+
+    private void bloqueiaCampos() {
+        emailField.setEnabled(false);
+        senhaField.setEnabled(false);
+    }
+
+    private void desbloqueiaCampos() {
+        emailField.setEnabled(true);
+        senhaField.setEnabled(true);
     }
 }

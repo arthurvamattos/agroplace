@@ -8,38 +8,39 @@
     android:id="@+id/cadastro_usuario_id"
     android:orientation="vertical"
     android:fitsSystemWindows="true">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:background="@drawable/background">
+            android:gravity="center_vertical">
 
             <ImageView
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="24dp"
                 android:id="@+id/cadstro_usuario_title"
                 android:layout_width="270dp"
                 android:layout_height="100dp"
                 android:src="@drawable/agroplace"
                 android:layout_centerHorizontal="true"/>
-            <ScrollView
-                android:layout_below="@+id/cadstro_usuario_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:padding="5dp"
-                android:background="@drawable/form_holder"
-                android:elevation="5dp">
 
                 <LinearLayout
+                    android:layout_below="@+id/cadstro_usuario_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="21dp"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/form_holder"
+                    android:elevation="5dp">
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -119,8 +120,8 @@
                         android:text="CADASTRAR"
                         android:textColor="#fff" />
                 </LinearLayout>
-            </ScrollView>
         </RelativeLayout>
+        </ScrollView>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"

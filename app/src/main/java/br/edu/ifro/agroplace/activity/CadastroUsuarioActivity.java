@@ -84,6 +84,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     }
 
     private void cadastrarUsuario() {
+        bloqueiaCampos();
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         autenticacao.createUserWithEmailAndPassword(
                 usuario.getEmail(),
@@ -100,7 +101,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                             preferencias.salvarDados(identificadorUsuario, usuario.getNome());
                             abrirMain();
                         } else {
-
+                            desbloqueiaCampos();
                             String mensagemDeErro = "";
                             try {
                                 throw task.getException();
@@ -126,5 +127,21 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
     public void abrirLogin(View view) {
         finish();
+    }
+
+    private void bloqueiaCampos() {
+        nomeField.setEnabled(false);
+        emailField.setEnabled(false);
+        senhaField.setEnabled(false);
+        confirmarsenhaField.setEnabled(false);
+        telefoneField.setEnabled(false);
+    }
+
+    private void desbloqueiaCampos() {
+        emailField.setEnabled(true);
+        senhaField.setEnabled(true);
+        nomeField.setEnabled(true);
+        confirmarsenhaField.setEnabled(true);
+        telefoneField.setEnabled(true);
     }
 }
