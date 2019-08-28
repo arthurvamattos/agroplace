@@ -1,11 +1,11 @@
 package br.edu.ifro.agroplace.activity;
 
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +21,6 @@ import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.fragment.MeusProdutosFragment;
 import br.edu.ifro.agroplace.fragment.ProdutosFragment;
 import br.edu.ifro.agroplace.helper.CategoriaObserver;
-import br.edu.ifro.agroplace.helper.HorizontalListView;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.helper.SearchViewObserver;
 import br.edu.ifro.agroplace.helper.SlidingTabLayout;

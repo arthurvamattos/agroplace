@@ -5,13 +5,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,20 +14,33 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -53,11 +61,10 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     private TextInputEditText confirmarSenhaField;
     private TextInputEditText telefoneField;
     private Preferencias preferencias;
-    private StorageReference referenciaStorage;
     private Uri localImagemRecuperada;
     private Usuario usuario;
     private FirebaseAuth autenticacao;
-
+    private StorageReference referenciaStorage;
     private StorageTask tarefaUpload;
     private Bundle extra;
 
@@ -133,7 +140,8 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     }
 
     private void realizaAlteracao(){
-        if (senhaField.getText().toString().trim().equals(confirmarSenhaField.getText().toString().trim()) && validaCampos()) {
+        if (validaCampos()) {
+            bloqueiaCampos();
             if (localImagemRecuperada != null) {
                 referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("usuarios").child(System.currentTimeMillis() + "." + getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
@@ -149,32 +157,25 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
-                            finish();
-                            if (validaCampos()) {
-                                usuario.setUrlImagem(task.getResult().toString());
-                                salvarUsuario();
-                                preferencias.salvarDados(usuario.getId(), usuario.getNome());
-                                Toast.makeText(FormularioUsuarioActivity.this, "Usuario alterado com sucesso", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
-                            }
+                            usuario.setUrlImagem(task.getResult().toString());
+                            salvarUsuario();
                         } else {
+                            desbloqueiaCampos();
                             Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                            return;
                         }
                     }
                 });
             } else {
                 salvarUsuario();
-                preferencias.salvarDados(usuario.getId(), usuario.getNome());
-                finish();
-                Toast.makeText(FormularioUsuarioActivity.this, "Usuário alterado com sucesso", Toast.LENGTH_SHORT).show();
             }
         } else {
             if (!validaCampos()){
-                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Por favor, informe todos os campos", Snackbar.LENGTH_SHORT).show();
-            } else {
-                Snackbar.make(findViewById(R.id.formulario_usuario_id), "As senhas informadas são diferentes!", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Por favor, preencha os campos", Snackbar.LENGTH_SHORT).show();
+            } else if(verificaSenhaPrenchida() && !verificaSenhasIguais()) {
+                Snackbar.make(findViewById(R.id.formulario_usuario_id), "As senhas informadas devem ser iguais, se preferir deixe os campos em branco para manter a senha atual!", Snackbar.LENGTH_SHORT).show();
             }
+            desbloqueiaCampos();
         }
     }
 
@@ -182,22 +183,16 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         FirebaseUser firebaseUser = autenticacao.getCurrentUser();
         firebaseUser.updateEmail(emailField.getText().toString());
-        firebaseUser.updatePassword(senhaField.getText().toString());
+        if (verificaSenhaPrenchida() && verificaSenhasIguais()) {
+            firebaseUser.updatePassword(senhaField.getText().toString());
+        }
         autenticacao.updateCurrentUser(firebaseUser).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    String identificadoUsuario = Base64Custom.codificarBase64(usuario.getEmail());
-                    usuario.setId(identificadoUsuario);
-                    usuario.setNome(nomeField.getText().toString());
-                    usuario.setEmail(emailField.getText().toString());
-                    if (!telefoneField.getText().toString().trim().equals(""))
-                        usuario.setTelefone(telefoneField.getText().toString());
-                    usuario.salvar();
-                    String identificadorUsuario = Base64Custom.codificarBase64( usuario.getEmail() );
-                    Preferencias preferencias = new Preferencias(FormularioUsuarioActivity.this);
-                    preferencias.salvarDados(identificadorUsuario, usuario.getNome());
-                    finish();
+                    montarUser();
+                    preferencias.salvarDados(usuario.getId(), usuario.getNome());
+                    salvar();
                 } else {
                     String mensagemDeErro = "";
                     try {
@@ -217,11 +212,55 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validaCampos() {
-        return !nomeField.getText().toString().trim().equals("") && !emailField.getText().toString().trim().equals("")
-                && !senhaField.getText().toString().trim().equals("") && !confirmarSenhaField.getText().toString().trim().equals("");
+    public void salvar(){
+        FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
+        Map<String, Object> user = montarMapUser(usuario);
+        db.collection("usuarios").document(usuario.getId()).update(user)
+        .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(FormularioUsuarioActivity.this, "Usuário alterado com sucesso", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                desbloqueiaCampos();
+                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
+    private void montarUser(){
+        String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
+        usuario.setId(identificadorUsuario);
+        usuario.setNome(nomeField.getText().toString());
+        usuario.setEmail(emailField.getText().toString());
+        if (!telefoneField.getText().toString().trim().equals(""))
+            usuario.setTelefone(telefoneField.getText().toString());
+    }
+
+    private Map<String, Object> montarMapUser(Usuario user) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("nome", user.getNome());
+        userMap.put("email", user.getEmail());
+        userMap.put("telefone", user.getTelefone());
+        userMap.put("urlImagem", user.getUrlImagem());
+        return userMap;
+    }
+
+
+    private boolean validaCampos() {
+        return !nomeField.getText().toString().trim().equals("") && !emailField.getText().toString().trim().equals("");
+    }
+
+    private boolean verificaSenhaPrenchida() {
+        return !senhaField.getText().toString().trim().equals("") && !confirmarSenhaField.getText().toString().trim().equals("");
+    }
+
+    private boolean verificaSenhasIguais() {
+        return senhaField.getText().toString().trim().equals(confirmarSenhaField.getText().toString().trim());
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -234,6 +273,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.menu_formulario_salvar:
                 if (tarefaUpload != null && tarefaUpload.isInProgress()){
+                    bloqueiaCampos();
                     Snackbar.make(findViewById(R.id.formulario_usuario_id), "Estamos salvando seus dados, por favor aguarde!", Snackbar.LENGTH_SHORT).show();
                 } else {
                     realizaAlteracao();
@@ -243,4 +283,19 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         }
     }
 
+    private void bloqueiaCampos() {
+        nomeField.setEnabled(false);
+        emailField.setEnabled(false);
+        senhaField.setEnabled(false);
+        confirmarSenhaField.setEnabled(false);
+        telefoneField.setEnabled(false);
+    }
+
+    private void desbloqueiaCampos() {
+        emailField.setEnabled(true);
+        senhaField.setEnabled(true);
+        nomeField.setEnabled(true);
+        confirmarSenhaField.setEnabled(true);
+        telefoneField.setEnabled(true);
+    }
 }

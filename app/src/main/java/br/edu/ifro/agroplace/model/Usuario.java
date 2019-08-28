@@ -2,8 +2,11 @@ package br.edu.ifro.agroplace.model;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 
@@ -13,15 +16,25 @@ public class Usuario implements Serializable {
     private String email;
     private String senha;
     private String telefone;
-    private String UrlImagem;
+    private String urlImagem;
 
     public Usuario (){
         this.setUrlImagem("https://firebasestorage.googleapis.com/v0/b/agroplace-project.appspot.com/o/usuarios%2Fno-img.png?alt=media&token=c4ea6a8d-b396-492b-9d9f-84dee85c0efa");
     }
 
     public void salvar(){
-        DatabaseReference referenciaFirebase = ConfiguracaoFirebase.getFirebase();
-        referenciaFirebase.child("usuarios").child(getId()).setValue(this);
+        FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
+        Map<String, Object> user = montarMapUser();
+        db.collection("usuarios").document(getId()).set(user);
+    }
+
+    private Map<String, Object> montarMapUser() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("nome", this.nome);
+        user.put("email", this.email);
+        user.put("telefone", this.telefone);
+        user.put("urlImagem", this.urlImagem);
+        return user;
     }
 
 
@@ -68,10 +81,10 @@ public class Usuario implements Serializable {
     }
 
     public String getUrlImagem() {
-        return UrlImagem;
+        return urlImagem;
     }
 
     public void setUrlImagem(String urlImagem) {
-        UrlImagem = urlImagem;
+        this.urlImagem = urlImagem;
     }
 }

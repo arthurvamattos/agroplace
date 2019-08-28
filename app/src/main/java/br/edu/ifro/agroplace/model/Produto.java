@@ -1,9 +1,5 @@
 package br.edu.ifro.agroplace.model;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-
 import java.io.Serializable;
 
 public class Produto  implements Serializable {

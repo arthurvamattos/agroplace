@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="Nome do Produto"
             android:layout_margin="16dp"
-            android:textFontWeight="600dp"
+            android:textFontWeight="600"
             android:textSize="26sp"
             android:textColor="@android:color/black"
             android:layout_gravity="center_horizontal"/>
@@ -45,13 +45,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00,00"
-                android:textFontWeight="600dp"
+                android:textFontWeight="600"
                 android:textSize="16sp" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" (Kg)"
-                android:textFontWeight="600dp"
+                android:textFontWeight="600"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:text="Descrição do Produto"
             android:layout_margin="20dp"
-            android:textFontWeight="600dp"
+            android:textFontWeight="600"
             android:textSize="18sp"
             android:textColor="@android:color/black"
             android:layout_gravity="center_horizontal"/>
@@ -79,14 +79,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Vendido por "
-                android:textFontWeight="600dp"
+                android:textFontWeight="600"
                 android:textSize="16sp" />
             <TextView
                 android:id="@+id/produto_vendedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Nome Vendedor"
-                android:textFontWeight="600dp"
+                android:textFontWeight="600"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:text="Categoria"
             android:layout_margin="10dp"
-            android:textFontWeight="600dp"
+            android:textFontWeight="600"
             android:textSize="18sp"
             android:textColor="@android:color/black"
             android:layout_gravity="center_horizontal"/>

@@ -22,7 +22,7 @@
         android:title="Pesquisar"
         android:orderInCategory="400"
         app:showAsAction="ifRoom|withText"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="@drawable/ic_search" />
 
     <item android:id="@+id/menu_main_conversas"

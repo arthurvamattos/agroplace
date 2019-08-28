@@ -3,24 +3,18 @@ package br.edu.ifro.agroplace.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,9 +24,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -46,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText emailField;
     private TextInputEditText senhaField;
     private Button loginBtn;
-    private DatabaseReference firebase;
+    private DocumentReference instance;
     private Usuario usuario;
     private String identificadorUsuarioLogado;
 
@@ -96,17 +92,16 @@ public class LoginActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         identificadorUsuarioLogado = Base64Custom.codificarBase64(emailField.getText().toString());
-                        firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(identificadorUsuarioLogado);
-                        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        instance = ConfiguracaoFirebase.getInstance().collection("usuarios").document(identificadorUsuarioLogado);
+                        instance.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Usuario user = documentSnapshot.toObject(Usuario.class);
                                 Preferencias preferencias = new Preferencias(LoginActivity.this);
-                                Usuario usuarioRecuperdado = dataSnapshot.getValue(Usuario.class);
-                                preferencias.salvarDados(identificadorUsuarioLogado, usuarioRecuperdado.getNome());
+                                preferencias.salvarDados(identificadorUsuarioLogado, user.getNome());
                                 abrirMain();
                             }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {}
                         });
                     } else {
                         desbloqueiaCampos();
