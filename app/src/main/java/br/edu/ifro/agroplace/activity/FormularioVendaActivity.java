@@ -37,6 +37,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +47,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.Categorias;
@@ -64,10 +69,9 @@ public class FormularioVendaActivity extends AppCompatActivity {
     private TextInputEditText descricaoField;
     private Preferencias preferencias;
     private StorageReference referenciaStorage;
-    private DatabaseReference firebase;
     private Uri localImagemRecuperada;
     private Produto produto;
-
+    private FirebaseFirestore db;
     private StorageTask tarefaUpload;
     private Bundle extra;
     private Spinner categoriasSpinner;
@@ -79,6 +83,8 @@ public class FormularioVendaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario_venda);
+
+        db = ConfiguracaoFirebase.getInstance();
 
         preferencias = new Preferencias(FormularioVendaActivity.this);
 
@@ -133,7 +139,6 @@ public class FormularioVendaActivity extends AppCompatActivity {
             descricaoField.setText(produto.getDescricao());
             toolbar.setTitle(produto.getNome());
         }
-
         getSellerImageUrl();
     }
 
@@ -244,19 +249,38 @@ public class FormularioVendaActivity extends AppCompatActivity {
         categoriasSpinner.setEnabled(true);
     }
 
-
     private void salvarProduto(Produto produto) {
-        firebase = ConfiguracaoFirebase.getFirebase().child("produtos");
-        firebase.child(produto.getId()).setValue(produto);
+        Map<String, Object> prod = montaMap(produto);
+        db.collection("produtos").document(produto.getId()).set(prod);
+    }
+
+    private Map montaMap(Produto prod) {
+        Map produto = new HashMap();
+        produto.put("categoria", prod.getCategoria());
+        produto.put("dataPublicacao", prod.getDataPublicacao());
+        produto.put("descricao", prod.getDescricao());
+        produto.put("id", prod.getId());
+        produto.put("idVendedor", prod.getIdVendedor());
+        produto.put("nome", prod.getNome());
+        produto.put("urlImagem", prod.getUrlImagem());
+        produto.put("urlFotoVendedor", prod.getUrlFotoVendedor());
+        produto.put("valor", prod.getValor());
+        produto.put("vendedor", prod.getVendedor());
+        return produto;
     }
 
     private Produto montaProduto(Task<Uri> task) {
-        Produto produto = new Produto();
+        Produto produto =  montaBaseProduto();
         produto.setId(String.valueOf(System.currentTimeMillis()));
+        produto.setUrlImagem(task.getResult().toString());
+        return produto;
+    }
+
+    private Produto montaBaseProduto() {
+        Produto produto = new Produto();
         produto.setNome(nomeField.getText().toString());
         produto.setValor(valorField.getText().toString());
         produto.setDescricao(descricaoField.getText().toString());
-        produto.setUrlImagem(task.getResult().toString());
         produto.setVendedor(preferencias.getNome());
         produto.setIdVendedor(preferencias.getIdentificador());
         Date dataAutal = new Date();
@@ -266,32 +290,22 @@ public class FormularioVendaActivity extends AppCompatActivity {
         return produto;
     }
 
+
     private Produto montaProduto() {
-        Produto produto = new Produto();
+        Produto produto =  montaBaseProduto();
         produto.setId(this.produto.getId());
-        produto.setNome(nomeField.getText().toString());
-        produto.setValor(valorField.getText().toString());
-        produto.setDescricao(descricaoField.getText().toString());
         produto.setUrlImagem(this.produto.getUrlImagem());
-        produto.setVendedor(preferencias.getNome());
-        produto.setIdVendedor(preferencias.getIdentificador());
-        Date dataAutal = new Date();
-        produto.setDataPublicacao(dataAutal.toString());
-        produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
-        produto.setUrlFotoVendedor(sellerUrl);
         return produto;
     }
 
     private void getSellerImageUrl() {
-        DatabaseReference userReference = ConfiguracaoFirebase.getFirebase().child("usuarios").child(preferencias.getIdentificador());
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Usuario user = dataSnapshot.getValue(Usuario.class);
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Usuario user = documentSnapshot.toObject(Usuario.class);
                 sellerUrl = user.getUrlImagem();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
@@ -330,22 +344,21 @@ public class FormularioVendaActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 bloqueiaCampos();
-                                firebase = ConfiguracaoFirebase.getFirebase().child("produtos").child(produto.getId());
-                                firebase.removeValue()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            desbloqueiaCampos();
-                                            Toast.makeText(FormularioVendaActivity.this, "Erro ao deletar venda, tente novamente mais tarde!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                db.collection("produtos").document(produto.getId()).delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                            }
+                                     })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        desbloqueiaCampos();
+                                        Toast.makeText(FormularioVendaActivity.this, "Erro ao deletar venda, tente novamente mais tarde!", Toast.LENGTH_SHORT).show();
+                                    }
+                            });
                         }
                         })
                         .setNegativeButton("Não", null)

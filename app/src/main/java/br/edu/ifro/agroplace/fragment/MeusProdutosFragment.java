@@ -31,6 +31,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,33 +65,28 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     private ArrayList<Produto> produtos;
     private boolean searchViewOpened;
 
-    private FirebaseAuth usuarioAutenticacao;
-    private Query firebase;
-    private ValueEventListener valueEventListener;
-    private FloatingActionButton btnNovaVenda;
-
-    private DocumentReference instance;
-    private RecyclerView productsRecyclerView;
     private ProductsAdapter productsAdapter;
+    private EventListener<QuerySnapshot> eventListener;
+    private ListenerRegistration productListener;
+    private com.google.firebase.firestore.Query productsRef;
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
     private Handler handler;
 
     public MeusProdutosFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        firebase.addValueEventListener(valueEventListener);
+        productListener = productsRef.addSnapshotListener(eventListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebase.removeEventListener(valueEventListener);
+        productListener.remove();
     }
 
     @Override
@@ -105,37 +104,28 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
 
         produtos = new ArrayList();
         produtos.clear();
+        handler = new Handler();
 
-        productsRecyclerView = view.findViewById(R.id.myproducts_recycler_view);
+        RecyclerView productsRecyclerView = view.findViewById(R.id.myproducts_recycler_view);
         productsAdapter = new ProductsAdapter(getContext(), produtos);
         productsRecyclerView.setAdapter(productsAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        handler = new Handler();
-
-        Preferencias preferencias = new Preferencias(getActivity());
-        firebase = ConfiguracaoFirebase.getFirebase().child("produtos").orderByChild("idVendedor").equalTo(preferencias.getIdentificador());
-        firebase.keepSynced(true);
-
-        valueEventListener = new ValueEventListener() {
+        eventListener = new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 produtos.clear();
-                for (DataSnapshot dado : dataSnapshot.getChildren()){
-                    Produto produto = dado.getValue(Produto.class);
-                    produtos.add(produto);
-                }
-                Collections.reverse(produtos);
+                produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
                 productsAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         };
 
-        btnNovaVenda = view.findViewById(R.id.btn_nova_venda);
+        Preferencias preferencias = new Preferencias(getActivity());
+        productsRef = ConfiguracaoFirebase.getInstance().collection("produtos").whereEqualTo("idVendedor", preferencias.getIdentificador());
+        productListener = productsRef.addSnapshotListener(eventListener);
+
+
+        FloatingActionButton btnNovaVenda = view.findViewById(R.id.btn_nova_venda);
         btnNovaVenda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,7 +156,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                 if (count > anterior){
                     productsAdapter.getFilter().filter(newText);
                 } else {
-                    firebase.addValueEventListener(valueEventListener);
+                    productsRef.addSnapshotListener(eventListener);
                     handler.postDelayed(new Runnable() {
                         public void run() {
                             productsAdapter.getFilter().filter(newText);
@@ -174,7 +164,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                     }, 100);
                 }
                 if (count == 0){
-                    firebase.addValueEventListener(valueEventListener);
+                    productsRef.addSnapshotListener(eventListener);
                 }
                 return false;
             }
@@ -247,7 +237,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                 return true;
             case R.id.menu_main_perfil:
                 Preferencias preferencias = new Preferencias(getActivity());
-                instance = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
+                DocumentReference instance = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
                 instance.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -276,7 +266,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     }
 
     private void deslogarUsuario() {
-        usuarioAutenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        FirebaseAuth usuarioAutenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         usuarioAutenticacao.signOut();
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
@@ -292,15 +282,14 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     @Override
     public void update(final String categoria) {
         if (categoria.equals(Categorias.getCategoriasLista()[0])){
-            firebase.addValueEventListener(valueEventListener);
+            productsRef.addSnapshotListener(eventListener);
         } else {
-            firebase.addValueEventListener(valueEventListener);
-
+            productsRef.addSnapshotListener(eventListener);
             handler.postDelayed(new Runnable() {
                 public void run() {
                     productsAdapter.getFilterCategory().filter(categoria);
                 }
-            }, 300);
+            }, 100);
         }
     }
 
