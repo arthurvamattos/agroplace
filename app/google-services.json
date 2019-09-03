@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_number": "1082293065111",
-    "firebase_url": "https://feira-rondonia.firebaseio.com",
-    "project_id": "feira-rondonia",
-    "storage_bucket": "feira-rondonia.appspot.com"
+    "project_number": "14765101880",
+    "firebase_url": "https://agroplace-project.firebaseio.com",
+    "project_id": "agroplace-project",
+    "storage_bucket": "agroplace-project.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1082293065111:android:2c0b50920e7dd03d",
+        "mobilesdk_app_id": "1:14765101880:android:d9e7502c8d11dcba",
         "android_client_info": {
           "package_name": "br.edu.ifro.agroplace"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1082293065111-r44c741oks74q0kagfkmu429sl6ct2fk.apps.googleusercontent.com",
+          "client_id": "14765101880-eudivq0ml753ld5ksjlk532equlkcrq3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "br.edu.ifro.agroplace",
-            "certificate_hash": "d7fcb450cedeb05c59d8588efa2c8254dcba3523"
+            "certificate_hash": "293688da8d2d97631cdd5ab24d3a1f35fbd43cb5"
           }
         },
         {
-          "client_id": "1082293065111-r5h2eu5s68tgeam1hbmqrnb2d0bj1v70.apps.googleusercontent.com",
+          "client_id": "14765101880-ubvkqqh8a55kg16lm0pl6m8q68h594ba.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCTNspGluR8p3Vy2a5A-xhzJ4IP-jaPGj0"
+          "current_key": "AIzaSyCTiZR5bBjG62OHO-2T8T3_hPJ0mCP3mMQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1082293065111-r5h2eu5s68tgeam1hbmqrnb2d0bj1v70.apps.googleusercontent.com",
+              "client_id": "14765101880-ubvkqqh8a55kg16lm0pl6m8q68h594ba.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
