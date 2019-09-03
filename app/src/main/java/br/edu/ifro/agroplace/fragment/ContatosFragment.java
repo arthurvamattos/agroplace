@@ -11,12 +11,18 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +33,7 @@ import br.edu.ifro.agroplace.adapter.ContatoAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Contato;
+import br.edu.ifro.agroplace.model.Conversa;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,8 +44,9 @@ public class ContatosFragment extends Fragment {
     private ListView listView;
     private ContatoAdapter adapter;
     private List contatos;
-    private DatabaseReference firebase;
-    private ValueEventListener valueEventListenerContatos;
+    private CollectionReference contatosRef;
+    private EventListener<QuerySnapshot> eventListener;
+    private ListenerRegistration contatosListener;
 
     public ContatosFragment() {
         // Required empty public constructor
@@ -47,13 +55,13 @@ public class ContatosFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        firebase.addValueEventListener(valueEventListenerContatos);
+        contatosListener = contatosRef.addSnapshotListener(eventListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebase.removeEventListener(valueEventListenerContatos);
+        contatosListener.remove();
     }
 
     @Override
@@ -69,23 +77,16 @@ public class ContatosFragment extends Fragment {
         listView.setAdapter((ListAdapter) adapter);
 
         Preferencias preferencias = new Preferencias(getActivity());
-        firebase = ConfiguracaoFirebase.getFirebase().child("contatos").child(preferencias.getIdentificador());
-        firebase.keepSynced(true);
+        contatosRef = ConfiguracaoFirebase.getInstance().collection("contatos").document(preferencias.getIdentificador())
+                .collection("pessoas");
 
-        valueEventListenerContatos = new ValueEventListener() {
+        eventListener = new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots.isEmpty()) return;
                 contatos.clear();
-                for (DataSnapshot dado : dataSnapshot.getChildren()){
-                    Contato contato = dado.getValue(Contato.class);
-                    contatos.add(contato);
-                }
+                contatos.addAll(queryDocumentSnapshots.toObjects(Contato.class));
                 adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         };
 

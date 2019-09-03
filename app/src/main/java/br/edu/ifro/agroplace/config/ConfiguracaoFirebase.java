@@ -10,18 +10,9 @@ import com.google.firebase.storage.StorageReference;
 
 public final class ConfiguracaoFirebase {
 
-    private static DatabaseReference referenciaFirebase;
     private static FirebaseFirestore referenciaFirestore;
     private static FirebaseAuth autenticacao;
     private static StorageReference storage;
-
-    public static DatabaseReference getFirebase(){
-        if (referenciaFirebase == null){
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            referenciaFirebase = FirebaseDatabase.getInstance().getReference();
-        }
-        return referenciaFirebase;
-    }
 
     public static FirebaseFirestore getInstance(){
         if (referenciaFirestore == null){

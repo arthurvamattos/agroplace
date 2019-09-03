@@ -3,6 +3,7 @@ package br.edu.ifro.agroplace.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +11,26 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.activity.ConversaActivity;
@@ -33,9 +45,9 @@ public class ConversasFragment extends Fragment {
     private ListView listView;
     private ConversasAdapter adapter;
     private ArrayList<Conversa> conversas;
-
-    private DatabaseReference firebase;
-    private ValueEventListener valueEventListenerContatos;
+    private CollectionReference conversasRef;
+    private EventListener<QuerySnapshot> eventListener;
+    private ListenerRegistration conversasListener;
 
     public ConversasFragment() {
         // Required empty public constructor
@@ -44,13 +56,13 @@ public class ConversasFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        firebase.addValueEventListener(valueEventListenerContatos);
+        conversasListener = conversasRef.addSnapshotListener(eventListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebase.removeEventListener(valueEventListenerContatos);
+        conversasListener.remove();
     }
 
     @Override
@@ -65,29 +77,22 @@ public class ConversasFragment extends Fragment {
         listView.setAdapter(adapter);
 
         Preferencias preferencias = new Preferencias(getActivity());
-        firebase = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
-        firebase.keepSynced(true);
+        conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
+            .collection("contatos");
 
-        valueEventListenerContatos = new ValueEventListener() {
+        eventListener = new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots.isEmpty()) return;
                 conversas.clear();
-                for (DataSnapshot dado : dataSnapshot.getChildren()){
-                    Conversa conversa = dado.getValue(Conversa.class);
-                    conversas.add(conversa);
-                }
-                Collections.reverse(conversas);
+                conversas.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
                 adapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         };
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick (AdapterView < ? > parent, View view,int position, long id){
 
                 Conversa conversa = conversas.get(position);
                 Intent intent = new Intent(getActivity(), ConversaActivity.class);
@@ -95,9 +100,7 @@ public class ConversasFragment extends Fragment {
                 intent.putExtra("email", Base64Custom.decodificarBase64(conversa.getIdUsuario()));
                 startActivity(intent);
             }
-        });
-
+            });
         return view;
+        }
     }
-
-}

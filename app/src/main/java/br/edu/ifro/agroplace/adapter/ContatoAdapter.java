@@ -62,27 +62,7 @@ public class ContatoAdapter extends BaseAdapter {
 
         Contato contato = contatos.get(position);
         campoNome.setText(contato.getNome());
-
-        if (contato.getCaminhoFoto() != null){
-            Bitmap bitmap = BitmapFactory.decodeFile(contato.getCaminhoFoto());
-            Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 70, 70, true);
-            campoFoto.setImageBitmap(bitmapReduzido);
-            campoFoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            campoFoto.setTag(contato.getCaminhoFoto());
-        }
-
-        DatabaseReference firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(contato.getIdentificadorUsuario());
-        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Usuario usuarioRecuperdado = dataSnapshot.getValue(Usuario.class);
-                if (usuarioRecuperdado.getUrlImagem() != null) {
-                    Picasso.get().load(usuarioRecuperdado.getUrlImagem()).fit().centerCrop().into(campoFoto);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
+        Picasso.get().load(contato.getCaminhoFoto()).fit().centerCrop().into(campoFoto);
 
         return view;
     }

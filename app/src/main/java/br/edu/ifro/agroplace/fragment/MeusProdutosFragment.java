@@ -3,6 +3,7 @@ package br.edu.ifro.agroplace.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -71,6 +73,8 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     private com.google.firebase.firestore.Query productsRef;
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
+
+    private CollectionReference conversasRef;
 
     private Handler handler;
 
@@ -189,32 +193,25 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     }
 
     public void verificarConversasNaoLidas(final Menu menu){
-        final boolean[] viewed = {true};
         Preferencias preferencias = new Preferencias(getActivity());
-        DatabaseReference referenciaConversas = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
-        referenciaConversas.addValueEventListener(new ValueEventListener() {
+        conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
+                .collection("contatos");
+        final MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+        conversasRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()){
-                    Conversa conversa = data.getValue(Conversa.class);
-                    if (!conversa.isVisualizada()){
-                        viewed[0] = false;
-                        MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-                        menuConversa.setIcon(R.drawable.ic_announcement);
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.isEmpty()) return;
+                int icon = R.drawable.ic_message;
+                for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
+                    if (!c.isVisualizada()){
+                       icon = R.drawable.ic_announcement;
                     }
                 }
-                if (viewed[0]) {
-                    MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-                    menuConversa.setIcon(R.drawable.ic_message);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                menuConversa.setIcon(icon);
             }
         });
     }
+
 
 
     private void configurarSearchView(SearchView searchView) {

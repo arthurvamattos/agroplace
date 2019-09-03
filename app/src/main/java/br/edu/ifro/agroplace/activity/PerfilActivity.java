@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -27,6 +32,7 @@ import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.ProductsAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
+import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
@@ -43,8 +49,9 @@ public class PerfilActivity extends AppCompatActivity {
     private ProductsAdapter adapter;
     private ArrayList<Produto> produtos;
 
-    private Query firebase;
-    private ValueEventListener valueEventListenerProdutos;
+    private EventListener<QuerySnapshot> eventListener;
+    private ListenerRegistration productListener;
+    private com.google.firebase.firestore.Query productsRef;
 
     private String idVendedor;
     private String nome;
@@ -54,13 +61,13 @@ public class PerfilActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        firebase.addValueEventListener(valueEventListenerProdutos);
+        productListener = productsRef.addSnapshotListener(eventListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        firebase.removeEventListener(valueEventListenerProdutos);
+        productListener.remove();
     }
 
     @Override
@@ -92,39 +99,18 @@ public class PerfilActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(PerfilActivity.this));
 
-        firebase = ConfiguracaoFirebase.getFirebase().child("produtos").orderByChild("idVendedor").equalTo(idVendedor);
-        firebase.keepSynced(true);
-        valueEventListenerProdutos = new ValueEventListener() {
+        eventListener = new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 produtos.clear();
-                for (DataSnapshot dado : dataSnapshot.getChildren()){
-                    Produto produto = dado.getValue(Produto.class);
-                    produtos.add(produto);
-                }
-                Collections.reverse(produtos);
+                produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
                 adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         };
 
-        DatabaseReference firebaseFoto = ConfiguracaoFirebase.getFirebase().child("usuarios").child(idVendedor);
-        firebaseFoto.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Usuario usuarioRecuperdado = dataSnapshot.getValue(Usuario.class);
-                if (usuarioRecuperdado.getUrlImagem() != null) {
-                    Picasso.get().load(usuarioRecuperdado.getUrlImagem()).fit().centerCrop().into(imageView);
-                }
-                user = usuarioRecuperdado;
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
+        Preferencias preferencias = new Preferencias(PerfilActivity.this);
+        productsRef = ConfiguracaoFirebase.getInstance().collection("produtos").whereEqualTo("idVendedor", preferencias.getIdentificador());
+        productListener = productsRef.addSnapshotListener(eventListener);
 
         contato.setOnClickListener(new View.OnClickListener() {
             @Override

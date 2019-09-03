@@ -2,6 +2,7 @@ package br.edu.ifro.agroplace.activity;
 
 import android.content.Intent;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
@@ -14,11 +15,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import br.edu.ifro.agroplace.R;
@@ -42,7 +49,20 @@ public class ProdutoActivity extends AppCompatActivity {
     private Button btnContato;
     private LinearLayout linkVendedor;
 
+
+    private CollectionReference conversasRef;
+
     private Produto produto;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +88,7 @@ public class ProdutoActivity extends AppCompatActivity {
             produto = (Produto) extra.getSerializable("produto");
         }
         if (produto != null) {
-            Picasso.get().load(produto.getUrlImagem()).fit().centerCrop().into(imageView);
-            nomeField.setText(produto.getNome());
-            valorField.setText(produto.getValor());
-            descricaoField.setText(produto.getDescricao());
-            vendedorField.setText(produto.getVendedor());
-            categoriaField.setText(produto.getCategoria());
-            setTitle(produto.getNome());
+            montaVisualizacaoProduto();
         }
 
         btnContato.setOnClickListener(new View.OnClickListener() {
@@ -95,6 +109,16 @@ public class ProdutoActivity extends AppCompatActivity {
         });
     }
 
+    private void montaVisualizacaoProduto() {
+        Picasso.get().load(produto.getUrlImagem()).fit().centerCrop().into(imageView);
+        nomeField.setText(produto.getNome());
+        valorField.setText(produto.getValor());
+        descricaoField.setText(produto.getDescricao());
+        vendedorField.setText(produto.getVendedor());
+        categoriaField.setText(produto.getCategoria());
+        setTitle(produto.getNome());
+    }
+
     private void abrirPerfil() {
         Intent intent =  new Intent(ProdutoActivity.this, PerfilActivity.class);
         intent.putExtra("idVendedor",produto.getIdVendedor());
@@ -112,32 +136,25 @@ public class ProdutoActivity extends AppCompatActivity {
     }
 
     public void verificarConversasNaoLidas(final Menu menu){
-        final boolean[] viewed = {true};
         Preferencias preferencias = new Preferencias(ProdutoActivity.this);
-        DatabaseReference referenciaConversas = ConfiguracaoFirebase.getFirebase().child("conversas").child(preferencias.getIdentificador());
-        referenciaConversas.addValueEventListener(new ValueEventListener() {
+        conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
+                .collection("contatos");
+        final MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
+        conversasRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()){
-                    Conversa conversa = data.getValue(Conversa.class);
-                    if (!conversa.isVisualizada()){
-                        viewed[0] = false;
-                        MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-                        menuConversa.setIcon(R.drawable.ic_announcement);
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.isEmpty()) return;
+                int icon = R.drawable.ic_message;
+                for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
+                    if (!c.isVisualizada()){
+                        icon = R.drawable.ic_announcement;
                     }
                 }
-                if (viewed[0]) {
-                    MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-                    menuConversa.setIcon(R.drawable.ic_message);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                menuConversa.setIcon(icon);
             }
         });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

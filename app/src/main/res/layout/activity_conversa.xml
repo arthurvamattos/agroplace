@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/conversa_id"
+    android:background="@drawable/background_conversa"
     app:itemTextColor="@android:color/black">
 
     <include android:id="@+id/tb_conversa"
@@ -13,7 +14,6 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/background_conversa"
         android:scaleType="centerCrop"
         android:layout_below="@+id/tb_conversa"
         android:layout_alignBottom="@+id/box_msg"

@@ -4,6 +4,7 @@ public class Mensagem {
 
     private String idUsuario;
     private String mensagem;
+    private String dataCriacao;
     private boolean visualizada;
 
     public Mensagem() {
@@ -31,5 +32,13 @@ public class Mensagem {
 
     public void setVisualizada(boolean visualizada) {
         this.visualizada = visualizada;
+    }
+
+    public String getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 }
