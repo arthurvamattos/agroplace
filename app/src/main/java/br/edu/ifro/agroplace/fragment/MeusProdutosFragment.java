@@ -119,7 +119,10 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 produtos.clear();
-                produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                    Collections.reverse(produtos);
+                }
                 productsAdapter.notifyDataSetChanged();
             }
         };

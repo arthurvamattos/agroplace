@@ -37,6 +37,7 @@ import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.MensagemAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
+import br.edu.ifro.agroplace.helper.IsoStringDate;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Contato;
 import br.edu.ifro.agroplace.model.Conversa;
@@ -200,8 +201,7 @@ public class ConversaActivity extends AppCompatActivity {
         Mensagem mensagem = new Mensagem();
         mensagem.setIdUsuario(idUsuarioRemetente);
         mensagem.setMensagem(textoMensagem);
-        Date createdAT = new Date();
-        mensagem.setDataCriacao(String.valueOf(createdAT.getTime()));
+        mensagem.setDataCriacao(IsoStringDate.getIsoStringDate());
         return mensagem;
     }
 

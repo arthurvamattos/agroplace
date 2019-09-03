@@ -53,6 +53,7 @@ import java.util.Map;
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.Categorias;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
+import br.edu.ifro.agroplace.helper.IsoStringDate;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
@@ -283,8 +284,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setDescricao(descricaoField.getText().toString());
         produto.setVendedor(preferencias.getNome());
         produto.setIdVendedor(preferencias.getIdentificador());
-        Date dataAutal = new Date();
-        produto.setDataPublicacao(dataAutal.toString());
+        produto.setDataPublicacao(IsoStringDate.getIsoStringDate());
         produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
         produto.setUrlFotoVendedor(sellerUrl);
         return produto;
