@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,7 +56,7 @@ public class PerfilActivity extends AppCompatActivity {
     private ProductsAdapter adapter;
     private ArrayList<Produto> produtos;
     private ImageView profilePic;
-    private ImageView icEmptyView;
+    private LinearLayout icEmptyView;
 
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration productListener;

@@ -3,10 +3,8 @@ package br.edu.ifro.agroplace.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,13 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -75,7 +69,7 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
     private RecyclerView productsRecyclerView;
-    private ImageView icEmptyView;
+    private LinearLayout icEmptyView;
 
     private CollectionReference conversasRef;
 

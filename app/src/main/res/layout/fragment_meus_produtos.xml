@@ -5,13 +5,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="275dp"
-        android:src="@drawable/ic_empty"
-        android:id="@+id/ic_empty_view"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center"
         android:visibility="gone"
-        android:layout_centerInParent="true"/>
+        android:id="@+id/ic_empty_view">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="275dp"
+            android:src="@drawable/ic_empty"
+            android:contentDescription="@string/noProducts"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/noProducts"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/noProductsHint"
+            android:textSize="14dp"
+            android:textColor="@android:color/darker_gray"/>
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

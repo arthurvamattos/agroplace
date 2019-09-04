@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -76,7 +77,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
     private CollectionReference conversasRef;
     private RecyclerView productsRecyclerView;
-    private ImageView icEmptyView;
+    private LinearLayout icEmptyView;
 
     public ProdutosFragment() {
     }
