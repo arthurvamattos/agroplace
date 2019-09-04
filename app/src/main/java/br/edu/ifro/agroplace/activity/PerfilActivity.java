@@ -11,14 +11,21 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -41,13 +48,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PerfilActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
-    private CircleImageView imageView;
-    private TextView nomeField;
     private TextView contato;
     private RecyclerView recyclerView;
     private ProductsAdapter adapter;
     private ArrayList<Produto> produtos;
+    private ImageView profilePic;
 
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration productListener;
@@ -79,8 +86,9 @@ public class PerfilActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         setSupportActionBar(toolbar);
 
-        imageView = findViewById(R.id.perfil_foto);
-        nomeField = findViewById(R.id.perfil_nome);
+        collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        profilePic = findViewById(R.id.collapsing_toolbar_image);
+
         recyclerView = findViewById(R.id.perfil_lista);
         contato = findViewById(R.id.perfil_contato);
 
@@ -88,13 +96,23 @@ public class PerfilActivity extends AppCompatActivity {
         if (extra != null){
             nome = extra.getString("nome");
             idVendedor = extra.getString("idVendedor");
-            nomeField.setText(nome);
-            setTitle(nome);
+            toolbar.setTitle(nome);
+            collapsingToolbarLayout.setTitle(nome);
+        }
+
+        if (idVendedor != null) {
+            DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idVendedor);
+            userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Usuario user = documentSnapshot.toObject(Usuario.class);
+                    Picasso.get().load(user.getUrlImagem()).fit().centerCrop().into(profilePic);
+                }
+            });
         }
 
         produtos = new ArrayList();
 
-        adapter = new ProductsAdapter(PerfilActivity.this, produtos);
         adapter = new ProductsAdapter(PerfilActivity.this, produtos);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(PerfilActivity.this));
@@ -108,8 +126,7 @@ public class PerfilActivity extends AppCompatActivity {
             }
         };
 
-        Preferencias preferencias = new Preferencias(PerfilActivity.this);
-        productsRef = ConfiguracaoFirebase.getInstance().collection("produtos").whereEqualTo("idVendedor", preferencias.getIdentificador());
+        productsRef = ConfiguracaoFirebase.getInstance().collection("produtos").whereEqualTo("idVendedor", idVendedor);
         productListener = productsRef.addSnapshotListener(eventListener);
 
         contato.setOnClickListener(new View.OnClickListener() {
