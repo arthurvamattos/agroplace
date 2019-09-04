@@ -1,9 +1,6 @@
 package br.edu.ifro.agroplace.adapter;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -11,18 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import br.edu.ifro.agroplace.R;
-import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.model.Conversa;
-import br.edu.ifro.agroplace.model.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversasAdapter extends BaseAdapter {
@@ -71,7 +62,7 @@ public class ConversasAdapter extends BaseAdapter {
             campoVizualizacao.setVisibility(View.INVISIBLE);
         }
 
-        Picasso.get().load(conversa.getCaminhoFoto()).fit().centerCrop().into(campoFoto);
+        Picasso.get().load(conversa.getUrlImagem()).fit().centerCrop().into(campoFoto);
 
         return view;
     }

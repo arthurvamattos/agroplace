@@ -7,7 +7,7 @@ public class Conversa {
     private String idUsuario;
     private String nome;
     private String mensagem;
-    private String caminhoFoto;
+    private String urlImagem;
     private boolean visualizada;
 
     public Conversa() {
@@ -38,12 +38,12 @@ public class Conversa {
     }
 
     @Exclude
-    public String getCaminhoFoto() {
-        return caminhoFoto;
+    public String getUrlImagem() {
+        return urlImagem;
     }
 
-    public void setCaminhoFoto(String caminhoFoto) {
-        this.caminhoFoto = caminhoFoto;
+    public void setUrlImagem(String urlImagem) {
+        this.urlImagem = urlImagem;
     }
 
     public boolean isVisualizada() {

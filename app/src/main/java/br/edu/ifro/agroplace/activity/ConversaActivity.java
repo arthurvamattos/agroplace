@@ -145,7 +145,7 @@ public class ConversaActivity extends AppCompatActivity {
                         conversa.setIdUsuario(idUsuarioRemetente);
                         conversa.setNome(preferencias.getNome());
                         conversa.setMensagem(textoMensagem);
-                        conversa.setCaminhoFoto(caminhoFotoRemetente);
+                        conversa.setUrlImagem(caminhoFotoRemetente);
                         Boolean retornoConversaDestinatario = salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, conversa);
                         if (!retornoConversaDestinatario) {
                             Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
@@ -162,7 +162,7 @@ public class ConversaActivity extends AppCompatActivity {
         conversa.setIdUsuario(idUsuarioDestinatario);
         conversa.setNome(nomeUsuarioDestinatario);
         conversa.setMensagem(textoMensagem);
-        conversa.setCaminhoFoto(caminhoFotoDestinatario);
+        conversa.setUrlImagem(caminhoFotoDestinatario);
         return conversa;
     }
 
