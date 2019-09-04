@@ -67,6 +67,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                         usuario.setSenha(senhaField.getText().toString());
                         if (!telefoneField.getText().toString().trim().equals("")){
                             usuario.setTelefone(telefoneField.getText().toString());
+                        } else {
+                            usuario.setTelefone("");
                         }
                         cadastrarUsuario();
                     } else {

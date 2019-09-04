@@ -30,6 +30,7 @@ public class Usuario implements Serializable {
 
     private Map<String, Object> montarMapUser() {
         Map<String, Object> user = new HashMap<>();
+        user.put("id", this.id);
         user.put("nome", this.nome);
         user.put("email", this.email);
         user.put("telefone", this.telefone);

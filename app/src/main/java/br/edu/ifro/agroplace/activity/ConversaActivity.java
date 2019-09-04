@@ -1,7 +1,6 @@
 package br.edu.ifro.agroplace.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +30,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.MensagemAdapter;
@@ -366,7 +364,7 @@ public class ConversaActivity extends AppCompatActivity {
 
                         Contato contato = new Contato();
                         contato.setIdentificadorUsuario(identificadorContato);
-                        contato.setCaminhoFoto(usuarioContato.getUrlImagem());
+                        contato.setUrlImagem(usuarioContato.getUrlImagem());
                         contato.setEmail(usuarioContato.getEmail());
                         contato.setNome(usuarioContato.getNome());
 

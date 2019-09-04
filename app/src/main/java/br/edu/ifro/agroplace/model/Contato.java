@@ -6,7 +6,7 @@ public class Contato {
     private String identificadorUsuario;
     private String nome;
     private String email;
-    private String caminhoFoto;
+    private String urlImagem;
 
     public Contato() {
     }
@@ -41,11 +41,11 @@ public class Contato {
     }
 
     @Exclude
-    public String getCaminhoFoto() {
-        return caminhoFoto;
+    public String getUrlImagem() {
+        return urlImagem;
     }
 
-    public void setCaminhoFoto(String caminhoFoto) {
-        this.caminhoFoto = caminhoFoto;
+    public void setUrlImagem(String urlImagem) {
+        this.urlImagem = urlImagem;
     }
 }

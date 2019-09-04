@@ -1,28 +1,18 @@
 package br.edu.ifro.agroplace.adapter;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import br.edu.ifro.agroplace.R;
-import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.model.Contato;
-import br.edu.ifro.agroplace.model.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContatoAdapter extends BaseAdapter {
@@ -62,7 +52,7 @@ public class ContatoAdapter extends BaseAdapter {
 
         Contato contato = contatos.get(position);
         campoNome.setText(contato.getNome());
-        Picasso.get().load(contato.getCaminhoFoto()).fit().centerCrop().into(campoFoto);
+        Picasso.get().load(contato.getUrlImagem()).fit().centerCrop().into(campoFoto);
 
         return view;
     }
