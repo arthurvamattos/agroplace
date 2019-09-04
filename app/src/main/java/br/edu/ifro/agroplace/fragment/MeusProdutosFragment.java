@@ -74,6 +74,9 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
 
     private static List<SearchViewObserver> observers = new ArrayList<SearchViewObserver>();
 
+    private RecyclerView productsRecyclerView;
+    private ImageView icEmptyView;
+
     private CollectionReference conversasRef;
 
     private Handler handler;
@@ -110,7 +113,9 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
         produtos.clear();
         handler = new Handler();
 
-        RecyclerView productsRecyclerView = view.findViewById(R.id.myproducts_recycler_view);
+        productsRecyclerView = view.findViewById(R.id.myproducts_recycler_view);
+        icEmptyView = view.findViewById(R.id.ic_empty_view);
+
         productsAdapter = new ProductsAdapter(getContext(), produtos);
         productsRecyclerView.setAdapter(productsAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -122,6 +127,13 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
                 if (!queryDocumentSnapshots.isEmpty()) {
                     produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
                     Collections.reverse(produtos);
+                }
+                if (!produtos.isEmpty()) {
+                    productsRecyclerView.setVisibility(View.VISIBLE);
+                    icEmptyView.setVisibility(View.GONE);
+                } else {
+                    productsRecyclerView.setVisibility(View.GONE);
+                    icEmptyView.setVisibility(View.VISIBLE);
                 }
                 productsAdapter.notifyDataSetChanged();
             }

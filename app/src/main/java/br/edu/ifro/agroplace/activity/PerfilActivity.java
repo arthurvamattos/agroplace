@@ -55,6 +55,7 @@ public class PerfilActivity extends AppCompatActivity {
     private ProductsAdapter adapter;
     private ArrayList<Produto> produtos;
     private ImageView profilePic;
+    private ImageView icEmptyView;
 
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration productListener;
@@ -89,6 +90,8 @@ public class PerfilActivity extends AppCompatActivity {
         collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
         profilePic = findViewById(R.id.collapsing_toolbar_image);
 
+        icEmptyView = findViewById(R.id.ic_empty_view);
+
         recyclerView = findViewById(R.id.perfil_lista);
         contato = findViewById(R.id.perfil_contato);
 
@@ -121,7 +124,17 @@ public class PerfilActivity extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 produtos.clear();
-                produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                    Collections.reverse(produtos);
+                }
+                if (!produtos.isEmpty()) {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    icEmptyView.setVisibility(View.GONE);
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
                 adapter.notifyDataSetChanged();
             }
         };
