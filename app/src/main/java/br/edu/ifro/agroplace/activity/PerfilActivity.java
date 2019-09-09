@@ -143,6 +143,14 @@ public class PerfilActivity extends AppCompatActivity {
         productsRef = ConfiguracaoFirebase.getInstance().collection("produtos").whereEqualTo("idVendedor", idVendedor);
         productListener = productsRef.addSnapshotListener(eventListener);
 
+        DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idVendedor);
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(Usuario.class);
+            }
+        });
+
         contato.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

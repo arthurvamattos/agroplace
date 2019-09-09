@@ -1,5 +1,7 @@
 package br.edu.ifro.agroplace.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +39,7 @@ import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
 import br.edu.ifro.agroplace.helper.IsoStringDate;
 import br.edu.ifro.agroplace.helper.Preferencias;
+import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Contato;
 import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Mensagem;
@@ -335,6 +338,7 @@ public class ConversaActivity extends AppCompatActivity {
         try {
             CollectionReference conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas");
             conversasRef.document(idRemetente).collection("contatos").document(idDestinatario).set(conversa);
+            conversasRef.document(idRemetente).set(conversa);
             return true;
         } catch (Exception e){
             e.printStackTrace();
@@ -373,38 +377,26 @@ public class ConversaActivity extends AppCompatActivity {
                                 .collection("contatos/").document(preferencias.getIdentificador());
                         contatoRef.collection("pessoas").document(identificadorContato).set(contato);
 
+                        contatoRef.set(contato);
+
                         Snackbar.make(findViewById(R.id.conversa_id), contato.getNome()+" está na sua lista de contatos", Snackbar.LENGTH_SHORT).show();
                     }
                 });
                 return true;
             case R.id.menu_conversa_whatsapp:
                 identificadorContato = idUsuarioDestinatario;
-//                firebase = ConfiguracaoFirebase.getFirebase().child("usuarios").child(identificadorContato);
-//                firebase.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                        //Recuperar dados do contato
-//                        Usuario usuarioContato = dataSnapshot.getValue(Usuario.class);
-//
-//                        //Recuperar identificador do usuário logado (base64)
-//                        String identificadorUsuarioLogado =  idUsuarioRemetente;
-//
-//                        firebase = ConfiguracaoFirebase.getFirebase().child("contatos")
-//                                .child(identificadorUsuarioLogado)
-//                                .child(identificadorContato);
-//
-//                        if (usuarioContato.getTelefone() != null)
-//                        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
-//                        else
-//                            Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
+                DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(identificadorContato);
+                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
+
+                        if (usuarioContato.getTelefone() != null)
+                            startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
+                        else
+                            Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
+                    }
+                });
                 return true;
 
             default: return super.onOptionsItemSelected(item);
