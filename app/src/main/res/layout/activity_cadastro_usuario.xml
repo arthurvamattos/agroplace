@@ -20,6 +20,7 @@
             android:background="@drawable/background">
 
         <RelativeLayout
+            android:id="@+id/cadastro_usuario_form_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical">

@@ -34,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(i);
                 finish();
             }
-        },2000);
+        },1000);
 
         Animation animacao = AnimationUtils.loadAnimation(this,R.anim.splash_animation);
         textLogo.startAnimation(animacao);
