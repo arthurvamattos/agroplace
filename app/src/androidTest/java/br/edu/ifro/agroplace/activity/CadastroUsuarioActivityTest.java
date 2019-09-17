@@ -26,6 +26,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -87,13 +88,11 @@ public class CadastroUsuarioActivityTest {
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.cadastro_usuario_btn), withText("CADASTRAR"),
                         childAtPosition(
-                                allOf(withId(R.id.cadastro_usuario_form_holder),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.RelativeLayout")),
-                                                1)),
-                                1),
-                        isDisplayed()));
-        appCompatButton.perform(click());
+                                childAtPosition(
+                                        withId(R.id.cadastro_usuario_form_holder),
+                                        1),
+                                5)));
+        appCompatButton.perform(scrollTo(), click());
 
         onView(isRoot()).perform(waitFor(5000));
 
