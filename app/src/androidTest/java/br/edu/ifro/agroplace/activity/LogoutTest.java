@@ -16,11 +16,10 @@ import androidx.test.runner.AndroidJUnit4;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.FixMethodOrder;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 
 import br.edu.ifro.agroplace.R;
 
@@ -33,6 +32,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -40,74 +40,13 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class LoginActivityTest {
+public class LogoutTest {
 
     @Rule
     public ActivityTestRule<LoginActivity> mActivityTestRule = new ActivityTestRule<>(LoginActivity.class);
 
     @Test
-    public void loginActivityButWithWrongCredentialsTest() {
-        // teste com e-mail correto e senha inválida
-        ViewInteraction textInputEditText = onView(
-                allOf(withId(R.id.login_username),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("com.google.android.material.textfield.TextInputLayout")),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textInputEditText.perform(replaceText("auth@test.com"), closeSoftKeyboard());
-
-        ViewInteraction textInputEditText2 = onView(
-                allOf(withId(R.id.login_password),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("com.google.android.material.textfield.TextInputLayout")),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textInputEditText2.perform(replaceText("senhainvalida"), closeSoftKeyboard());
-
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.login_btn), withText("ENTRAR"),
-                        childAtPosition(
-                                allOf(withId(R.id.login_form_holder),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.RelativeLayout")),
-                                                2)),
-                                2),
-                        isDisplayed()));
-        appCompatButton.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
-
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText("Usuário ou senha inválidos!")));
-
-        // teste com senha correta e e-mail inválido
-        textInputEditText.perform(replaceText("emailinvalido"), closeSoftKeyboard());
-        textInputEditText2.perform(replaceText("senha1234"), closeSoftKeyboard());
-        appCompatButton.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
-
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText("Usuário ou senha inválidos!")));
-
-        // teste com e-mail e senha inválidos
-        textInputEditText.perform(replaceText("emailinvalido"), closeSoftKeyboard());
-        textInputEditText2.perform(replaceText("senhainvalida"), closeSoftKeyboard());
-        appCompatButton.perform(click());
-
-        onView(isRoot()).perform(waitFor(1500));
-
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText("Usuário ou senha inválidos!")));
-    }
-
-    @Test
-    public void loginActivityTest() {
+    public void logoutTest() {
         ViewInteraction textInputEditText = onView(
                 allOf(withId(R.id.login_username),
                         childAtPosition(
@@ -141,16 +80,38 @@ public class LoginActivityTest {
 
         onView(isRoot()).perform(waitFor(5000));
 
-        ViewInteraction viewPager = onView(
-                allOf(withId(R.id.vp_main),
+        ViewInteraction overflowMenuButton = onView(
+                allOf(withContentDescription("More options"),
                         childAtPosition(
-                                allOf(withId(R.id.main_id),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
+                                childAtPosition(
+                                        withId(R.id.toolbar),
+                                        1),
                                 2),
                         isDisplayed()));
-        viewPager.check(matches(isDisplayed()));
+        overflowMenuButton.perform(click());
+
+        ViewInteraction appCompatTextView = onView(
+                allOf(withId(R.id.title), withText("Sair"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.content),
+                                        0),
+                                0),
+                        isDisplayed()));
+        appCompatTextView.perform(click());
+
+        onView(isRoot()).perform(waitFor(1500));
+
+        ViewInteraction linearLayout = onView(
+                allOf(withId(R.id.login_id),
+                        childAtPosition(
+                                allOf(withId(android.R.id.content),
+                                        childAtPosition(
+                                                withId(R.id.action_bar_root),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        linearLayout.check(matches(isDisplayed()));
     }
 
     public static ViewAction waitFor(long delay) {
