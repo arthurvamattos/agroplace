@@ -80,10 +80,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-
     }
 
     private void cadastrarUsuario() {
