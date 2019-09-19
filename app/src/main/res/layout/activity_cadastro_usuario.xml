@@ -111,6 +111,7 @@
                 android:layout_height="wrap_content"
                 android:text="Já é cadastrado? Faça login"
                 android:textColor="@android:color/secondary_text_light"
-                android:onClick="abrirLogin"/>
+                android:onClick="abrirLogin"
+                android:layout_marginBottom="20dp"/>
         </LinearLayout>
 </ScrollView>

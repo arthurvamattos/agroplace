@@ -106,7 +106,8 @@
             android:text="Não é cadastrado? Crie uma conta"
             android:textColor="@android:color/secondary_text_light"
             android:layout_marginTop="20dp"
-            android:onClick="abrirCadastroUsuario"/>
+            android:onClick="abrirCadastroUsuario"
+            android:layout_marginBottom="20dp"/>
     </LinearLayout>
 
 </ScrollView>
