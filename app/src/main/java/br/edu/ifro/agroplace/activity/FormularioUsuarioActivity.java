@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.os.Bundle;
 import android.util.Log;
@@ -172,8 +173,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         } else {
             if (!validaCampos()){
                 Snackbar.make(findViewById(R.id.formulario_usuario_id), "Por favor, preencha os campos", Snackbar.LENGTH_SHORT).show();
-            } else if(verificaSenhaPrenchida() && !verificaSenhasIguais()) {
-                Snackbar.make(findViewById(R.id.formulario_usuario_id), "As senhas informadas devem ser iguais, se preferir deixe os campos em branco para manter a senha atual!", Snackbar.LENGTH_SHORT).show();
             }
             desbloqueiaCampos();
         }
@@ -183,6 +182,11 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         FirebaseUser firebaseUser = autenticacao.getCurrentUser();
         firebaseUser.updateEmail(emailField.getText().toString());
+        if(verificaSenhaPrenchida() && !verificaSenhasIguais()) {
+            Snackbar.make(findViewById(R.id.formulario_usuario_id), "As senhas informadas devem ser iguais, se preferir deixe os campos em branco para manter a senha atual!", Snackbar.LENGTH_SHORT).show();
+            desbloqueiaCampos();
+            return;
+        }
         if (verificaSenhaPrenchida() && verificaSenhasIguais()) {
             firebaseUser.updatePassword(senhaField.getText().toString());
         }
@@ -219,8 +223,14 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(FormularioUsuarioActivity.this, "Usuário alterado com sucesso", Toast.LENGTH_SHORT).show();
-                finish();
+                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Usuário alterado com sucesso!", Snackbar.LENGTH_SHORT).show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        finish();
+                    }
+                }, 1000);
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
