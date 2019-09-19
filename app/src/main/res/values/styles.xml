@@ -40,7 +40,5 @@
         <item name="actionBarItemBackground">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
         <item name="android:actionMenuTextColor">@android:color/white</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>

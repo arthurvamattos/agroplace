@@ -1,141 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.LoginActivity"
-    android:id="@+id/login_id"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:id="@+id/login_id">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@drawable/background"
-        android:paddingHorizontal="10dp">
-        <RelativeLayout
-            android:layout_marginTop="60dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/login_title"
-                android:layout_width="270dp"
-                android:layout_height="100dp"
-                android:src="@drawable/agroplace"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:id="@+id/login_descript"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/login_title"
-                android:layout_centerHorizontal="true"
-                android:text="A feira agora na palma da sua mão"
-                android:textAlignment="center"
-                android:textColor="#fff"
-                android:textSize="18dp"
-                android:textStyle="bold"/>
-
-            <LinearLayout
-                android:id="@+id/login_form_holder"
-                android:layout_margin="16dp"
-                android:background="@drawable/form_holder"
-                android:elevation="5dp"
-                android:layout_below="@id/login_descript"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-                //Email
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/login_username"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="E-mail"
-                        android:inputType="textEmailAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                //Senha
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/login_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Senha"
-                        android:inputType="textPassword" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/login_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="40dp"
-                    android:background="@drawable/btn_circle"
-                    android:elevation="2dp"
-                    android:paddingHorizontal="60dp"
-                    android:text="ENTRAR"
-                    android:textColor="#fff" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/login_form_holder"
-                android:id="@+id/login_btn_holder"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="10dp">
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="40dp"
-                    android:layout_marginRight="10px"
-                    android:background="@drawable/form_holder"
-                    android:backgroundTint="#dd4b39"
-                    android:text="GOOGLE"
-                    android:paddingHorizontal="0.15in"
-                    android:textColor="@android:color/white"
-                    android:drawableLeft="@drawable/ic_google"
-                    android:tooltipText="Continuar com o Google"/>
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="40dp"
-                    android:background="@drawable/form_holder"
-                    android:backgroundTint="#3b5998"
-                    android:paddingHorizontal="0.12in"
-                    android:drawableLeft="@drawable/ic_facebook"
-                    android:text="FACEBOOK"
-                    android:textColor="@android:color/white"
-                    android:tooltipText="Continuar com o Facebook"/>
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:padding="20dp">
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/login_title"
+            android:layout_width="200dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_agroplace_green"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"/>
+
+        //Email
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="E-mail"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        //Senha
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/login_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Senha"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/login_btn_holder"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="50dp">
+
+            <ImageButton
+                android:src="@drawable/ic_google"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/btn_circle"
+                android:backgroundTint="#dd4b39"
+                android:elevation="2dp"
+                android:tooltipText="Continuar com o Google"/>
+
+            <ImageButton
+                android:src="@drawable/ic_facebook"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:background="@drawable/btn_circle"
+                android:backgroundTint="#3b5998"
+                android:elevation="2dp"
+                android:tooltipText="Continuar com o Facebook"/>
+
+            <Button
+                android:id="@+id/login_btn"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_circle"
+                android:elevation="2dp"
+                android:text="ENTRAR"
+                android:textSize="16dp"
+                android:textColor="#fff" />
+
+        </LinearLayout>
         <TextView
             android:id="@+id/login_btn_cad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Não é cadastrado? Crie uma conta"
-            android:textColor="#757575"
+            android:textColor="@android:color/secondary_text_light"
+            android:layout_marginTop="20dp"
             android:onClick="abrirCadastroUsuario"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
