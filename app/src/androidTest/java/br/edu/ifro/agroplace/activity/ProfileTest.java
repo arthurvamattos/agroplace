@@ -72,15 +72,7 @@ public class ProfileTest {
                         isDisplayed()));
         textInputEditText2.perform(replaceText("senha1234"), closeSoftKeyboard());
 
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.login_btn), withText("ENTRAR"),
-                        childAtPosition(
-                                allOf(withId(R.id.login_form_holder),
-                                        childAtPosition(
-                                                withClassName(is("android.widget.RelativeLayout")),
-                                                2)),
-                                2),
-                        isDisplayed()));
+        ViewInteraction appCompatButton = onView(withId(R.id.login_btn));
         appCompatButton.perform(click());
 
         onView(isRoot()).perform(waitFor(5000));

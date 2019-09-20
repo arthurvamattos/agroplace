@@ -82,13 +82,7 @@ public class CadastroUsuarioActivityTest {
                             0),
                     isDisplayed()));
 
-    ViewInteraction appCompatButton = onView(
-            allOf(withId(R.id.cadastro_usuario_btn), withText("CADASTRAR"),
-                    childAtPosition(
-                            childAtPosition(
-                                    withId(R.id.cadastro_usuario_form_holder),
-                                    1),
-                            5)));
+    ViewInteraction appCompatButton = onView(withId(R.id.cadastro_usuario_btn));
 
 
     ViewInteraction viewPager = onView(
