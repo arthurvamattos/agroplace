@@ -3,10 +3,12 @@ package br.edu.ifro.agroplace.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -48,6 +50,8 @@ public class ContatosFragment extends Fragment {
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration contatosListener;
 
+    private LinearLayout icEmptyView;
+
     public ContatosFragment() {
         // Required empty public constructor
     }
@@ -76,18 +80,23 @@ public class ContatosFragment extends Fragment {
         listView.setDivider(null);
         listView.setAdapter((ListAdapter) adapter);
 
+        icEmptyView = view.findViewById(R.id.ic_empty_view);
+
         Preferencias preferencias = new Preferencias(getActivity());
         contatosRef = ConfiguracaoFirebase.getInstance().collection("contatos").document(preferencias.getIdentificador())
                 .collection("pessoas");
 
-        eventListener = new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots.isEmpty()) return;
-                contatos.clear();
-                contatos.addAll(queryDocumentSnapshots.toObjects(Contato.class));
-                adapter.notifyDataSetChanged();
+        eventListener = (queryDocumentSnapshots, e) -> {
+            contatos.clear();
+            if (!queryDocumentSnapshots.isEmpty()) {
+                contatos.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
+                listView.setVisibility(View.VISIBLE);
+                icEmptyView.setVisibility(View.GONE);
+            } else {
+                listView.setVisibility(View.GONE);
+                icEmptyView.setVisibility(View.VISIBLE);
             }
+            adapter.notifyDataSetChanged();
         };
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

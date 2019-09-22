@@ -33,7 +33,7 @@ public class ConversasActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Conversas");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         setSupportActionBar(toolbar);
 
         slidingTabLayout = findViewById(R.id.stl_tabs);

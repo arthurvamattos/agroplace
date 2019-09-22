@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar_principal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary"
+    android:background="@android:color/white"
     android:minHeight="?attr/actionBarSize"
-    android:theme="?attr/actionBarTheme"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:titleTextColor="@android:color/white"
-    app:subtitleTextColor="@android:color/white"
+    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
+    app:titleTextColor="@android:color/black"
+    app:subtitleTextColor="@android:color/black"
     app:contentInsetStart="0dp"
     app:contentInsetStartWithNavigation="0dp"
-    app:contentInsetLeft="0dp">
+    app:contentInsetLeft="0dp"
+    app:titleMarginStart="0dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/toolbar_foto"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:src="@drawable/ic_person_primary"
-        android:background="@drawable/convesar_photo_round" />
+        android:src="@drawable/ic_person"
+        android:background="@drawable/btn_circle" />
 
     <TextView
         android:id="@+id/toolbar_nome"
-        android:layout_marginLeft="3dp"
+        android:layout_marginLeft="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nome"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18dp"/>
 
 </androidx.appcompat.widget.Toolbar>

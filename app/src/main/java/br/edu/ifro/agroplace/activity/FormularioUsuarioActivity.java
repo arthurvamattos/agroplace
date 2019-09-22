@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -55,7 +56,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private static final int REQUISICAO_IMAGEM = 86;
     private FloatingActionButton btnFoto;
-    private CircleImageView imageView;
+    private ImageView imageView;
     private TextInputEditText nomeField;
     private TextInputEditText emailField;
     private TextInputEditText senhaField;
@@ -79,7 +80,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Alterar Perfil");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         setSupportActionBar(toolbar);
 
         imageView = findViewById(R.id.formulario_usuario_foto);

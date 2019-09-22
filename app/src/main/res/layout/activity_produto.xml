@@ -1,120 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/formulario_id">
+    android:id="@+id/produto_id">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <include android:id="@+id/toolbar"
-            layout="@layout/toolbar"></include>
-
-        <ImageView
-            android:id="@+id/produto_foto"
+        android:layout_height="300dp"
+        android:id="@+id/appbar"
+        android:theme="@style/AppThemeWhite">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@color/colorPrimary"
-            android:scaleType="centerCrop"
-            android:src="@drawable/form_background"/>
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="exitUntilCollapsed|scroll"
+            app:contentScrim="#fff"
+            app:title=""
+            app:expandedTitleMarginStart="20dp"
+            android:background="@color/gray">
 
-        //Nome
-        <TextView
-            android:id="@+id/produto_nome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nome do Produto"
-            android:layout_margin="16dp"
-            android:textFontWeight="600"
-            android:textSize="26sp"
-            android:textColor="@android:color/black"
-            android:layout_gravity="center_horizontal"/>
+            <ImageView
+                android:id="@+id/produto_foto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                android:background="@drawable/form_background"/>
 
-        //Valor
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                app:layout_collapseMode="pin"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical"
+            android:layout_marginTop="30dp">
+
             <TextView
-                android:id="@+id/produto_valor"
+                android:id="@+id/produto_nome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00,00"
-                android:textFontWeight="600"
-                android:textSize="16sp" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=" (Kg)"
-                android:textFontWeight="600"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        //Descricao
-        <TextView
-            android:id="@+id/produto_descricao"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Descrição do Produto"
-            android:layout_margin="20dp"
-            android:textFontWeight="600"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_gravity="center_horizontal"/>
-
-        //Vendedor
-        <LinearLayout
-            android:id="@+id/produto_vendedor_link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp">
-            <TextView
+                android:text="Nome do Produto"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:textColor="@android:color/black"
+                android:textSize="24sp" />
+            //Valor
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vendido por "
-                android:textFontWeight="600"
-                android:textSize="16sp" />
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:id="@+id/produto_valor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00,00"
+                    android:textFontWeight="600"
+                    android:textSize="24sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" (Kg)"
+                    android:textFontWeight="600"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            //Descricao
             <TextView
-                android:id="@+id/produto_vendedor"
-                android:layout_width="match_parent"
+                android:id="@+id/produto_descricao"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nome Vendedor"
+                android:text="Descrição do Produto"
+                android:layout_margin="20dp"
                 android:textFontWeight="600"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center_horizontal"/>
 
+            //Vendedor
+            <LinearLayout
+                android:id="@+id/produto_vendedor_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Veja o perfil de "
+                    android:textFontWeight="600"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/produto_vendedor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nome Vendedor"
+                    android:textFontWeight="600"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            //Categoria
+            <TextView
+                android:id="@+id/produto_categoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Categoria"
+                android:layout_margin="10dp"
+                android:textFontWeight="600"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center_horizontal"/>
+
+            <Button
+                android:id="@+id/produto_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_circle"
+                android:elevation="2dp"
+                android:paddingHorizontal="40dp"
+                android:text="ENTRAR EM CONTATO"
+                android:textColor="#fff"
+                android:layout_marginBottom="20dp"/>
         </LinearLayout>
-
-        //Categoria
-        <TextView
-            android:id="@+id/produto_categoria"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Categoria"
-            android:layout_margin="10dp"
-            android:textFontWeight="600"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_gravity="center_horizontal"/>
-
-        <Button
-            android:id="@+id/produto_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/btn_circle"
-            android:elevation="2dp"
-            android:paddingHorizontal="60dp"
-            android:text="ENTRAR EM CONTATO"
-            android:textColor="#fff"
-            android:layout_marginBottom="20dp"/>
-    </LinearLayout>
-
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

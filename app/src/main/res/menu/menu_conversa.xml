@@ -6,13 +6,13 @@
         android:title="Adicionar Contato"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:icon="@drawable/ic_whatsapp"/>
+        android:icon="@drawable/ic_whatsapp_green"/>
 
     <item android:id="@+id/menu_conversa_contato"
         android:title="Adicionar Contato"
         android:orderInCategory="200"
         app:showAsAction="always"
-        android:icon="@drawable/ic_person_add"/>
+        android:icon="@drawable/ic_person_add_green"/>
 
 
 </menu>

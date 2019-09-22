@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -49,6 +50,8 @@ public class ConversasFragment extends Fragment {
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration conversasListener;
 
+    private LinearLayout icEmptyView;
+
     public ConversasFragment() {
         // Required empty public constructor
     }
@@ -76,18 +79,23 @@ public class ConversasFragment extends Fragment {
         listView.setDivider(null);
         listView.setAdapter(adapter);
 
+        icEmptyView = view.findViewById(R.id.ic_empty_view);
+
         Preferencias preferencias = new Preferencias(getActivity());
         conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
             .collection("contatos");
 
-        eventListener = new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots.isEmpty()) return;
-                conversas.clear();
+        eventListener = (queryDocumentSnapshots, e) -> {
+            conversas.clear();
+            if (!queryDocumentSnapshots.isEmpty()) {
                 conversas.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
-                adapter.notifyDataSetChanged();
+                listView.setVisibility(View.VISIBLE);
+                icEmptyView.setVisibility(View.GONE);
+            } else {
+                listView.setVisibility(View.GONE);
+                icEmptyView.setVisibility(View.VISIBLE);
             }
+            adapter.notifyDataSetChanged();
         };
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){

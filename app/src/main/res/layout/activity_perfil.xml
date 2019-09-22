@@ -3,22 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/gray"
     android:id="@+id/perfil_id">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:id="@+id/appbar"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/AppThemeWhite">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_scrollFlags="exitUntilCollapsed|scroll"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="#fff"
             app:title="Nome Completo"
-            app:expandedTitleMarginStart="20dp">
+            app:expandedTitleMarginStart="20dp"
+            android:background="@color/gray">
 
             <ImageView
                 android:id="@+id/collapsing_toolbar_image"
@@ -31,11 +31,11 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
+                android:layout_height="?attr/actionBarSize"/>
 
-            </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.core.widget.NestedScrollView

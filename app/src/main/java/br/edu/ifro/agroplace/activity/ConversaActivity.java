@@ -260,7 +260,7 @@ public class ConversaActivity extends AppCompatActivity {
 
     private void configurarAToobar() {
         toolbar.setTitle("");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         TextView tituloToolbar = findViewById(R.id.toolbar_nome);
         tituloToolbar.setText(nomeUsuarioDestinatario);
         setSupportActionBar(toolbar);

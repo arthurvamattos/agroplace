@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -148,7 +149,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_main_green, menu);
         MenuItem searchItem = menu.findItem(R.id.menu_main_pesquisa);
         SearchView searchView = (SearchView) searchItem.getActionView();
         configurarSearchView(searchView);
@@ -215,10 +216,10 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (queryDocumentSnapshots.isEmpty()) return;
-                int icon = R.drawable.ic_message;
+                int icon = R.drawable.ic_message_green;
                 for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
                     if (!c.isVisualizada()){
-                        icon = R.drawable.ic_announcement;
+                        icon = R.drawable.ic_announcement_green;
                     }
                 }
                 menuConversa.setIcon(icon);
@@ -230,9 +231,9 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
     private void configurarSearchView(SearchView searchView) {
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         ImageView icon = searchView.findViewById(androidx.appcompat.R.id.search_button);
-        icon.setColorFilter(Color.WHITE);
+        icon.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         ImageView iconClose = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-        iconClose.setColorFilter(Color.WHITE);
+        iconClose.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         searchView.setMaxWidth(Integer.MAX_VALUE);
     }
 

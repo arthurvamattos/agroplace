@@ -18,9 +18,16 @@
         android:orderInCategory="300"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/menu_main_pesquisa"
+        android:title="Pesquisar"
+        android:orderInCategory="400"
+        app:showAsAction="ifRoom|withText"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@drawable/ic_search" />
+
     <item android:id="@+id/menu_main_conversas"
         android:title="Abrir conversas"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_message_green"/>
 

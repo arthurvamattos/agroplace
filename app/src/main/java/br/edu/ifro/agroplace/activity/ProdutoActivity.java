@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,8 +42,8 @@ public class ProdutoActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ImageView imageView;
-    private TextView nomeField;
     private TextView valorField;
+    private TextView nomeField;
     private TextView descricaoField;
     private TextView vendedorField;
     private TextView categoriaField;
@@ -70,18 +71,21 @@ public class ProdutoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_produto);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         setSupportActionBar(toolbar);
 
-
-        imageView = findViewById(R.id.produto_foto);
         nomeField = findViewById(R.id.produto_nome);
+        imageView = findViewById(R.id.produto_foto);
         valorField = findViewById(R.id.produto_valor);
         descricaoField = findViewById(R.id.produto_descricao);
         vendedorField = findViewById(R.id.produto_vendedor);
         categoriaField = findViewById(R.id.produto_categoria);
         btnContato = findViewById(R.id.produto_btn);
         linkVendedor = findViewById(R.id.produto_vendedor_link);
+
+
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(" ");
 
         Bundle extra = getIntent().getExtras();
         if (extra != null){
@@ -111,12 +115,11 @@ public class ProdutoActivity extends AppCompatActivity {
 
     private void montaVisualizacaoProduto() {
         Picasso.get().load(produto.getUrlImagem()).fit().centerCrop().into(imageView);
-        nomeField.setText(produto.getNome());
         valorField.setText(produto.getValor());
         descricaoField.setText(produto.getDescricao());
         vendedorField.setText(produto.getVendedor());
         categoriaField.setText(produto.getCategoria());
-        setTitle(produto.getNome());
+        nomeField.setText(produto.getNome());
     }
 
     private void abrirPerfil() {
@@ -144,10 +147,10 @@ public class ProdutoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (queryDocumentSnapshots.isEmpty()) return;
-                int icon = R.drawable.ic_message;
+                int icon = R.drawable.ic_message_green;
                 for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
                     if (!c.isVisualizada()){
-                        icon = R.drawable.ic_announcement;
+                        icon = R.drawable.ic_announcement_green;
                     }
                 }
                 menuConversa.setIcon(icon);

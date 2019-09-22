@@ -85,7 +85,7 @@ public class PerfilActivity extends AppCompatActivity {
         setContentView(R.layout.activity_perfil);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         setSupportActionBar(toolbar);
 
         collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
