@@ -46,10 +46,6 @@ public class ContatoAdapter extends BaseAdapter {
         final CircleImageView campoFoto = view.findViewById(R.id.lista_contato_personalizado_foto);
         TextView campoNome = view.findViewById(R.id.lista_contato_personalizado_nome);
 
-        campoFoto.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_transition_animation));
-        campoNome.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_scale_animation));
-
-
         Contato contato = contatos.get(position);
         campoNome.setText(contato.getNome());
         Picasso.get().load(contato.getUrlImagem()).fit().centerCrop().into(campoFoto);

@@ -38,11 +38,13 @@ import br.edu.ifro.agroplace.adapter.MensagemAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
 import br.edu.ifro.agroplace.helper.IsoStringDate;
+import br.edu.ifro.agroplace.helper.OnClickListener;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Contato;
 import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Mensagem;
+import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -71,6 +73,8 @@ public class ConversaActivity extends AppCompatActivity {
     private Query buscarMensagensRef;
     private CollectionReference destinatarioRef;
     private String caminhoFotoDestinatario, caminhoFotoRemetente;
+    private CircleImageView campoFoto;
+    private TextView tituloToolbar;
 
     @Override
     protected void onStart() {
@@ -110,7 +114,17 @@ public class ConversaActivity extends AppCompatActivity {
         recuperarMensagens();
         configurarListView();
         buscarFotoPerfil();
+        abrirPerilOnClick();
         enviarMensagem();
+    }
+
+    private void abrirPerilOnClick() {
+        tituloToolbar.setOnClickListener((View v) -> {
+            abrirPerfil();
+        });
+        campoFoto.setOnClickListener((View v) -> {
+            abrirPerfil();
+        });
     }
 
     private void enviarMensagem() {
@@ -182,6 +196,13 @@ public class ConversaActivity extends AppCompatActivity {
         }
     }
 
+    private void abrirPerfil() {
+        Intent intent =  new Intent(ConversaActivity.this, PerfilActivity.class);
+        intent.putExtra("idVendedor", this.idUsuarioDestinatario);
+        intent.putExtra("nome", this.nomeUsuarioDestinatario);
+        startActivity(intent);
+    }
+
     private void criarEventListener() {
         eventListenerMensagem = new EventListener<QuerySnapshot>() {
             @Override
@@ -210,6 +231,8 @@ public class ConversaActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.tb_conversa);
         editMensagem = findViewById(R.id.edit_mensagem);
         btnEnviar = findViewById(R.id.btn_enviar);
+        campoFoto = findViewById(R.id.toolbar_foto);
+        tituloToolbar = findViewById(R.id.toolbar_nome);
         listView = findViewById(R.id.lv_conversas);
     }
 
@@ -261,7 +284,6 @@ public class ConversaActivity extends AppCompatActivity {
     private void configurarAToobar() {
         toolbar.setTitle("");
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
-        TextView tituloToolbar = findViewById(R.id.toolbar_nome);
         tituloToolbar.setText(nomeUsuarioDestinatario);
         setSupportActionBar(toolbar);
     }
@@ -273,7 +295,6 @@ public class ConversaActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Usuario usuario = documentSnapshot.toObject(Usuario.class);
-                CircleImageView campoFoto = findViewById(R.id.toolbar_foto);
                 Picasso.get().load(usuario.getUrlImagem()).fit().centerCrop().into(campoFoto);
                 caminhoFotoDestinatario = usuario.getUrlImagem();
             }

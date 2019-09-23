@@ -49,11 +49,6 @@ public class ConversasAdapter extends BaseAdapter {
         final CircleImageView campoFoto = view.findViewById(R.id.lista_conversa_personalizada_foto);
         ImageView campoVizualizacao = view.findViewById(R.id.lista_contato_personalizado_vizualizacao);
 
-
-        campoFoto.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_transition_animation));
-        campoNome.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_scale_animation));
-        campoMensagem.setAnimation(AnimationUtils.loadAnimation(activity, R.anim.fade_scale_animation));
-
         Conversa conversa = conversas.get(position);
         campoNome.setText(conversa.getNome());
         campoMensagem.setText(conversa.getMensagem());

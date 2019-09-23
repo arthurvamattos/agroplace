@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
+
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -135,7 +137,8 @@ public class FormularioVendaActivity extends AppCompatActivity {
             nomeField.setText(produto.getNome());
             valorField.setText(produto.getValor());
             descricaoField.setText(produto.getDescricao());
-            toolbar.setTitle(produto.getNome());
+            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+            collapsingToolbarLayout.setTitle(produto.getNome());
         }
         getSellerImageUrl();
 

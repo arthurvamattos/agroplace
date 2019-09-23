@@ -127,8 +127,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                 if (!queryDocumentSnapshots.isEmpty()) {
                     produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
                     Collections.reverse(produtos);
-                }
-                if (!produtos.isEmpty()) {
                     productsRecyclerView.setVisibility(View.VISIBLE);
                     icEmptyView.setVisibility(View.GONE);
                 } else {

@@ -45,7 +45,7 @@ public class ContatosFragment extends Fragment {
 
     private ListView listView;
     private ContatoAdapter adapter;
-    private List contatos;
+    private List<Contato> contatos;
     private CollectionReference contatosRef;
     private EventListener<QuerySnapshot> eventListener;
     private ListenerRegistration contatosListener;
@@ -89,7 +89,7 @@ public class ContatosFragment extends Fragment {
         eventListener = (queryDocumentSnapshots, e) -> {
             contatos.clear();
             if (!queryDocumentSnapshots.isEmpty()) {
-                contatos.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
+                contatos.addAll(queryDocumentSnapshots.toObjects(Contato.class));
                 listView.setVisibility(View.VISIBLE);
                 icEmptyView.setVisibility(View.GONE);
             } else {
