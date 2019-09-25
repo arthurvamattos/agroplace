@@ -43,7 +43,6 @@ public class ProdutoActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView imageView;
     private TextView valorField;
-    private TextView nomeField;
     private TextView descricaoField;
     private TextView vendedorField;
     private TextView categoriaField;
@@ -74,7 +73,6 @@ public class ProdutoActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
         setSupportActionBar(toolbar);
 
-        nomeField = findViewById(R.id.produto_nome);
         imageView = findViewById(R.id.produto_foto);
         valorField = findViewById(R.id.produto_valor);
         descricaoField = findViewById(R.id.produto_descricao);
@@ -82,10 +80,6 @@ public class ProdutoActivity extends AppCompatActivity {
         categoriaField = findViewById(R.id.produto_categoria);
         btnContato = findViewById(R.id.produto_btn);
         linkVendedor = findViewById(R.id.produto_vendedor_link);
-
-
-        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(" ");
 
         Bundle extra = getIntent().getExtras();
         if (extra != null){
@@ -119,7 +113,8 @@ public class ProdutoActivity extends AppCompatActivity {
         descricaoField.setText(produto.getDescricao());
         vendedorField.setText(produto.getVendedor());
         categoriaField.setText(produto.getCategoria());
-        nomeField.setText(produto.getNome());
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(produto.getNome());
     }
 
     private void abrirPerfil() {

@@ -16,6 +16,7 @@
             android:layout_height="match_parent"
             app:layout_scrollFlags="exitUntilCollapsed|scroll"
             app:contentScrim="#fff"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded.Shadow"
             app:title="Nome Completo"
             app:expandedTitleMarginStart="20dp"
             android:background="@color/gray">

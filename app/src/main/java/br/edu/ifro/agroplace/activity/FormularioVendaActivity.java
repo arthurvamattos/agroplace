@@ -78,6 +78,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
     private ArrayAdapter adapterCategorias;
     private String caminhoFoto;
     private String sellerUrl;
+    private String nomeVendedor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +141,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
             CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
             collapsingToolbarLayout.setTitle(produto.getNome());
         }
-        getSellerImageUrl();
+        getSellerData();
 
     }
 
@@ -192,7 +193,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 bloqueiaCampos();
                 Snackbar snake = Snackbar.make(findViewById(R.id.formulario_id), "Estamos publicando sua venda, só mais um segundo", Snackbar.LENGTH_INDEFINITE);
                 snake.show();
-                referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("produtos").child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
+                referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
                 Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
@@ -283,7 +284,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.setNome(nomeField.getText().toString());
         produto.setValor(valorField.getText().toString());
         produto.setDescricao(descricaoField.getText().toString());
-        produto.setVendedor(preferencias.getNome());
+        produto.setVendedor(nomeVendedor);
         produto.setIdVendedor(preferencias.getIdentificador());
         produto.setDataPublicacao(IsoStringDate.getIsoStringDate());
         produto.setCategoria(categoriasSpinner.getSelectedItem().toString());
@@ -299,13 +300,14 @@ public class FormularioVendaActivity extends AppCompatActivity {
         return produto;
     }
 
-    private void getSellerImageUrl() {
+    private void getSellerData() {
         DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Usuario user = documentSnapshot.toObject(Usuario.class);
                 sellerUrl = user.getUrlImagem();
+                nomeVendedor = user.getNome();
             }
         });
     }

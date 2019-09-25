@@ -5,4 +5,5 @@
     <color name="colorAccent">#20CE6C</color>
     <color name="slidingIndicator">#149B50</color>
     <color name="gray">#EAEBED</color>
+    <color name="darkShadow">#CD000000</color>
 </resources>

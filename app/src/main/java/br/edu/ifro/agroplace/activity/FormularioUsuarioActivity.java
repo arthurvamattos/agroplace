@@ -7,14 +7,12 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,7 +47,6 @@ import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Usuario;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FormularioUsuarioActivity extends AppCompatActivity {
 
@@ -145,7 +142,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         if (validaCampos()) {
             bloqueiaCampos();
             if (localImagemRecuperada != null) {
-                referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child("usuarios").child(System.currentTimeMillis() + "." + getFileExtension(localImagemRecuperada));
+                referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child(System.currentTimeMillis() + "." + getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
                 Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override

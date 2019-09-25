@@ -66,4 +66,11 @@
         <item name="android:actionMenuTextColor">@android:color/white</item>
     </style>
 
+    <style name="TextAppearance.Design.CollapsingToolbar.Expanded.Shadow">
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowRadius">6</item>
+        <item name="android:shadowColor">@color/darkShadow</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

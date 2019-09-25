@@ -17,6 +17,7 @@
             app:layout_scrollFlags="exitUntilCollapsed|scroll"
             app:contentScrim="#fff"
             app:title="Nova venda"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded.Shadow"
             app:expandedTitleMarginStart="20dp">
 
             <ImageView
@@ -35,6 +36,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"/>
+
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
