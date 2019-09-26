@@ -14,7 +14,7 @@ _"Criar um marketplace que ajude as intenções de compra e venda dos produtos c
 
 ## Por quê?
 
-O projeto faz parte do meu portifólio pessoal, além disso, foi desenvolvido em parceiria com o CNPq e usado como produto do meu TCC no curso de CST em Análise e Desenvolvimento de Sistemas, so, I'll be happy if you could provide me any feedback about the project, code, structure or anything that you can report that could make me a better developer!
+O projeto faz parte do meu portifólio pessoal, além disso, foi desenvolvido em parceiria com o CNPq e usado como produto do meu TCC no curso de CST em Análise e Desenvolvimento de Sistemas.
 
 ## Algumas observações sobre o App
 
