@@ -60,9 +60,8 @@ Para rodar o projeto em desenvolvimento, você vai precisar do ambiente de desen
 
 ```
 $ https://github.com/arthurvamattos/agroplace
-
-**Abrir o projeto no Android Studio**
 ```
+**Abrir o projeto no Android Studio**
 
 ### Executando
 
