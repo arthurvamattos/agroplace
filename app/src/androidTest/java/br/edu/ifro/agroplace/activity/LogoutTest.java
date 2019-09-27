@@ -70,7 +70,7 @@ public class LogoutTest {
         ViewInteraction appCompatButton = onView(withId(R.id.login_btn));
         appCompatButton.perform(click());
 
-        onView(isRoot()).perform(waitFor(5000));
+        onView(isRoot()).perform(waitFor(7000));
 
         ViewInteraction overflowMenuButton = onView(
                 allOf(withContentDescription("More options"),
@@ -94,16 +94,8 @@ public class LogoutTest {
 
         onView(isRoot()).perform(waitFor(1500));
 
-        ViewInteraction linearLayout = onView(
-                allOf(withId(R.id.login_id),
-                        childAtPosition(
-                                allOf(withId(android.R.id.content),
-                                        childAtPosition(
-                                                withId(R.id.action_bar_root),
-                                                0)),
-                                0),
-                        isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
+        ViewInteraction loginBtn = onView(withId(R.id.login_btn));
+        loginBtn.check(matches(isDisplayed()));
     }
 
     public static ViewAction waitFor(long delay) {

@@ -152,7 +152,7 @@ public class ProductPreviewTest {
 
         onView(isRoot()).perform(waitFor(1500));
 
-        ViewInteraction textView = onView(withId(R.id.produto_nome));
+        ViewInteraction textView = onView(withId(R.id.product_name));
         textView.check(matches(isDisplayed()));
     }
 
