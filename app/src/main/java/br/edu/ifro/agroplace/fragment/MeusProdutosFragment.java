@@ -119,19 +119,22 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
         eventListener = new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                produtos.clear();
-                if (!queryDocumentSnapshots.isEmpty()) {
-                    produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
-                    Collections.reverse(produtos);
+
+                if (queryDocumentSnapshots != null) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        produtos.clear();
+                        produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                        Collections.reverse(produtos);
+                    }
+                    if (!produtos.isEmpty()) {
+                        productsRecyclerView.setVisibility(View.VISIBLE);
+                        icEmptyView.setVisibility(View.GONE);
+                    } else {
+                        productsRecyclerView.setVisibility(View.GONE);
+                        icEmptyView.setVisibility(View.VISIBLE);
+                    }
+                    productsAdapter.notifyDataSetChanged();
                 }
-                if (!produtos.isEmpty()) {
-                    productsRecyclerView.setVisibility(View.VISIBLE);
-                    icEmptyView.setVisibility(View.GONE);
-                } else {
-                    productsRecyclerView.setVisibility(View.GONE);
-                    icEmptyView.setVisibility(View.VISIBLE);
-                }
-                productsAdapter.notifyDataSetChanged();
             }
         };
 
