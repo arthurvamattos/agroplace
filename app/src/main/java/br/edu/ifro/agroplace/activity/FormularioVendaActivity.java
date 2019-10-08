@@ -262,7 +262,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
         produto.put("categoria", prod.getCategoria());
         produto.put("dataPublicacao", prod.getDataPublicacao());
         produto.put("descricao", prod.getDescricao());
-        produto.put("id", prod.getId());
+        produto.put("idProduto", prod.getId());
         produto.put("idVendedor", prod.getIdVendedor());
         produto.put("nome", prod.getNome());
         produto.put("urlImagem", prod.getUrlImagem());
