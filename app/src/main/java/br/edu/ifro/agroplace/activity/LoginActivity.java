@@ -116,21 +116,29 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = autenticacao.getCurrentUser();
                         identificadorUsuarioLogado = Base64Custom.codificarBase64(user.getEmail());
-                        Usuario usuario = new Usuario();
-                        usuario.setNome(user.getDisplayName());
-                        usuario.setEmail(user.getEmail());
-                        usuario.setId(identificadorUsuarioLogado);
-                        if(user.getPhoneNumber() != null) usuario.setTelefone(user.getPhoneNumber());
-                        usuario.setUrlImagem(user.getPhotoUrl().toString());
+
 
                         FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
-                        db.collection("usuarios").document(usuario.getId()).update(montarMapUser(usuario))
-                                .addOnSuccessListener(aVoid -> {
+                        db.collection("usuarios").document(identificadorUsuarioLogado).get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.toObject(Usuario.class) == null) {
+                                        Usuario newUser = new Usuario();
+                                        newUser.setNome(user.getDisplayName());
+                                        newUser.setEmail(user.getEmail());
+                                        newUser.setId(identificadorUsuarioLogado);
+                                        if(user.getPhoneNumber() != null) newUser.setTelefone(user.getPhoneNumber());
+                                        newUser.setUrlImagem(user.getPhotoUrl().toString());
+
+                                        FirebaseFirestore database = ConfiguracaoFirebase.getInstance();
+                                        database.collection("usuarios").document(newUser.getId()).set(montarMapUser(newUser))
+                                                .addOnFailureListener(err -> desbloqueiaCampos());
+                                    }
+                                    Preferencias preferencias = new Preferencias(LoginActivity.this);
+                                    preferencias.salvarDados(identificadorUsuarioLogado, user.getDisplayName());
                                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(i);
                                     finish();
-                                })
-                                .addOnFailureListener(e -> desbloqueiaCampos());
+                                });
                     } else {
                         Log.w("Error", "Google sign in failed");
                         desbloqueiaCampos();
@@ -192,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
         userMap.put("email", user.getEmail());
         userMap.put("telefone", user.getTelefone());
         userMap.put("urlImagem", user.getUrlImagem());
+        userMap.put("id", user.getId());
         return userMap;
     }
 

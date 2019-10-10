@@ -203,7 +203,6 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         });
     }
 
-
     private void configurarSearchView(SearchView searchView) {
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         ImageView icon = searchView.findViewById(androidx.appcompat.R.id.search_button);
