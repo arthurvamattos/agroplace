@@ -196,7 +196,7 @@ public class ConversaActivity extends AppCompatActivity {
     private void criarEventListener() {
         eventListenerMensagem = (queryDocumentSnapshots, e) -> {
             mensagens.clear();
-            if (queryDocumentSnapshots.isEmpty()) return;
+            if (queryDocumentSnapshots == null) return;
             mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
             adapter.notifyDataSetChanged();
             if (mensagens.size() > 0) {
