@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Produto  implements Serializable {
 
-    private String id;
+    private String idProduto;
     private String nome;
     private String valor;
     private String descricao;
@@ -66,12 +66,12 @@ public class Produto  implements Serializable {
         this.idVendedor = idVendedor;
     }
 
-    public String getId() {
-        return id;
+    public String getIdProduto() {
+        return idProduto;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIdProduto(String id) {
+        this.idProduto = id;
     }
 
     public String getDataPublicacao() {
