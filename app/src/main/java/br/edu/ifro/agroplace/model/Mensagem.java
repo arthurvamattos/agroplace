@@ -34,10 +34,6 @@ public class Mensagem {
         this.visualizada = visualizada;
     }
 
-    public String getDataCriacao() {
-        return dataCriacao;
-    }
-
     public void setDataCriacao(String dataCriacao) {
         this.dataCriacao = dataCriacao;
     }

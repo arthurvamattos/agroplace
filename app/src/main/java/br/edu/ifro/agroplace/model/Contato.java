@@ -19,10 +19,6 @@ public class Contato {
         this.nome = nome;
     }
 
-    public String getIdentificadorUsuario() {
-        return identificadorUsuario;
-    }
-
     public void setIdentificadorUsuario(String identificadorUsuario) {
         this.identificadorUsuario = identificadorUsuario;
     }

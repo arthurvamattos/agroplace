@@ -7,25 +7,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,13 +33,11 @@ import br.edu.ifro.agroplace.adapter.MensagemAdapter;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
 import br.edu.ifro.agroplace.helper.IsoStringDate;
-import br.edu.ifro.agroplace.helper.OnClickListener;
 import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.helper.WhatsAppHelper;
 import br.edu.ifro.agroplace.model.Contato;
 import br.edu.ifro.agroplace.model.Conversa;
 import br.edu.ifro.agroplace.model.Mensagem;
-import br.edu.ifro.agroplace.model.Produto;
 import br.edu.ifro.agroplace.model.Usuario;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -128,48 +121,45 @@ public class ConversaActivity extends AppCompatActivity {
     }
 
     private void enviarMensagem() {
-        btnEnviar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String textoMensagem = editMensagem.getText().toString();
-                if (textoMensagem.isEmpty()){
-                    Toast.makeText(ConversaActivity.this, "Digite uma mensagem para enviar!", Toast.LENGTH_SHORT).show();
-                } else{
-                    Mensagem mensagem = getMensagem(textoMensagem);
-                    mensagem.setVisualizada(false);
-                    //Salvar mensagem para o remetente
-                    Boolean retornoMensagemRemetente =  salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
-                    if (!retornoMensagemRemetente) {
-                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                    } else {
-                        //Salvar mensagem para o destinatário
-                        mensagem.setVisualizada(true);
-                        Boolean retornoMensagemDestinatario = salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
-                        if (!retornoMensagemDestinatario) {
-                            Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                        }
+        btnEnviar.setOnClickListener(v -> {
+            String textoMensagem = editMensagem.getText().toString();
+            if (textoMensagem.isEmpty()){
+                Toast.makeText(ConversaActivity.this, "Digite uma mensagem para enviar!", Toast.LENGTH_SHORT).show();
+            } else{
+                Mensagem mensagem = getMensagem(textoMensagem);
+                mensagem.setVisualizada(false);
+                //Salvar mensagem para o remetente
+                Boolean retornoMensagemRemetente =  salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
+                if (!retornoMensagemRemetente) {
+                    Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    //Salvar mensagem para o destinatário
+                    mensagem.setVisualizada(true);
+                    Boolean retornoMensagemDestinatario = salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
+                    if (!retornoMensagemDestinatario) {
+                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
                     }
-
-                    //Salvamos a conversa para o remetente
-                    Conversa conversa = getConversa(textoMensagem);
-                    conversa.setVisualizada(true);
-                    Boolean retornoConversaRemetente = salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, conversa);
-
-                    if (!retornoMensagemRemetente) {
-                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                    } else {
-                        conversa = new Conversa();
-                        conversa.setIdUsuario(idUsuarioRemetente);
-                        conversa.setNome(preferencias.getNome());
-                        conversa.setMensagem(textoMensagem);
-                        conversa.setUrlImagem(caminhoFotoRemetente);
-                        Boolean retornoConversaDestinatario = salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, conversa);
-                        if (!retornoConversaDestinatario) {
-                            Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                        }
-                    }
-                    editMensagem.setText("");
                 }
+
+                //Salvamos a conversa para o remetente
+                Conversa conversa = getConversa(textoMensagem);
+                conversa.setVisualizada(true);
+                salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, conversa);
+
+                if (!retornoMensagemRemetente) {
+                    Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    conversa = new Conversa();
+                    conversa.setIdUsuario(idUsuarioRemetente);
+                    conversa.setNome(preferencias.getNome());
+                    conversa.setMensagem(textoMensagem);
+                    conversa.setUrlImagem(caminhoFotoRemetente);
+                    Boolean retornoConversaDestinatario = salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, conversa);
+                    if (!retornoConversaDestinatario) {
+                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+                editMensagem.setText("");
             }
         });
     }
@@ -204,17 +194,14 @@ public class ConversaActivity extends AppCompatActivity {
     }
 
     private void criarEventListener() {
-        eventListenerMensagem = new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                mensagens.clear();
-                if (queryDocumentSnapshots.isEmpty()) return;
-                mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
-                adapter.notifyDataSetChanged();
-                if (mensagens.size() > 0) {
-                    marcarConversaComoVisualizada();
-                    marcarMensagensComoVisualizadas();
-                }
+        eventListenerMensagem = (queryDocumentSnapshots, e) -> {
+            mensagens.clear();
+            if (queryDocumentSnapshots.isEmpty()) return;
+            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
+            adapter.notifyDataSetChanged();
+            if (mensagens.size() > 0) {
+                marcarConversaComoVisualizada();
+                marcarMensagensComoVisualizadas();
             }
         };
     }
@@ -237,39 +224,33 @@ public class ConversaActivity extends AppCompatActivity {
     }
 
     private void configurarListView() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
 
-                Mensagem mensagem = mensagens.get(i);
-                if (idUsuarioRemetente.equals( mensagem.getIdUsuario() )){
-                    final TextView indicadorVisualizacao = view.findViewById(R.id.indicador_visualizacao);
-                    if (mensagem.isVisualizada()) {
-                        indicadorVisualizacao.setText("Visualizada");
-                    }
-                    if (indicadorVisualizacao.getVisibility() == View.VISIBLE){
-                        indicadorVisualizacao.setVisibility(View.INVISIBLE);
-                        indicadorVisualizacao.setTextSize(0);
-                    } else {
-                        indicadorVisualizacao.setVisibility(View.VISIBLE);
-                        indicadorVisualizacao.setTextSize(14);
-                    }
+            Mensagem mensagem = mensagens.get(i);
+            if (idUsuarioRemetente.equals( mensagem.getIdUsuario() )){
+                final TextView indicadorVisualizacao = view.findViewById(R.id.indicador_visualizacao);
+                if (mensagem.isVisualizada()) {
+                    indicadorVisualizacao.setText("Visualizada");
+                }
+                if (indicadorVisualizacao.getVisibility() == View.VISIBLE){
+                    indicadorVisualizacao.setVisibility(View.INVISIBLE);
+                    indicadorVisualizacao.setTextSize(0);
+                } else {
+                    indicadorVisualizacao.setVisibility(View.VISIBLE);
+                    indicadorVisualizacao.setTextSize(14);
                 }
             }
         });
     }
 
     private void recuperarMensagens() {
-        buscarMensagensRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                mensagens.clear();
-                mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
-                adapter.notifyDataSetChanged();
-                if (mensagens.size() > 0) {
-                    marcarConversaComoVisualizada();
-                    marcarMensagensComoVisualizadas();
-                }
+        buscarMensagensRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            mensagens.clear();
+            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
+            adapter.notifyDataSetChanged();
+            if (mensagens.size() > 0) {
+                marcarConversaComoVisualizada();
+                marcarMensagensComoVisualizadas();
             }
         });
         messageListener = mensagensRef.addSnapshotListener(eventListenerMensagem);
@@ -291,36 +272,27 @@ public class ConversaActivity extends AppCompatActivity {
     private void buscarFotoPerfil() {
         caminhoFotoDestinatario = caminhoFotoRemetente = "";
         DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioDestinatario);
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Usuario usuario = documentSnapshot.toObject(Usuario.class);
-                Picasso.get().load(usuario.getUrlImagem()).fit().centerCrop().into(campoFoto);
-                caminhoFotoDestinatario = usuario.getUrlImagem();
-            }
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            Usuario usuario = documentSnapshot.toObject(Usuario.class);
+            Picasso.get().load(usuario.getUrlImagem()).fit().centerCrop().into(campoFoto);
+            caminhoFotoDestinatario = usuario.getUrlImagem();
         });
 
         DocumentReference userRef2 = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioRemetente);
-        userRef2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Usuario user = documentSnapshot.toObject(Usuario.class);
-               caminhoFotoRemetente = user.getUrlImagem();
-            }
+        userRef2.get().addOnSuccessListener(documentSnapshot -> {
+            Usuario user = documentSnapshot.toObject(Usuario.class);
+           caminhoFotoRemetente = user.getUrlImagem();
         });
     }
 
     private void marcarConversaComoVisualizada() {
         final DocumentReference conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas")
             .document(idUsuarioRemetente).collection("contatos").document(idUsuarioDestinatario);
-        conversasRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Conversa conversaAtualizda = documentSnapshot.toObject(Conversa.class);
-                if (conversaAtualizda == null) return;
-                conversaAtualizda.setVisualizada(true);
-                conversasRef.set(conversaAtualizda);
-            }
+        conversasRef.get().addOnSuccessListener(documentSnapshot -> {
+            Conversa conversaAtualizda = documentSnapshot.toObject(Conversa.class);
+            if (conversaAtualizda == null) return;
+            conversaAtualizda.setVisualizada(true);
+            conversasRef.set(conversaAtualizda);
         });
     }
 
@@ -328,20 +300,17 @@ public class ConversaActivity extends AppCompatActivity {
         final ArrayList<String> listaIds = new ArrayList<>();
         destinatarioRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
                 .document(idUsuarioDestinatario).collection(idUsuarioRemetente);
-        destinatarioRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-           @Override
-           public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-               for (DocumentSnapshot doc : queryDocumentSnapshots){
-                   listaIds.add(doc.getId());
-               }
-               for (int i = 0; i < listaIds.size() && mensagens.size() > 0; i++){
-                   if (mensagens.get(i).getMensagem() != null) {
-                       Mensagem novaMensagem = mensagens.get(i);
-                       novaMensagem.setVisualizada(true);
-                       destinatarioRef.document(listaIds.get(i)).set(novaMensagem);
-                   }
-               }
-           }
+        destinatarioRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (DocumentSnapshot doc : queryDocumentSnapshots){
+                listaIds.add(doc.getId());
+            }
+            for (int i = 0; i < listaIds.size() && mensagens.size() > 0; i++){
+                if (mensagens.get(i).getMensagem() != null) {
+                    Mensagem novaMensagem = mensagens.get(i);
+                    novaMensagem.setVisualizada(true);
+                    destinatarioRef.document(listaIds.get(i)).set(novaMensagem);
+                }
+            }
         });
     }
 
@@ -382,41 +351,35 @@ public class ConversaActivity extends AppCompatActivity {
 
                 //Montar contato
                 DocumentReference usuarioContatoRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(identificadorContato);
-                usuarioContatoRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
+                usuarioContatoRef.get().addOnSuccessListener(documentSnapshot -> {
+                    Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
 
-                        Contato contato = new Contato();
-                        contato.setIdentificadorUsuario(identificadorContato);
-                        contato.setUrlImagem(usuarioContato.getUrlImagem());
-                        contato.setEmail(usuarioContato.getEmail());
-                        contato.setNome(usuarioContato.getNome());
+                    Contato contato = new Contato();
+                    contato.setIdentificadorUsuario(identificadorContato);
+                    contato.setUrlImagem(usuarioContato.getUrlImagem());
+                    contato.setEmail(usuarioContato.getEmail());
+                    contato.setNome(usuarioContato.getNome());
 
-                        //Salvar na lista de contatos
-                        DocumentReference contatoRef = ConfiguracaoFirebase.getInstance()
-                                .collection("contatos/").document(preferencias.getIdentificador());
-                        contatoRef.collection("pessoas").document(identificadorContato).set(contato);
+                    //Salvar na lista de contatos
+                    DocumentReference contatoRef = ConfiguracaoFirebase.getInstance()
+                            .collection("contatos/").document(preferencias.getIdentificador());
+                    contatoRef.collection("pessoas").document(identificadorContato).set(contato);
 
-                        contatoRef.set(contato);
+                    contatoRef.set(contato);
 
-                        Snackbar.make(findViewById(R.id.conversa_id), contato.getNome()+" está na sua lista de contatos", Snackbar.LENGTH_SHORT).show();
-                    }
+                    Snackbar.make(findViewById(R.id.conversa_id), contato.getNome()+" está na sua lista de contatos", Snackbar.LENGTH_SHORT).show();
                 });
                 return true;
             case R.id.menu_conversa_whatsapp:
                 identificadorContato = idUsuarioDestinatario;
                 DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(identificadorContato);
-                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
+                userRef.get().addOnSuccessListener(documentSnapshot -> {
+                    Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
 
-                        if (usuarioContato.getTelefone() != null)
-                            startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
-                        else
-                            Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
-                    }
+                    if (usuarioContato.getTelefone() != null)
+                        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
+                    else
+                        Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
                 });
                 return true;
 

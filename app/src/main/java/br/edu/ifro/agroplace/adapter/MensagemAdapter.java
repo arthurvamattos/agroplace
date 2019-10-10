@@ -53,7 +53,7 @@ public class MensagemAdapter extends ArrayAdapter<Mensagem> {
             }
 
             //Recupera elemento para exibição
-            TextView textoMensagem = (TextView) view.findViewById(R.id.tv_mensgagem);
+            TextView textoMensagem = view.findViewById(R.id.tv_mensgagem);
             textoMensagem.setText(mensagem.getMensagem());
 
         }

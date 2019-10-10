@@ -1,8 +1,6 @@
 package br.edu.ifro.agroplace.activity;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
@@ -18,14 +16,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -89,22 +80,14 @@ public class ProdutoActivity extends AppCompatActivity {
             montaVisualizacaoProduto();
         }
 
-        btnContato.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProdutoActivity.this, ConversaActivity.class);
-                intent.putExtra("nome", produto.getVendedor());
-                intent.putExtra("email", Base64Custom.decodificarBase64(produto.getIdVendedor()));
-                startActivity(intent);
-            }
+        btnContato.setOnClickListener(v -> {
+            Intent intent = new Intent(ProdutoActivity.this, ConversaActivity.class);
+            intent.putExtra("nome", produto.getVendedor());
+            intent.putExtra("email", Base64Custom.decodificarBase64(produto.getIdVendedor()));
+            startActivity(intent);
         });
 
-        linkVendedor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                abrirPerfil();
-            }
-        });
+        linkVendedor.setOnClickListener(v -> abrirPerfil());
     }
 
     private void montaVisualizacaoProduto() {
@@ -138,18 +121,15 @@ public class ProdutoActivity extends AppCompatActivity {
         conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
                 .collection("contatos");
         final MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-        conversasRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if (queryDocumentSnapshots.isEmpty()) return;
-                int icon = R.drawable.ic_message_green;
-                for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
-                    if (!c.isVisualizada()){
-                        icon = R.drawable.ic_announcement_green;
-                    }
+        conversasRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (queryDocumentSnapshots.isEmpty()) return;
+            int icon = R.drawable.ic_message_green;
+            for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
+                if (!c.isVisualizada()){
+                    icon = R.drawable.ic_announcement_green;
                 }
-                menuConversa.setIcon(icon);
             }
+            menuConversa.setIcon(icon);
         });
     }
 

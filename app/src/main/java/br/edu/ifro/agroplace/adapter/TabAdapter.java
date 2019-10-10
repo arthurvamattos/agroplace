@@ -1,6 +1,5 @@
 package br.edu.ifro.agroplace.adapter;
 
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

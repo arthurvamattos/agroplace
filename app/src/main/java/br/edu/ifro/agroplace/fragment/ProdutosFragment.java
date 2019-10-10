@@ -2,11 +2,9 @@ package br.edu.ifro.agroplace.fragment;
 
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -14,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,12 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -120,22 +112,19 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         productsRecyclerView.setAdapter(productsAdapter);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        eventListener = new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        produtos.clear();
-                        produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
-                        Collections.reverse(produtos);
-                        productsRecyclerView.setVisibility(View.VISIBLE);
-                        icEmptyView.setVisibility(View.GONE);
-                    } else {
-                        productsRecyclerView.setVisibility(View.GONE);
-                        icEmptyView.setVisibility(View.VISIBLE);
-                    }
-                    productsAdapter.notifyDataSetChanged();
+        eventListener = (queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    produtos.clear();
+                    produtos.addAll(queryDocumentSnapshots.toObjects(Produto.class));
+                    Collections.reverse(produtos);
+                    productsRecyclerView.setVisibility(View.VISIBLE);
+                    icEmptyView.setVisibility(View.GONE);
+                } else {
+                    productsRecyclerView.setVisibility(View.GONE);
+                    icEmptyView.setVisibility(View.VISIBLE);
                 }
+                productsAdapter.notifyDataSetChanged();
             }
         };
 
@@ -170,11 +159,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
                     productsAdapter.getFilter().filter(newText);
                 } else {
                     productsRef.addSnapshotListener(eventListener);
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            productsAdapter.getFilter().filter(newText);
-                        }
-                    }, 100);
+                    handler.postDelayed(() -> productsAdapter.getFilter().filter(newText), 100);
                 }
                 if (count == 0) {
                     productsRef.addSnapshotListener(eventListener);
@@ -183,21 +168,15 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             }
         });
 
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchViewOpened = true;
-                notifyObservers();
-            }
+        searchView.setOnSearchClickListener(view -> {
+            searchViewOpened = true;
+            notifyObservers();
         });
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                searchViewOpened = false;
-                notifyObservers();
-                return false;
-            }
+        searchView.setOnCloseListener(() -> {
+            searchViewOpened = false;
+            notifyObservers();
+            return false;
         });
     }
 
@@ -207,23 +186,20 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
         verificarConversasNaoLidas(menu);
     }
 
-    public void verificarConversasNaoLidas(final Menu menu){
+    public void verificarConversasNaoLidas(final Menu menu) {
         Preferencias preferencias = new Preferencias(getActivity());
         conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas").document(preferencias.getIdentificador())
                 .collection("contatos");
         final MenuItem menuConversa = menu.findItem(R.id.menu_main_conversas);
-        conversasRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if (queryDocumentSnapshots.isEmpty()) return;
-                int icon = R.drawable.ic_message_green;
-                for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
-                    if (!c.isVisualizada()){
-                        icon = R.drawable.ic_announcement_green;
-                    }
+        conversasRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if (queryDocumentSnapshots.isEmpty()) return;
+            int icon = R.drawable.ic_message_green;
+            for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
+                if (!c.isVisualizada()) {
+                    icon = R.drawable.ic_announcement_green;
                 }
-                menuConversa.setIcon(icon);
             }
+            menuConversa.setIcon(icon);
         });
     }
 
@@ -249,12 +225,9 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             case R.id.menu_main_perfil:
                 Preferencias preferencias = new Preferencias(getActivity());
                 DocumentReference instance = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
-                instance.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Usuario user = documentSnapshot.toObject(Usuario.class);
-                        abrirPerfil(user);
-                    }
+                instance.get().addOnSuccessListener(documentSnapshot -> {
+                    Usuario user = documentSnapshot.toObject(Usuario.class);
+                    abrirPerfil(user);
                 });
                 return true;
             case R.id.menu_main_conversas:
@@ -295,11 +268,7 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             productsRef.addSnapshotListener(eventListener);
         } else {
             productsRef.addSnapshotListener(eventListener);
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    productsAdapter.getFilterCategory().filter(categoria);
-                }
-            }, 100);
+            handler.postDelayed(() -> productsAdapter.getFilterCategory().filter(categoria), 100);
         }
     }
 
@@ -312,6 +281,5 @@ public class ProdutosFragment extends Fragment implements CategoriaObserver {
             observer.update(searchViewOpened);
         }
     }
-
 
 }

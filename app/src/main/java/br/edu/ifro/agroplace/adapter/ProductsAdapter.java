@@ -58,20 +58,17 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         Picasso.get().load(product.getUrlImagem()).fit().centerCrop().into(productsHolder.productImage);
         Picasso.get().load(product.getUrlFotoVendedor()).fit().centerCrop().into(productsHolder.sellerImage);
 
-        productsHolder.bind(product, new OnClickListener() {
-            @Override
-            public void onItemClick(Produto produto) {
-               Preferencias preferencias = new Preferencias(context);
-               if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
-                   Intent intent = new Intent(context, FormularioVendaActivity.class);
-                   intent.putExtra("produto", produto);
-                   context.startActivity(intent);
-               } else {
-                   Intent intent = new Intent(context, ProdutoActivity.class);
-                   intent.putExtra("produto", produto);
-                   context.startActivity(intent);
-               }
-            }
+        productsHolder.bind(product, produto -> {
+           Preferencias preferencias = new Preferencias(context);
+           if (produto.getIdVendedor().equals(preferencias.getIdentificador())){
+               Intent intent = new Intent(context, FormularioVendaActivity.class);
+               intent.putExtra("produto", produto);
+               context.startActivity(intent);
+           } else {
+               Intent intent = new Intent(context, ProdutoActivity.class);
+               intent.putExtra("produto", produto);
+               context.startActivity(intent);
+           }
         });
     }
 
@@ -99,12 +96,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         }
 
         public void bind(final Produto produto, final OnClickListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-
-                @Override public void onClick(View v) {
-                    listener.onItemClick(produto);
-                }
-            });
+            itemView.setOnClickListener(v -> listener.onItemClick(produto));
         }
     }
 

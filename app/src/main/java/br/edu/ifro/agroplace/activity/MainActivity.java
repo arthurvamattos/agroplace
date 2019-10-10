@@ -35,9 +35,6 @@ public class MainActivity extends AppCompatActivity implements SearchViewObserve
 
     private static List<CategoriaObserver> observers = new ArrayList<CategoriaObserver>();
 
-    public MainActivity() {
-    }
-
     public MainActivity(int contentLayoutId) {
         super(contentLayoutId);
     }
@@ -80,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements SearchViewObserve
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
 
@@ -100,14 +96,11 @@ public class MainActivity extends AppCompatActivity implements SearchViewObserve
             Snackbar.make(findViewById(R.id.main_id), "Mostrando todos os produtos", Snackbar.LENGTH_SHORT).show();
         else{
             final Snackbar snackbar = Snackbar.make(findViewById(R.id.main_id), "Mostrando "+categoria, Snackbar.LENGTH_SHORT);
-            snackbar.setAction("Mostrar todos", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    for (CategoriaObserver observer : observers) {
-                        observer.update(Categorias.getCategoriasLista()[0]);
-                    }
-                    snackbar.dismiss();
+            snackbar.setAction("Mostrar todos", view -> {
+                for (CategoriaObserver observer : observers) {
+                    observer.update(Categorias.getCategoriasLista()[0]);
                 }
+                snackbar.dismiss();
             });
             snackbar.show();
         }

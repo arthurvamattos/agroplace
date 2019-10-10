@@ -1,22 +1,16 @@
 package br.edu.ifro.agroplace.activity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -55,30 +49,27 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         telefoneField.addTextChangedListener(mascaraTelefoneWatcher);
 
         //Cadastro de usuário
-        btnCadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!nomeField.getText().toString().trim().equals("") && !emailField.getText().toString().trim().equals("")
-                && !senhaField.getText().toString().trim().equals("") && !confirmarsenhaField.getText().toString().trim().equals("")){
-                    usuario = new Usuario();
-                    usuario.setNome(nomeField.getText().toString());
-                    usuario.setEmail(emailField.getText().toString());
-                    if (senhaField.getText().toString().equals(confirmarsenhaField.getText().toString())){
-                        usuario.setSenha(senhaField.getText().toString());
-                        if (!telefoneField.getText().toString().trim().equals("")){
-                            usuario.setTelefone(telefoneField.getText().toString());
-                        } else {
-                            usuario.setTelefone("");
-                        }
-                        cadastrarUsuario();
+        btnCadastrar.setOnClickListener(v -> {
+            if (!nomeField.getText().toString().trim().equals("") && !emailField.getText().toString().trim().equals("")
+            && !senhaField.getText().toString().trim().equals("") && !confirmarsenhaField.getText().toString().trim().equals("")){
+                usuario = new Usuario();
+                usuario.setNome(nomeField.getText().toString());
+                usuario.setEmail(emailField.getText().toString());
+                if (senhaField.getText().toString().equals(confirmarsenhaField.getText().toString())){
+                    usuario.setSenha(senhaField.getText().toString());
+                    if (!telefoneField.getText().toString().trim().equals("")){
+                        usuario.setTelefone(telefoneField.getText().toString());
                     } else {
-                        Snackbar.make(findViewById(R.id.cadastro_usuario_id), "As senhas informadas são diferentes!", Snackbar.LENGTH_SHORT).show();
+                        usuario.setTelefone("");
                     }
+                    cadastrarUsuario();
                 } else {
-                    Snackbar.make(findViewById(R.id.cadastro_usuario_id), "Por favor informe todos os campos!", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.cadastro_usuario_id), "As senhas informadas são diferentes!", Snackbar.LENGTH_SHORT).show();
                 }
-
+            } else {
+                Snackbar.make(findViewById(R.id.cadastro_usuario_id), "Por favor informe todos os campos!", Snackbar.LENGTH_SHORT).show();
             }
+
         });
     }
 
@@ -88,33 +79,30 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         autenticacao.createUserWithEmailAndPassword(
                 usuario.getEmail(),
                 usuario.getSenha())
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            String identificadoUsuario = Base64Custom.codificarBase64(usuario.getEmail());
-                            usuario.setId(identificadoUsuario);
-                            usuario.salvar();
-                            String identificadorUsuario = Base64Custom.codificarBase64( usuario.getEmail() );
-                            Preferencias preferencias = new Preferencias(CadastroUsuarioActivity.this);
-                            preferencias.salvarDados(identificadorUsuario, usuario.getNome());
-                            abrirMain();
-                        } else {
-                            desbloqueiaCampos();
-                            String mensagemDeErro = "";
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthWeakPasswordException e){
-                                mensagemDeErro = "Por favor digite uma senha mais forte!";
-                            } catch (FirebaseAuthInvalidCredentialsException e){
-                                mensagemDeErro = "Por favor digite um e-mail válido!";
-                            } catch (FirebaseAuthUserCollisionException e){
-                                mensagemDeErro = "O e-mail informado já está em uso!";
-                            } catch (Exception e) {
-                                mensagemDeErro = "Falha ao cadastrar usuário!";
-                            }
-                            Snackbar.make(findViewById(R.id.cadastro_usuario_id), mensagemDeErro, Snackbar.LENGTH_SHORT).show();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        String identificadoUsuario = Base64Custom.codificarBase64(usuario.getEmail());
+                        usuario.setId(identificadoUsuario);
+                        usuario.salvar();
+                        String identificadorUsuario = Base64Custom.codificarBase64( usuario.getEmail() );
+                        Preferencias preferencias = new Preferencias(CadastroUsuarioActivity.this);
+                        preferencias.salvarDados(identificadorUsuario, usuario.getNome());
+                        abrirMain();
+                    } else {
+                        desbloqueiaCampos();
+                        String mensagemDeErro = "";
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthWeakPasswordException e){
+                            mensagemDeErro = "Por favor digite uma senha mais forte!";
+                        } catch (FirebaseAuthInvalidCredentialsException e){
+                            mensagemDeErro = "Por favor digite um e-mail válido!";
+                        } catch (FirebaseAuthUserCollisionException e){
+                            mensagemDeErro = "O e-mail informado já está em uso!";
+                        } catch (Exception e) {
+                            mensagemDeErro = "Falha ao cadastrar usuário!";
                         }
+                        Snackbar.make(findViewById(R.id.cadastro_usuario_id), mensagemDeErro, Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -1,6 +1,5 @@
 package br.edu.ifro.agroplace.model;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.firestore.FirebaseFirestore;
 
