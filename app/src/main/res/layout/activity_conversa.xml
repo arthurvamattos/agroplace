@@ -47,7 +47,8 @@
             android:layout_margin="8dp"
             android:layout_marginBottom="16dp"
             android:textColor="@android:color/black"
-            android:id="@+id/edit_mensagem"/>
+            android:id="@+id/edit_mensagem"
+            android:inputType="textCapSentences"/>
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

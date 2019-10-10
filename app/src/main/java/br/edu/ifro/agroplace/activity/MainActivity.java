@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements SearchViewObserve
 
     private static List<CategoriaObserver> observers = new ArrayList<CategoriaObserver>();
 
+    public MainActivity() {
+    }
     public MainActivity(int contentLayoutId) {
         super(contentLayoutId);
     }
