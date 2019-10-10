@@ -106,12 +106,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         }
 
         btnFoto = findViewById(R.id.formulario_usuario_btn_foto);
-        btnFoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                abrirSeletorDeImagens();
-            }
-        });
+        btnFoto.setOnClickListener(v -> abrirSeletorDeImagens());
     }
 
     private void abrirSeletorDeImagens() {
@@ -144,25 +139,19 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             if (localImagemRecuperada != null) {
                 referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child(System.currentTimeMillis() + "." + getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
-                Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return referenciaStorage.getDownloadUrl();
+                Task<Uri> urlTask = tarefaUpload.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
                     }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            usuario.setUrlImagem(task.getResult().toString());
-                            salvarUsuario();
-                        } else {
-                            desbloqueiaCampos();
-                            Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                            return;
-                        }
+                    return referenciaStorage.getDownloadUrl();
+                }).addOnCompleteListener((OnCompleteListener<Uri>) task -> {
+                    if (task.isSuccessful()) {
+                        usuario.setUrlImagem(task.getResult().toString());
+                        salvarUsuario();
+                    } else {
+                        desbloqueiaCampos();
+                        Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                        return;
                     }
                 });
             } else {
@@ -188,28 +177,25 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         if (verificaSenhaPrenchida() && verificaSenhasIguais()) {
             firebaseUser.updatePassword(senhaField.getText().toString());
         }
-        autenticacao.updateCurrentUser(firebaseUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    montarUser();
-                    preferencias.salvarDados(usuario.getId(), usuario.getNome());
-                    salvar();
-                } else {
-                    String mensagemDeErro = "";
-                    try {
-                        throw task.getException();
-                    } catch (FirebaseAuthWeakPasswordException e){
-                        mensagemDeErro = "Por favor digite uma senha mais forte!";
-                    } catch (FirebaseAuthInvalidCredentialsException e){
-                        mensagemDeErro = "Por favor digite um e-mail válido!";
-                    } catch (FirebaseAuthUserCollisionException e){
-                        mensagemDeErro = "O e-mail informado já está em uso!";
-                    } catch (Exception e) {
-                        mensagemDeErro = "Falha ao alterar usuário!";
-                    }
-                    Snackbar.make(findViewById(R.id.formulario_usuario_id), mensagemDeErro, Snackbar.LENGTH_SHORT).show();
+        autenticacao.updateCurrentUser(firebaseUser).addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                montarUser();
+                preferencias.salvarDados(usuario.getId(), usuario.getNome());
+                salvar();
+            } else {
+                String mensagemDeErro = "";
+                try {
+                    throw task.getException();
+                } catch (FirebaseAuthWeakPasswordException e){
+                    mensagemDeErro = "Por favor digite uma senha mais forte!";
+                } catch (FirebaseAuthInvalidCredentialsException e){
+                    mensagemDeErro = "Por favor digite um e-mail válido!";
+                } catch (FirebaseAuthUserCollisionException e){
+                    mensagemDeErro = "O e-mail informado já está em uso!";
+                } catch (Exception e) {
+                    mensagemDeErro = "Falha ao alterar usuário!";
                 }
+                Snackbar.make(findViewById(R.id.formulario_usuario_id), mensagemDeErro, Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -218,24 +204,14 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
         Map<String, Object> user = montarMapUser(usuario);
         db.collection("usuarios").document(usuario.getId()).update(user)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Usuário alterado com sucesso!", Snackbar.LENGTH_SHORT).show();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        finish();
-                    }
-                }, 1000);
+        .addOnSuccessListener(aVoid -> {
+            Snackbar.make(findViewById(R.id.formulario_usuario_id), "Usuário alterado com sucesso!", Snackbar.LENGTH_SHORT).show();
+            Handler handler = new Handler();
+            handler.postDelayed(() -> finish(), 1000);
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                desbloqueiaCampos();
-                Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
-            }
+        }).addOnFailureListener(e -> {
+            desbloqueiaCampos();
+            Snackbar.make(findViewById(R.id.formulario_usuario_id), "Erro ao salvar novos dados, tente novamente!", Snackbar.LENGTH_SHORT).show();
         });
     }
 

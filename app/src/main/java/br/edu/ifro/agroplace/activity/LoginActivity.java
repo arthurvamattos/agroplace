@@ -1,6 +1,5 @@
 package br.edu.ifro.agroplace.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
@@ -11,28 +10,28 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
@@ -94,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
         googleBtn.setOnClickListener(v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
+            bloqueiaCampos();
         });
     }
 
@@ -113,20 +113,28 @@ public class LoginActivity extends AppCompatActivity {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         autenticacao.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = autenticacao.getCurrentUser();
-                            identificadorUsuarioLogado = Base64Custom.codificarBase64(emailField.getText().toString());
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(i);
-                            finish();
-                        } else {
-                            Log.w("Error", "Google sign in failed");
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = autenticacao.getCurrentUser();
+                        identificadorUsuarioLogado = Base64Custom.codificarBase64(user.getEmail());
+                        Usuario usuario = new Usuario();
+                        usuario.setNome(user.getDisplayName());
+                        usuario.setEmail(user.getEmail());
+                        usuario.setId(identificadorUsuarioLogado);
+                        if(user.getPhoneNumber() != null) usuario.setTelefone(user.getPhoneNumber());
+                        usuario.setUrlImagem(user.getPhotoUrl().toString());
 
-                        // ...
+                        FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
+                        db.collection("usuarios").document(usuario.getId()).update(montarMapUser(usuario))
+                                .addOnSuccessListener(aVoid -> {
+                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(i);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> desbloqueiaCampos());
+                    } else {
+                        Log.w("Error", "Google sign in failed");
+                        desbloqueiaCampos();
                     }
                 });
     }
@@ -144,8 +152,9 @@ public class LoginActivity extends AppCompatActivity {
                     firebaseAuthWithGoogle(account);
                 } catch (ApiException e) {
                     // Google Sign In failed, update UI appropriately
-                    Log.w("Error", "Google sign in failed", e);
-                    // ...
+                    Log.w ("Error", "Google sign in failed", e);
+                    Log.i ("Error", "Google sign in failed"+ e.getStatusCode());
+                    Snackbar.make(findViewById(R.id.login_id), "Ocorreu um erro, por favor tente novamente em alguns instantes", Snackbar.LENGTH_SHORT).show();
                 }
             }
     }
@@ -178,6 +187,14 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    private Map<String, Object> montarMapUser(Usuario user) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("nome", user.getNome());
+        userMap.put("email", user.getEmail());
+        userMap.put("telefone", user.getTelefone());
+        userMap.put("urlImagem", user.getUrlImagem());
+        return userMap;
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

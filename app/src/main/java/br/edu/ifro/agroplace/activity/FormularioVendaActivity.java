@@ -46,6 +46,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,10 +73,10 @@ public class FormularioVendaActivity extends AppCompatActivity {
     private Uri localImagemRecuperada;
     private Produto produto;
     private FirebaseFirestore db;
-    private StorageTask tarefaUpload;
+    private StorageTask<UploadTask.TaskSnapshot> tarefaUpload;
     private Bundle extra;
     private Spinner categoriasSpinner;
-    private ArrayAdapter adapterCategorias;
+    private ArrayAdapter<String> adapterCategorias;
     private String caminhoFoto;
     private String sellerUrl;
     private String nomeVendedor;
@@ -105,28 +106,16 @@ public class FormularioVendaActivity extends AppCompatActivity {
         descricaoField = findViewById(R.id.formulario_descricao);
 
         btnFoto = findViewById(R.id.formulario_btn_foto);
-        btnFoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(FormularioVendaActivity.this);
-                builder.setTitle("Foto do produto")
-                        .setMessage("Foto nova ou existente?")
-                        .setNegativeButton("Usar a câmera", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                abrirCamera();
-                            }
-                        })
-                        .setPositiveButton("Abrir a galeria", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                abrirSeletorDeImagens();
-                            }
-                        }).show();
-            }
+        btnFoto.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(FormularioVendaActivity.this);
+            builder.setTitle("Foto do produto")
+                    .setMessage("Foto nova ou existente?")
+                    .setNegativeButton("Usar a câmera", (dialog, id) -> abrirCamera())
+                    .setPositiveButton("Abrir a galeria", (dialogInterface, i) -> abrirSeletorDeImagens()).show();
         });
 
         categoriasSpinner = findViewById(R.id.formulario_categorias);
-        adapterCategorias = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasCasdastro());
+        adapterCategorias = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Categorias.getCategoriasCasdastro());
         categoriasSpinner.setAdapter(adapterCategorias);
 
         extra = getIntent().getExtras();
@@ -195,31 +184,25 @@ public class FormularioVendaActivity extends AppCompatActivity {
                 snake.show();
                 referenciaStorage = ConfiguracaoFirebase.getFirebaseStorage().child(System.currentTimeMillis()+"."+getFileExtension(localImagemRecuperada));
                 tarefaUpload = referenciaStorage.putFile(localImagemRecuperada);
-                Task<Uri> urlTask = tarefaUpload.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return referenciaStorage.getDownloadUrl();
+                tarefaUpload.continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
                     }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            finish();
-                            if (validaCampos()){
-                                Produto produto = montaProduto(task);
-                                salvarProduto(produto);
-                                Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
-                            } else {
-                                desbloqueiaCampos();
-                                Snackbar.make(findViewById(R.id.formulario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
-                            }
+                    return referenciaStorage.getDownloadUrl();
+                }).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        finish();
+                        if (validaCampos()){
+                            Produto produto = montaProduto(task);
+                            salvarProduto(produto);
+                            Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
                         } else {
                             desbloqueiaCampos();
-                            Snackbar.make(findViewById(R.id.formulario_id), "Erro ao salvar venda, tente novamente!", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.formulario_id), "Por favor, informe todos os campos!", Snackbar.LENGTH_SHORT).show();
                         }
+                    } else {
+                        desbloqueiaCampos();
+                        Snackbar.make(findViewById(R.id.formulario_id), "Erro ao salvar venda, tente novamente!", Snackbar.LENGTH_SHORT).show();
                     }
                 });
             } else if (produto.getUrlImagem() != null) {
@@ -254,15 +237,15 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private void salvarProduto(Produto produto) {
         Map<String, Object> prod = montaMap(produto);
-        db.collection("produtos").document(produto.getId()).set(prod);
+        db.collection("produtos").document(produto.getIdProduto()).set(prod);
     }
 
-    private Map montaMap(Produto prod) {
-        Map produto = new HashMap();
+    private Map<String, Object> montaMap(Produto prod) {
+        Map<String, Object> produto = new HashMap<>();
         produto.put("categoria", prod.getCategoria());
         produto.put("dataPublicacao", prod.getDataPublicacao());
         produto.put("descricao", prod.getDescricao());
-        produto.put("idProduto", prod.getId());
+        produto.put("idProduto", prod.getIdProduto());
         produto.put("idVendedor", prod.getIdVendedor());
         produto.put("nome", prod.getNome());
         produto.put("urlImagem", prod.getUrlImagem());
@@ -274,7 +257,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private Produto montaProduto(Task<Uri> task) {
         Produto produto =  montaBaseProduto();
-        produto.setId(String.valueOf(System.currentTimeMillis()));
+        produto.setIdProduto(produto.getNome()+System.currentTimeMillis());
         produto.setUrlImagem(task.getResult().toString());
         return produto;
     }
@@ -295,26 +278,25 @@ public class FormularioVendaActivity extends AppCompatActivity {
 
     private Produto montaProduto() {
         Produto produto =  montaBaseProduto();
-        produto.setId(this.produto.getId());
+        produto.setIdProduto(this.produto.getIdProduto());
         produto.setUrlImagem(this.produto.getUrlImagem());
         return produto;
     }
 
     private void getSellerData() {
-        DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(preferencias.getIdentificador());
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Usuario user = documentSnapshot.toObject(Usuario.class);
-                sellerUrl = user.getUrlImagem();
-                nomeVendedor = user.getNome();
-            }
+        DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios")
+                .document(preferencias.getIdentificador());
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            Usuario user = documentSnapshot.toObject(Usuario.class);
+            sellerUrl = user.getUrlImagem();
+            nomeVendedor = user.getNome();
         });
     }
 
 
     private boolean validaCampos() {
-        return !nomeField.getText().toString().trim().equals("") && !valorField.getText().toString().trim().equals("") && !descricaoField.getText().toString().trim().equals("");
+        return !nomeField.getText().toString().trim().equals("") && !valorField.getText().toString().trim().equals("")
+                && !descricaoField.getText().toString().trim().equals("");
     }
 
     @Override
@@ -342,28 +324,18 @@ public class FormularioVendaActivity extends AppCompatActivity {
                         .setIcon(R.drawable.ic_warning)
                         .setTitle("Deletar Venda")
                         .setMessage("Você tem certeza que deseja remover esta venda?")
-                        .setPositiveButton("Sim", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                bloqueiaCampos();
-                                db.collection("produtos").document(produto.getId()).delete()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                            }
-                                     })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        desbloqueiaCampos();
-                                        Toast.makeText(FormularioVendaActivity.this, "Erro ao deletar venda, tente novamente mais tarde!", Toast.LENGTH_SHORT).show();
-                                    }
+                        .setPositiveButton("Sim", (dialog, which) -> {
+                            bloqueiaCampos();
+                            db.collection("produtos").document(produto.getIdProduto()).delete()
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(FormularioVendaActivity.this, "Venda deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                                finish();
+                                    })
+                            .addOnFailureListener(e -> {
+                                desbloqueiaCampos();
+                                Toast.makeText(FormularioVendaActivity.this, "Erro ao deletar venda, tente novamente mais tarde!", Toast.LENGTH_SHORT).show();
                             });
-                        }
-                        })
+                    })
                         .setNegativeButton("Não", null)
                         .show();
                 return true;
