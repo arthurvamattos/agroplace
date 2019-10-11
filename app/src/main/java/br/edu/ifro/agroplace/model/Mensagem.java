@@ -1,5 +1,6 @@
 package br.edu.ifro.agroplace.model;
 
+
 public class Mensagem {
 
     private String idUsuario;
@@ -32,6 +33,10 @@ public class Mensagem {
 
     public void setVisualizada(boolean visualizada) {
         this.visualizada = visualizada;
+    }
+
+    public String getDataCriacao() {
+        return dataCriacao;
     }
 
     public void setDataCriacao(String dataCriacao) {
