@@ -3,6 +3,7 @@ package br.edu.ifro.agroplace.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,7 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,11 +23,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.adapter.MensagemAdapter;
@@ -44,35 +45,32 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ConversaActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private EditText editMensagem;
+    private EditText messageField;
     private ImageButton btnEnviar;
     private ListView listView;
-    private ArrayList<Mensagem> mensagens;
-    private ArrayAdapter<Mensagem> adapter;
+    private CircleImageView campoFoto;
+    private TextView tituloToolbar;
 
-    private EventListener<QuerySnapshot> eventListenerMensagem;
-    private ListenerRegistration messageListener;
-
-    //dados do destinatário
-    private String nomeUsuarioDestinatario;
     private String idUsuarioDestinatario;
-
-    //dados do remetente
     private String idUsuarioRemetente;
     private String identificadorContato;
 
-    private CollectionReference mensagensRef;
+    private Usuario destinario;
+    private Usuario remetente;
+
+    private ArrayList<Mensagem> mensagens;
+    private ArrayAdapter<Mensagem> adapter;
     private Preferencias preferencias;
-    private Query buscarMensagensRef;
-    private CollectionReference destinatarioRef;
-    private String caminhoFotoDestinatario, caminhoFotoRemetente;
-    private CircleImageView campoFoto;
-    private TextView tituloToolbar;
+
+
+    private EventListener<QuerySnapshot> eventListener;
+    private ListenerRegistration messageListener;
+    private com.google.firebase.firestore.Query messagesRef;
 
     @Override
     protected void onStart() {
         super.onStart();
-        messageListener = buscarMensagensRef.addSnapshotListener(eventListenerMensagem);
+        messageListener = messagesRef.addSnapshotListener(eventListener);
     }
 
     @Override
@@ -87,126 +85,134 @@ public class ConversaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_conversa);
 
         mensagens = new ArrayList<>();
-        preferencias = new Preferencias(ConversaActivity.this);
+        mensagens.clear();
 
-        configuraRemetente();
-        configuraDestinatario();
+        toolbar = findViewById(R.id.tb_conversa);
+        messageField = findViewById(R.id.edit_mensagem);
+        btnEnviar = findViewById(R.id.btn_enviar);
+        campoFoto = findViewById(R.id.toolbar_foto);
+        tituloToolbar = findViewById(R.id.toolbar_nome);
+        listView = findViewById(R.id.lv_conversas);
 
-        mensagensRef = ConfiguracaoFirebase.getInstance().collection("mensagens");
-        buscarMensagensRef = ConfiguracaoFirebase.getInstance().collection("mensagens").document(idUsuarioRemetente)
-                .collection(idUsuarioDestinatario).orderBy("dataCriacao");
 
-        destinatarioRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
-                .document(idUsuarioDestinatario).collection(idUsuarioRemetente);
+        preferencias = new Preferencias(this);
+        idUsuarioRemetente = preferencias.getIdentificador();
 
-        criarEventListener();
+        Bundle extra = getIntent().getExtras();
+        if (extra != null) {
+            String emailDestinatario = extra.getString("email");
+            idUsuarioDestinatario = Base64Custom.codificarBase64(emailDestinatario);
+            ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioDestinatario).get()
+                    .addOnSuccessListener(
+                            documentSnapshot -> {
+                                destinario = documentSnapshot.toObject(Usuario.class);
+                                toolbarConfig();
+                            });
+        }
+
+        ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioRemetente).get()
+                .addOnSuccessListener(documentSnapshot -> remetente = documentSnapshot.toObject(Usuario.class));
+
+
+        eventListener = (queryDocumentSnapshots, e) -> {
+            mensagens.clear();
+            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
+            marcarMensagensComoVisualizadas();
+            adapter.notifyDataSetChanged();
+        };
+
+        messagesRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
+                .document(idUsuarioRemetente).collection(idUsuarioDestinatario)
+                .orderBy("dataCriacao");
+        messageListener = messagesRef.addSnapshotListener(eventListener);
+
+        adapter = new MensagemAdapter(ConversaActivity.this, mensagens);
+        listView.setDivider(null);
+        listView.setAdapter(adapter);
+
+        viewMessageStatusOnClick();
+        btnEnviar.setOnClickListener(view -> sendMenssage());
         marcarConversaComoVisualizada();
-        recuperarItensXML();
-        configurarAToobar();
-        adapterCustomizado();
-        recuperarMensagens();
-        configurarListView();
-        buscarFotoPerfil();
-        abrirPerilOnClick();
-        enviarMensagem();
     }
 
-    private void abrirPerilOnClick() {
-        tituloToolbar.setOnClickListener((View v) -> {
-            abrirPerfil();
-        });
-        campoFoto.setOnClickListener((View v) -> {
-            abrirPerfil();
-        });
+
+    private void sendMenssage() {
+        String textoMensagem = messageField.getText().toString();
+        AtomicBoolean sendError = new AtomicBoolean(false);
+        if (textoMensagem.trim().equals("")) {
+            Snackbar.make(findViewById(R.id.conversa_id), "Por favor digite uma mensagem", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        Mensagem mensagem = getMessageObject(textoMensagem);
+        //salvando para o rementene
+        ConfiguracaoFirebase.getInstance().collection("mensagens")
+                .document(remetente.getId()).collection(destinario.getId()).add(mensagem)
+                .addOnSuccessListener(documentReference -> {
+                    //salvado para o destinatário
+                    ConfiguracaoFirebase.getInstance().collection("mensagens")
+                            .document(destinario.getId()).collection(remetente.getId()).add(mensagem)
+                            .addOnSuccessListener(documentReference2 -> {
+                                //salvado para o destinatário
+                                Conversa conversa = getConversationObject(textoMensagem);
+                                ConfiguracaoFirebase.getInstance().collection("conversas")
+                                        .document(remetente.getId()).collection("contatos")
+                                        .document(destinario.getId()).set(conversa)
+                                        .addOnSuccessListener(docRef -> {
+                                            conversa.setIdUsuario(remetente.getId());
+                                            conversa.setNome(remetente.getNome());
+                                            conversa.setUrlImagem(remetente.getUrlImagem());
+                                            ConfiguracaoFirebase.getInstance().collection("conversas")
+                                                    .document(destinario.getId()).collection("contatos")
+                                                    .document(remetente.getId()).set(conversa)
+                                                    .addOnFailureListener(err2 -> sendError.set(true));
+                                        })
+                                        .addOnFailureListener(err3 -> sendError.set(true));
+                            })
+                            .addOnFailureListener(e -> sendError.set(true));
+                })
+                .addOnFailureListener(e -> sendError.set(true));
+
+        if (sendError.get()) {
+            Snackbar.make(findViewById(R.id.conversa_id), "Algo deu errado, por favor tente novamente em alguns instantes", Snackbar.LENGTH_SHORT).show();
+        }
+        messageField.setText("");
     }
 
-    private void enviarMensagem() {
-        btnEnviar.setOnClickListener(v -> {
-            String textoMensagem = editMensagem.getText().toString();
-            if (textoMensagem.isEmpty()){
-                Toast.makeText(ConversaActivity.this, "Digite uma mensagem para enviar!", Toast.LENGTH_SHORT).show();
-            } else{
-                Mensagem mensagem = getMensagem(textoMensagem);
-                mensagem.setVisualizada(false);
-                //Salvar mensagem para o remetente
-                Boolean retornoMensagemRemetente =  salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
-                if (!retornoMensagemRemetente) {
-                    Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    //Salvar mensagem para o destinatário
-                    mensagem.setVisualizada(true);
-                    Boolean retornoMensagemDestinatario = salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
-                    if (!retornoMensagemDestinatario) {
-                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar mensagem para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                    }
-                }
 
-                //Salvamos a conversa para o remetente
-                Conversa conversa = getConversa(textoMensagem);
-                conversa.setVisualizada(true);
-                salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, conversa);
-
-                if (!retornoMensagemRemetente) {
-                    Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    conversa = new Conversa();
-                    conversa.setIdUsuario(idUsuarioRemetente);
-                    conversa.setNome(preferencias.getNome());
-                    conversa.setMensagem(textoMensagem);
-                    conversa.setUrlImagem(caminhoFotoRemetente);
-                    Boolean retornoConversaDestinatario = salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, conversa);
-                    if (!retornoConversaDestinatario) {
-                        Snackbar.make(findViewById(R.id.conversa_id), "Problema ao salvar conversa para o destinatário, tente novamente!", Snackbar.LENGTH_SHORT).show();
-                    }
-                }
-                editMensagem.setText("");
-            }
-        });
-    }
-
-    private Conversa getConversa(String textoMensagem) {
+    private Conversa getConversationObject(String textoMensagem) {
         Conversa conversa = new Conversa();
-        conversa.setIdUsuario(idUsuarioDestinatario);
-        conversa.setNome(nomeUsuarioDestinatario);
+        conversa.setIdUsuario(destinario.getId());
+        conversa.setNome(destinario.getNome());
         conversa.setMensagem(textoMensagem);
-        conversa.setUrlImagem(caminhoFotoDestinatario);
+        conversa.setUrlImagem(destinario.getUrlImagem());
         return conversa;
     }
 
-    private void configuraRemetente() {
-        idUsuarioRemetente = preferencias.getIdentificador();
+    private void marcarMensagensComoVisualizadas() {
+        final ArrayList<String> listaIds = new ArrayList<>();
+        CollectionReference destinatarioRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
+                .document(idUsuarioDestinatario).collection(idUsuarioRemetente);
+        destinatarioRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (DocumentSnapshot doc : queryDocumentSnapshots){
+                listaIds.add(doc.getId());
+                Mensagem mensagemAtualizda = doc.toObject(Mensagem.class);
+                mensagemAtualizda.setVisualizada(true);
+                destinatarioRef.document(doc.getId()).set(mensagemAtualizda);
+
+                Log.i(doc.getId(), "marcarMensagensComoVisualizadas: ");
+            }
+        });
+        adapter.notifyDataSetChanged();
     }
 
-    private void configuraDestinatario() {
-        Bundle extra = getIntent().getExtras();
-        if (extra != null){
-            nomeUsuarioDestinatario = extra.getString("nome");
-            String emailDestinatario = extra.getString("email");
-            idUsuarioDestinatario = Base64Custom.codificarBase64(emailDestinatario);
-        }
-    }
-
-    private void abrirPerfil() {
-        Intent intent =  new Intent(ConversaActivity.this, PerfilActivity.class);
-        intent.putExtra("idVendedor", this.idUsuarioDestinatario);
-        intent.putExtra("nome", this.nomeUsuarioDestinatario);
+    private void goToProfile() {
+        Intent intent = new Intent(ConversaActivity.this, PerfilActivity.class);
+        intent.putExtra("idVendedor", destinario.getId());
+        intent.putExtra("nome", destinario.getNome());
         startActivity(intent);
     }
 
-    private void criarEventListener() {
-        eventListenerMensagem = (queryDocumentSnapshots, e) -> {
-            mensagens.clear();
-            if (queryDocumentSnapshots == null) return;
-            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
-            adapter.notifyDataSetChanged();
-            if (mensagens.size() > 0) {
-                marcarConversaComoVisualizada();
-                marcarMensagensComoVisualizadas();
-            }
-        };
-    }
-
-    private Mensagem getMensagem(String textoMensagem) {
+    private Mensagem getMessageObject(String textoMensagem) {
         Mensagem mensagem = new Mensagem();
         mensagem.setIdUsuario(idUsuarioRemetente);
         mensagem.setMensagem(textoMensagem);
@@ -214,25 +220,16 @@ public class ConversaActivity extends AppCompatActivity {
         return mensagem;
     }
 
-    private void recuperarItensXML() {
-        toolbar = findViewById(R.id.tb_conversa);
-        editMensagem = findViewById(R.id.edit_mensagem);
-        btnEnviar = findViewById(R.id.btn_enviar);
-        campoFoto = findViewById(R.id.toolbar_foto);
-        tituloToolbar = findViewById(R.id.toolbar_nome);
-        listView = findViewById(R.id.lv_conversas);
-    }
-
-    private void configurarListView() {
+    private void viewMessageStatusOnClick() {
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
 
             Mensagem mensagem = mensagens.get(i);
-            if (idUsuarioRemetente.equals( mensagem.getIdUsuario() )){
+            if (idUsuarioRemetente.equals(mensagem.getIdUsuario())) {
                 final TextView indicadorVisualizacao = view.findViewById(R.id.indicador_visualizacao);
                 if (mensagem.isVisualizada()) {
                     indicadorVisualizacao.setText("Visualizada");
                 }
-                if (indicadorVisualizacao.getVisibility() == View.VISIBLE){
+                if (indicadorVisualizacao.getVisibility() == View.VISIBLE) {
                     indicadorVisualizacao.setVisibility(View.INVISIBLE);
                     indicadorVisualizacao.setTextSize(0);
                 } else {
@@ -243,51 +240,10 @@ public class ConversaActivity extends AppCompatActivity {
         });
     }
 
-    private void recuperarMensagens() {
-        buscarMensagensRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            mensagens.clear();
-            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
-            adapter.notifyDataSetChanged();
-            if (mensagens.size() > 0) {
-                marcarConversaComoVisualizada();
-                marcarMensagensComoVisualizadas();
-            }
-        });
-        messageListener = mensagensRef.addSnapshotListener(eventListenerMensagem);
-    }
-
-    private void adapterCustomizado() {
-        adapter = new MensagemAdapter(ConversaActivity.this, mensagens);
-        listView.setDivider(null);
-        listView.setAdapter(adapter);
-    }
-
-    private void configurarAToobar() {
-        toolbar.setTitle("");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
-        tituloToolbar.setText(nomeUsuarioDestinatario);
-        setSupportActionBar(toolbar);
-    }
-
-    private void buscarFotoPerfil() {
-        caminhoFotoDestinatario = caminhoFotoRemetente = "";
-        DocumentReference userRef = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioDestinatario);
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            Usuario usuario = documentSnapshot.toObject(Usuario.class);
-            Picasso.get().load(usuario.getUrlImagem()).fit().centerCrop().into(campoFoto);
-            caminhoFotoDestinatario = usuario.getUrlImagem();
-        });
-
-        DocumentReference userRef2 = ConfiguracaoFirebase.getInstance().collection("usuarios").document(idUsuarioRemetente);
-        userRef2.get().addOnSuccessListener(documentSnapshot -> {
-            Usuario user = documentSnapshot.toObject(Usuario.class);
-           caminhoFotoRemetente = user.getUrlImagem();
-        });
-    }
-
     private void marcarConversaComoVisualizada() {
-        final DocumentReference conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas")
-            .document(idUsuarioRemetente).collection("contatos").document(idUsuarioDestinatario);
+        DocumentReference conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas")
+                .document(idUsuarioRemetente).collection("contatos")
+                .document(idUsuarioDestinatario);
         conversasRef.get().addOnSuccessListener(documentSnapshot -> {
             Conversa conversaAtualizda = documentSnapshot.toObject(Conversa.class);
             if (conversaAtualizda == null) return;
@@ -296,44 +252,20 @@ public class ConversaActivity extends AppCompatActivity {
         });
     }
 
-    private void marcarMensagensComoVisualizadas() {
-        final ArrayList<String> listaIds = new ArrayList<>();
-        destinatarioRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
-                .document(idUsuarioDestinatario).collection(idUsuarioRemetente);
-        destinatarioRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            for (DocumentSnapshot doc : queryDocumentSnapshots){
-                listaIds.add(doc.getId());
-            }
-            for (int i = 0; i < listaIds.size() && mensagens.size() > 0; i++){
-                if (mensagens.get(i).getMensagem() != null) {
-                    Mensagem novaMensagem = mensagens.get(i);
-                    novaMensagem.setVisualizada(true);
-                    destinatarioRef.document(listaIds.get(i)).set(novaMensagem);
-                }
-            }
+    private void toolbarConfig() {
+        toolbar.setTitle("");
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_green);
+        tituloToolbar.setText(destinario.getNome());
+        Picasso.get().load(destinario.getUrlImagem()).fit().centerCrop().into(campoFoto);
+        setSupportActionBar(toolbar);
+
+        tituloToolbar.setOnClickListener((View v) -> {
+            goToProfile();
         });
-    }
+        campoFoto.setOnClickListener((View v) -> {
+            goToProfile();
+        });
 
-    private boolean salvarMensagem(String idRemetente, String idDestinatario, Mensagem mensagem) {
-        try {
-            mensagensRef.document(idRemetente).collection(idDestinatario).add(mensagem);
-            return true;
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private boolean salvarConversa(String idRemetente, String idDestinatario, Conversa conversa) {
-        try {
-            CollectionReference conversasRef = ConfiguracaoFirebase.getInstance().collection("conversas");
-            conversasRef.document(idRemetente).collection("contatos").document(idDestinatario).set(conversa);
-            conversasRef.document(idRemetente).set(conversa);
-            return true;
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override
@@ -345,7 +277,7 @@ public class ConversaActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_conversa_contato:
                 identificadorContato = idUsuarioDestinatario;
 
@@ -367,7 +299,7 @@ public class ConversaActivity extends AppCompatActivity {
 
                     contatoRef.set(contato);
 
-                    Snackbar.make(findViewById(R.id.conversa_id), contato.getNome()+" está na sua lista de contatos", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.conversa_id), contato.getNome() + " está na sua lista de contatos", Snackbar.LENGTH_SHORT).show();
                 });
                 return true;
             case R.id.menu_conversa_whatsapp:
@@ -383,7 +315,8 @@ public class ConversaActivity extends AppCompatActivity {
                 });
                 return true;
 
-            default: return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
