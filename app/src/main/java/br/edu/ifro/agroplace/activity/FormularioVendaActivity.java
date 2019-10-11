@@ -184,7 +184,14 @@ public class FormularioVendaActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         finish();
                         if (validaCampos()){
+                            String id = "";
+                            if (produto.getIdProduto() != null) {
+                                id = produto.getIdProduto();
+                            }
                             Produto produto = montaProduto(task);
+                            if (!id.equals("")) {
+                                produto.setIdProduto(id);
+                            }
                             salvarProduto(produto);
                             Toast.makeText(FormularioVendaActivity.this, "Venda publicada com sucesso", Toast.LENGTH_SHORT).show();
                         } else {
