@@ -114,27 +114,23 @@ public class LoginActivity extends AppCompatActivity {
         autenticacao.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = autenticacao.getCurrentUser();
-                        identificadorUsuarioLogado = Base64Custom.codificarBase64(user.getEmail());
-
-
+                        identificadorUsuarioLogado = Base64Custom.codificarBase64(account.getEmail());
                         FirebaseFirestore db = ConfiguracaoFirebase.getInstance();
                         db.collection("usuarios").document(identificadorUsuarioLogado).get()
                                 .addOnSuccessListener(documentSnapshot -> {
                                     if (documentSnapshot.toObject(Usuario.class) == null) {
                                         Usuario newUser = new Usuario();
-                                        newUser.setNome(user.getDisplayName());
-                                        newUser.setEmail(user.getEmail());
+                                        newUser.setNome(account.getDisplayName());
+                                        newUser.setEmail(account.getEmail());
                                         newUser.setId(identificadorUsuarioLogado);
-                                        if(user.getPhoneNumber() != null) newUser.setTelefone(user.getPhoneNumber());
-                                        newUser.setUrlImagem(user.getPhotoUrl().toString());
+                                        newUser.setUrlImagem(account.getPhotoUrl().toString());
 
                                         FirebaseFirestore database = ConfiguracaoFirebase.getInstance();
                                         database.collection("usuarios").document(newUser.getId()).set(montarMapUser(newUser))
                                                 .addOnFailureListener(err -> desbloqueiaCampos());
                                     }
                                     Preferencias preferencias = new Preferencias(LoginActivity.this);
-                                    preferencias.salvarDados(identificadorUsuarioLogado, user.getDisplayName());
+                                    preferencias.salvarDados(identificadorUsuarioLogado, account.getDisplayName());
                                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(i);
                                     finish();

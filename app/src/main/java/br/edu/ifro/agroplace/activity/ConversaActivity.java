@@ -94,7 +94,6 @@ public class ConversaActivity extends AppCompatActivity {
         tituloToolbar = findViewById(R.id.toolbar_nome);
         listView = findViewById(R.id.lv_conversas);
 
-
         preferencias = new Preferencias(this);
         idUsuarioRemetente = preferencias.getIdentificador();
 
@@ -133,6 +132,7 @@ public class ConversaActivity extends AppCompatActivity {
         viewMessageStatusOnClick();
         btnEnviar.setOnClickListener(view -> sendMenssage());
         marcarConversaComoVisualizada();
+
     }
 
 
@@ -152,8 +152,9 @@ public class ConversaActivity extends AppCompatActivity {
                     ConfiguracaoFirebase.getInstance().collection("mensagens")
                             .document(destinario.getId()).collection(remetente.getId()).add(mensagem)
                             .addOnSuccessListener(documentReference2 -> {
-                                //salvado para o destinatário
+                                //salvado para o remetente
                                 Conversa conversa = getConversationObject(textoMensagem);
+                                conversa.setVisualizada(true);
                                 ConfiguracaoFirebase.getInstance().collection("conversas")
                                         .document(remetente.getId()).collection("contatos")
                                         .document(destinario.getId()).set(conversa)
@@ -161,6 +162,7 @@ public class ConversaActivity extends AppCompatActivity {
                                             conversa.setIdUsuario(remetente.getId());
                                             conversa.setNome(remetente.getNome());
                                             conversa.setUrlImagem(remetente.getUrlImagem());
+                                            conversa.setVisualizada(false);
                                             ConfiguracaoFirebase.getInstance().collection("conversas")
                                                     .document(destinario.getId()).collection("contatos")
                                                     .document(remetente.getId()).set(conversa)
@@ -198,8 +200,6 @@ public class ConversaActivity extends AppCompatActivity {
                 Mensagem mensagemAtualizda = doc.toObject(Mensagem.class);
                 mensagemAtualizda.setVisualizada(true);
                 destinatarioRef.document(doc.getId()).set(mensagemAtualizda);
-
-                Log.i(doc.getId(), "marcarMensagensComoVisualizadas: ");
             }
         });
         adapter.notifyDataSetChanged();

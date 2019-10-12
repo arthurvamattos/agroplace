@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.config.ConfiguracaoFirebase;
 import br.edu.ifro.agroplace.helper.Base64Custom;
+import br.edu.ifro.agroplace.helper.Preferencias;
 import br.edu.ifro.agroplace.model.Mensagem;
 
 public class MensagemAdapter extends ArrayAdapter<Mensagem> {
@@ -35,8 +36,7 @@ public class MensagemAdapter extends ArrayAdapter<Mensagem> {
         if (mensagens != null){
 
             //Recupera dados do usuario remetente
-            FirebaseAuth auth = ConfiguracaoFirebase.getFirebaseAutenticacao();
-            String idUsuarioRemetente = Base64Custom.codificarBase64(auth.getCurrentUser().getEmail());
+            Preferencias preferencias = new Preferencias(getContext());
 
 
             //Inicializa objeto para montagem do layout
@@ -46,7 +46,7 @@ public class MensagemAdapter extends ArrayAdapter<Mensagem> {
             Mensagem mensagem = mensagens.get(position);
 
             //Monta a view a partir do xml
-            if (idUsuarioRemetente.equals( mensagem.getIdUsuario() )){
+            if (preferencias.getIdentificador().equals( mensagem.getIdUsuario() )){
                 view = inflater.inflate(R.layout.item_mensagem_direita, parent, false);
             } else {
                 view = inflater.inflate(R.layout.item_mensagem_esquerda, parent, false);

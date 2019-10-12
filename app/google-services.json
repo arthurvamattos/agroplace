@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "14765101880-6qnh4q0dofb54eh6lgq9gb3un48k0fbo.apps.googleusercontent.com",
+          "client_id": "14765101880-q1gutme6ivjvhdprermpjdvbi42hr44f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "br.edu.ifro.agroplace",
-            "certificate_hash": "293688da8d2d97631cdd5ab24d3a1f35fbd43cb5"
+            "certificate_hash": "2976c07f6bd226c7dc1b566abdf5a2aa5de014c2"
           }
         },
         {

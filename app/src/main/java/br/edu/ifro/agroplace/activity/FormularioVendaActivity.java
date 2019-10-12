@@ -185,7 +185,7 @@ public class FormularioVendaActivity extends AppCompatActivity {
                         finish();
                         if (validaCampos()){
                             String id = "";
-                            if (produto.getIdProduto() != null) {
+                            if (produto != null) {
                                 id = produto.getIdProduto();
                             }
                             Produto produto = montaProduto(task);
