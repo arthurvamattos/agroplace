@@ -14,11 +14,11 @@ _"Criar um marketplace que ajude as intenções de compra e venda dos produtos c
 
 ## Por quê?
 
-O projeto faz parte do meu portifólio pessoal, além disso, foi desenvolvido em parceiria com o CNPq e usado como produto do meu TCC no curso de CST em Análise e Desenvolvimento de Sistemas.
+O projeto faz parte do meu portfólio pessoal, além disso, foi desenvolvido em parceria com o CNPq e usado como produto do meu TCC no curso de CST em Análise e Desenvolvimento de Sistemas.
 
 ## Algumas observações sobre o App
 
-1 - Os dados de produtos, pessoas e conversas demonstrados pra preview são feitos por mim, e não existem e podem não corresponder com a realidade.
+1 - Os dados de produtos, pessoas e conversas demonstrados na preview são feitos por mim, e não existem e podem não corresponder com a realidade.
 
 2 - É o primeiro projeto android com porte mediano feito por mim, então pode possuir alguns erros na estrutura.
 
@@ -30,7 +30,7 @@ O projeto faz parte do meu portifólio pessoal, além disso, foi desenvolvido em
   - Cadastro de usuários
   - Login
   - Logout
-  - Login social (google e facebook) **em breve**
+  - Login social (google)
   
 - Painel:
   - Lista de todos os produtos vendidos
