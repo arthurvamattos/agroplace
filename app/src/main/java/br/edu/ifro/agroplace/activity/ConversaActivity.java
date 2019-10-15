@@ -115,9 +115,11 @@ public class ConversaActivity extends AppCompatActivity {
 
         eventListener = (queryDocumentSnapshots, e) -> {
             mensagens.clear();
-            mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
-            marcarMensagensComoVisualizadas();
-            adapter.notifyDataSetChanged();
+            if  (queryDocumentSnapshots != null){
+                mensagens.addAll(queryDocumentSnapshots.toObjects(Mensagem.class));
+                marcarMensagensComoVisualizadas();
+                adapter.notifyDataSetChanged();
+            }
         };
 
         messagesRef = ConfiguracaoFirebase.getInstance().collection("mensagens")
