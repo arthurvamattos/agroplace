@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -27,6 +28,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import br.edu.ifro.agroplace.R;
@@ -161,6 +164,10 @@ public class ConversaActivity extends AppCompatActivity {
                                         .document(remetente.getId()).collection("contatos")
                                         .document(destinario.getId()).set(conversa)
                                         .addOnSuccessListener(docRef -> {
+                                            Map<String, String> mapId = new HashMap<>();
+                                            mapId.put("id", remetente.getId());
+                                            ConfiguracaoFirebase.getInstance().collection("conversas")
+                                                    .document(remetente.getId()).set(mapId);
                                             conversa.setIdUsuario(remetente.getId());
                                             conversa.setNome(remetente.getNome());
                                             conversa.setUrlImagem(remetente.getUrlImagem());
@@ -169,7 +176,11 @@ public class ConversaActivity extends AppCompatActivity {
                                                     .document(destinario.getId()).collection("contatos")
                                                     .document(remetente.getId()).set(conversa)
                                                     .addOnFailureListener(err2 -> sendError.set(true));
-                                        })
+                                        }).addOnSuccessListener(aVoid -> {
+                                            Map<String, String> mapId = new HashMap<>();
+                                            mapId.put("id", remetente.getId());
+                                            ConfiguracaoFirebase.getInstance().collection("conversas")
+                                                .document(remetente.getId()).set(mapId);})
                                         .addOnFailureListener(err3 -> sendError.set(true));
                             })
                             .addOnFailureListener(e -> sendError.set(true));

@@ -38,7 +38,6 @@ public class MensagemAdapter extends ArrayAdapter<Mensagem> {
             //Recupera dados do usuario remetente
             Preferencias preferencias = new Preferencias(getContext());
 
-
             //Inicializa objeto para montagem do layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
 

@@ -51,7 +51,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     private FloatingActionButton btnFoto;
     private ImageView imageView;
     private TextInputEditText nomeField;
-    private TextInputEditText emailField;
     private TextInputEditText senhaField;
     private TextInputEditText confirmarSenhaField;
     private TextInputEditText telefoneField;
@@ -78,7 +77,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.formulario_usuario_foto);
         nomeField = findViewById(R.id.formulario_usuario_nome);
-        emailField = findViewById(R.id.formulario_usuario_email);
         senhaField = findViewById(R.id.formulario_usuario_password);
         confirmarSenhaField = findViewById(R.id.formulario_usuario_confirm_password);
         telefoneField = findViewById(R.id.formulario_usuario_telefone);
@@ -95,7 +93,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         if (usuario != null) {
             Picasso.get().load(usuario.getUrlImagem()).fit().centerCrop().into(imageView);
             nomeField.setText(usuario.getNome());
-            emailField.setText(usuario.getEmail());
             toolbar.setTitle(usuario.getNome());
             if (usuario.getTelefone() != null)
                 telefoneField.setText(usuario.getTelefone());
@@ -164,7 +161,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
     private void salvarUsuario() {
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         FirebaseUser firebaseUser = autenticacao.getCurrentUser();
-        firebaseUser.updateEmail(emailField.getText().toString());
         if(verificaSenhaPrenchida() && !verificaSenhasIguais()) {
             Snackbar.make(findViewById(R.id.formulario_usuario_id), "As senhas informadas devem ser iguais, se preferir deixe os campos em branco para manter a senha atual!", Snackbar.LENGTH_SHORT).show();
             desbloqueiaCampos();
@@ -215,7 +211,6 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
         usuario.setId(identificadorUsuario);
         usuario.setNome(nomeField.getText().toString());
-        usuario.setEmail(emailField.getText().toString());
         if (!telefoneField.getText().toString().trim().equals(""))
             usuario.setTelefone(telefoneField.getText().toString());
     }
@@ -231,7 +226,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
 
     private boolean validaCampos() {
-        return !nomeField.getText().toString().trim().equals("") && !emailField.getText().toString().trim().equals("");
+        return !nomeField.getText().toString().trim().equals("");
     }
 
     private boolean verificaSenhaPrenchida() {
@@ -265,14 +260,12 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
 
     private void bloqueiaCampos() {
         nomeField.setEnabled(false);
-        emailField.setEnabled(false);
         senhaField.setEnabled(false);
         confirmarSenhaField.setEnabled(false);
         telefoneField.setEnabled(false);
     }
 
     private void desbloqueiaCampos() {
-        emailField.setEnabled(true);
         senhaField.setEnabled(true);
         nomeField.setEnabled(true);
         confirmarSenhaField.setEnabled(true);
