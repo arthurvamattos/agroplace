@@ -110,6 +110,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private void abrirMain() {
         Intent intent = new Intent(CadastroUsuarioActivity.this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void abrirLogin(View view) {

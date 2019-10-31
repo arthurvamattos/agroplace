@@ -16,7 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppThemeWhite"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity
+            android:name=".activity.EsqueceuASenhaActivity"
+            android:label="@string/title_activity_esqueceu_asenha"
+            android:theme="@style/AppThemeWhite.NoActionBar"></activity>
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,41 +27,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.PerfilActivity"
             android:parentActivityName=".activity.MainActivity" />
-
-        <activity android:name=".activity.FormularioUsuarioActivity"
-            android:parentActivityName=".activity.MainActivity"/>
-
+        <activity
+            android:name=".activity.FormularioUsuarioActivity"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.ProdutoActivity"
             android:parentActivityName=".activity.MainActivity" />
-
         <activity
             android:name=".activity.FormularioVendaActivity"
             android:parentActivityName=".activity.MainActivity" />
-
         <activity
             android:name=".activity.ConversaActivity"
             android:parentActivityName=".activity.ConversasActivity" />
-
         <activity
             android:name=".activity.ConversasActivity"
             android:parentActivityName=".activity.MainActivity" />
-
-        <activity android:name=".activity.MainActivity"/>
-
+        <activity android:name=".activity.MainActivity" />
         <activity
             android:name=".activity.CadastroUsuarioActivity"
-            android:theme="@style/AppTheme.Auth"/>
-
+            android:theme="@style/AppTheme.Auth" />
         <activity
             android:name=".activity.LoginActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme.Auth"/>
-
+            android:theme="@style/AppTheme.Auth"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

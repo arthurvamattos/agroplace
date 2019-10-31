@@ -12,5 +12,6 @@
 
     <string name="noContacts">Oops, nenhum contato encontrado</string>
     <string name="noContactsHint">Verifique sua conexão ou cadastre novos contatos</string>
+    <string name="title_activity_esqueceu_asenha">Esqueceu a senha?</string>
 
 </resources>

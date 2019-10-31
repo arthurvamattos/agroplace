@@ -73,4 +73,13 @@
         <item name="android:shadowColor">@color/darkShadow</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="AppThemeWhite.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppThemeWhite.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppThemeWhite.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

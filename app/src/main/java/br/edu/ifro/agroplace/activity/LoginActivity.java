@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText emailField;
     private TextInputEditText senhaField;
     private Button loginBtn;
+    private TextView forgotPassBtn;
     private DocumentReference instance;
     private Usuario usuario;
     private String identificadorUsuarioLogado;
@@ -68,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         emailField = findViewById(R.id.login_username);
         senhaField = findViewById(R.id.login_password);
         loginBtn = findViewById(R.id.login_btn);
+        forgotPassBtn = findViewById(R.id.login_forgot_password);
 
         googleBtn = findViewById(R.id.sign_in_button);
 
@@ -80,6 +83,11 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Snackbar.make(findViewById(R.id.login_id), "Por favor informe todos os campos!", Snackbar.LENGTH_SHORT).show();
             }
+        });
+
+        forgotPassBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, EsqueceuASenhaActivity.class);
+            startActivity(intent);
         });
 
         //google sigin

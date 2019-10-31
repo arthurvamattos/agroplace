@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.LoginActivity"
-    android:id="@+id/login_id"
+    tools:context=".activity.EsqueceuASenhaActivity"
+    android:id="@+id/esqueceu_asenha"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
@@ -32,29 +32,12 @@
             android:layout_marginStart="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_username"
+                android:id="@+id/esqueceu_asenha_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="E-mail"
+                android:hint="E-mail de recuperação"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        //Senha
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/login_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Senha"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,22 +48,15 @@
             android:layout_marginStart="30dp"
             android:gravity="center"
             android:layout_marginTop="50dp">
-
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/sign_in_button"
-                android:layout_width="wrap_content"
-                android:layout_height="57dp"
-                android:layout_marginEnd="10dp" />
-
             <Button
-                android:id="@+id/login_btn"
-                android:layout_width="0dp"
-                android:layout_weight="2"
+                android:id="@+id/esqueceu_asenha_btn"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:paddingHorizontal="45dp"
                 android:textStyle="bold"
                 android:background="@drawable/btn_circle"
                 android:elevation="2dp"
-                android:text="ENTRAR"
+                android:text="ENVIAR E-MAIL"
                 android:textSize="16dp"
                 android:textColor="#fff" />
 
@@ -89,20 +65,10 @@
             android:id="@+id/login_forgot_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Esqueceu a senha?"
+            android:text="Voltar para login"
             android:textColor="@android:color/secondary_text_light"
             android:layout_marginTop="20dp"
-            android:onClick="abrirCadastroUsuario"/>
-
-        <TextView
-            android:id="@+id/login_btn_cad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Não é cadastrado? Crie uma conta"
-            android:textColor="@android:color/secondary_text_light"
-            android:layout_marginTop="20dp"
-            android:onClick="abrirCadastroUsuario"
-            android:layout_marginBottom="20dp"/>
+            android:onClick="abrirlogin"/>
     </LinearLayout>
 
 </ScrollView>
