@@ -1,5 +1,7 @@
 package br.edu.ifro.agroplace.helper;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -10,7 +12,7 @@ public final class IsoStringDate {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat sdf;
         sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("CET"));
+        sdf.setTimeZone(TimeZone.getTimeZone("America/Porto_Velho"));
         return sdf.format(date);
     }
 }
