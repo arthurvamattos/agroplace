@@ -61,6 +61,7 @@ Para rodar o projeto em desenvolvimento, você vai precisar do ambiente de desen
 ```
 $ https://github.com/arthurvamattos/agroplace
 ```
+**Lembre-se de manter o arquivo google-services.json (disponível nas configurações do projeto no firebase) atualizado**
 **Abrir o projeto no Android Studio**
 
 ### Executando
