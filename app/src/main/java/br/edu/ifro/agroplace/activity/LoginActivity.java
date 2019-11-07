@@ -132,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
                                         newUser.setEmail(account.getEmail());
                                         newUser.setId(identificadorUsuarioLogado);
                                         newUser.setUrlImagem(account.getPhotoUrl().toString());
+                                        newUser.setGoogleAccount(true);
 
                                         FirebaseFirestore database = ConfiguracaoFirebase.getInstance();
                                         database.collection("usuarios").document(newUser.getId()).set(montarMapUser(newUser))
@@ -205,6 +206,7 @@ public class LoginActivity extends AppCompatActivity {
         userMap.put("telefone", user.getTelefone());
         userMap.put("urlImagem", user.getUrlImagem());
         userMap.put("id", user.getId());
+        if (user.isGoogleAccount()) userMap.put("googleAccount", user.isGoogleAccount());
         return userMap;
     }
 

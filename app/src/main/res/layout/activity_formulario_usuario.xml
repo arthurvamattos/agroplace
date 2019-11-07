@@ -73,6 +73,20 @@
                     android:id="@+id/formulario_usuario_nome"
                     android:inputType="textCapWords"/>
             </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/formulario_usuario_telefone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Telefone"
+                    android:inputType="phone"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -102,21 +116,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Confirmar senha"
                     android:inputType="textPassword"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginStart="30dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/formulario_usuario_telefone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Telefone"
-                    android:inputType="phone"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

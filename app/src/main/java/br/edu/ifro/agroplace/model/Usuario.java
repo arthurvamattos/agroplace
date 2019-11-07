@@ -16,6 +16,7 @@ public class Usuario implements Serializable {
     private String senha;
     private String telefone;
     private String urlImagem;
+    private boolean googleAccount;
 
     public Usuario (){
         this.setUrlImagem("https://firebasestorage.googleapis.com/v0/b/agroplace-project.appspot.com/o/no-img.png?alt=media");
@@ -86,5 +87,13 @@ public class Usuario implements Serializable {
 
     public void setUrlImagem(String urlImagem) {
         this.urlImagem = urlImagem;
+    }
+
+    public boolean isGoogleAccount() {
+        return googleAccount;
+    }
+
+    public void setGoogleAccount(boolean googleAccount) {
+        this.googleAccount = googleAccount;
     }
 }

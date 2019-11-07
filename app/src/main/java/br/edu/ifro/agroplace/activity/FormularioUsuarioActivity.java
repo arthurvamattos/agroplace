@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 
@@ -96,6 +97,10 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
             toolbar.setTitle(usuario.getNome());
             if (usuario.getTelefone() != null)
                 telefoneField.setText(usuario.getTelefone());
+            if (usuario.isGoogleAccount()) {
+                senhaField.setVisibility(View.GONE);
+                confirmarSenhaField.setVisibility(View.GONE);
+            }
         }
 
         btnFoto = findViewById(R.id.formulario_usuario_btn_foto);
