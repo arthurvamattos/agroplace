@@ -73,7 +73,13 @@ public class ConversasFragment extends Fragment {
         eventListener = (queryDocumentSnapshots, e) -> {
             conversas.clear();
             if (!queryDocumentSnapshots.isEmpty()) {
-                conversas.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
+                ArrayList<Conversa> conversasBD = new ArrayList<>();
+                conversasBD.addAll(queryDocumentSnapshots.toObjects(Conversa.class));
+                for (Conversa conv: conversasBD) {
+                    if (conv.getIdUsuario() != null) {
+                        conversas.add(conv);
+                    }
+                }
                 listView.setVisibility(View.VISIBLE);
                 icEmptyView.setVisibility(View.GONE);
             } else {

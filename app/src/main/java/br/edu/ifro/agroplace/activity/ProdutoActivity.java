@@ -125,7 +125,7 @@ public class ProdutoActivity extends AppCompatActivity {
             if (queryDocumentSnapshots.isEmpty()) return;
             int icon = R.drawable.ic_message_green;
             for (Conversa c : queryDocumentSnapshots.toObjects(Conversa.class)) {
-                if (!c.isVisualizada()){
+                if (c.getIdUsuario() != null && !c.isVisualizada()){
                     icon = R.drawable.ic_announcement_green;
                 }
             }

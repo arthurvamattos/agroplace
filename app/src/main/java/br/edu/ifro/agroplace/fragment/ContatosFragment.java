@@ -80,7 +80,14 @@ public class ContatosFragment extends Fragment {
         eventListener = (queryDocumentSnapshots, e) -> {
             contatos.clear();
             if (!queryDocumentSnapshots.isEmpty()) {
-                contatos.addAll(queryDocumentSnapshots.toObjects(Contato.class));
+
+                ArrayList<Contato> contatosBD = new ArrayList<>();
+                contatosBD.addAll(queryDocumentSnapshots.toObjects(Contato.class));
+                for (Contato contato: contatosBD) {
+                    if (contato.getNome() != null) {
+                        contatos.add(contato);
+                    }
+                }
                 listView.setVisibility(View.VISIBLE);
                 icEmptyView.setVisibility(View.GONE);
             } else {
