@@ -35,7 +35,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_usuario);
 
-
         //Recuperando do XML
         emailField = findViewById(R.id.cadastro_usuario_email);
         nomeField = findViewById(R.id.cadastro_usuario_nome);
@@ -108,7 +107,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     }
 
     private void abrirMain() {
-        Intent intent = new Intent(CadastroUsuarioActivity.this, MainActivity.class);
+        Intent intent = new Intent(CadastroUsuarioActivity.this, IntroActivity.class);
         startActivity(intent);
         finish();
     }

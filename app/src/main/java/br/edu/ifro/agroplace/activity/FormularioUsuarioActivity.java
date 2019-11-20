@@ -224,7 +224,7 @@ public class FormularioUsuarioActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("nome", user.getNome());
         userMap.put("email", user.getEmail());
-        userMap.put("telefone", user.getTelefone());
+        userMap.put("intro_item7", user.getTelefone());
         userMap.put("urlImagem", user.getUrlImagem());
         return userMap;
     }

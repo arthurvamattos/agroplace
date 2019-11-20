@@ -16,14 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppThemeWhite"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activity.IntroActivity">
+        </activity>
         <activity
             android:name=".activity.EsqueceuASenhaActivity"
             android:label="@string/title_activity_esqueceu_asenha"
-            android:theme="@style/AppThemeWhite.NoActionBar"></activity>
+            android:theme="@style/AppThemeWhite.NoActionBar" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -13,6 +13,7 @@ public class Preferencias {
 
     private final String CHAVE_IDENTIFICADOR = "identificadorUsuarioLogado";
     private final String CHAVE_NOME = "nomeUsuarioLogado";
+    private final String CHAVE_INTRO = "isIntroOpened";
 
     private final String CHAVE_CATEGORIA = "categoriaSelecionada";
 
@@ -21,6 +22,11 @@ public class Preferencias {
         preferences = contexto.getSharedPreferences(NOME_ARQUIVO, MODE );
         editor = preferences.edit();
 
+    }
+
+    public void setIntroOpenend() {
+        editor.putBoolean(CHAVE_INTRO, true);
+        editor.commit();
     }
 
     public void salvarDados(String identificadorUsuario, String nomeUsuarioLogado){
@@ -42,6 +48,9 @@ public class Preferencias {
     }
     public String getCategoria(){
         return preferences.getString(CHAVE_CATEGORIA, "Mostrar todos");
+    }
+    public boolean isIntroOpened(){
+        return preferences.getBoolean(CHAVE_INTRO, false);
     }
 
 }

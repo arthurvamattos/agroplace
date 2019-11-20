@@ -140,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     Preferencias preferencias = new Preferencias(LoginActivity.this);
                                     preferencias.salvarDados(identificadorUsuarioLogado, account.getDisplayName());
-                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                    Intent i = new Intent(getApplicationContext(), IntroActivity.class);
                                     startActivity(i);
                                     finish();
                                 });
@@ -194,7 +194,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void abrirMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, IntroActivity.class);
         startActivity(intent);
         finish();
     }
@@ -203,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("nome", user.getNome());
         userMap.put("email", user.getEmail());
-        userMap.put("telefone", user.getTelefone());
+        userMap.put("intro_item7", user.getTelefone());
         userMap.put("urlImagem", user.getUrlImagem());
         userMap.put("id", user.getId());
         if (user.isGoogleAccount()) userMap.put("googleAccount", user.isGoogleAccount());

@@ -33,7 +33,7 @@ public class Usuario implements Serializable {
         user.put("id", this.id);
         user.put("nome", this.nome);
         user.put("email", this.email);
-        user.put("telefone", this.telefone);
+        user.put("intro_item7", this.telefone);
         user.put("urlImagem", this.urlImagem);
         return user;
     }
