@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,7 +30,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private TextInputEditText emailField, nomeField, senhaField, confirmarsenhaField, telefoneField;
     private Button btnCadastrar;
     private Usuario usuario;
-
+    private ProgressBar progressBar;
+    private TextView loginBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         confirmarsenhaField = findViewById(R.id.cadastro_usuario_oonfirm_password);
         telefoneField = findViewById(R.id.cadastro_usuario_telefone);
         btnCadastrar = findViewById(R.id.cadastro_usuario_btn);
+        progressBar = findViewById(R.id.cadastro_usuario_progressbar);
+        loginBtn = findViewById(R.id.cadastro_usuario_login);
 
         SimpleMaskFormatter mascaraTelefone = new SimpleMaskFormatter("(NN) NNNNN-NNNN");
         MaskTextWatcher mascaraTelefoneWatcher = new MaskTextWatcher(telefoneField, mascaraTelefone);
@@ -68,8 +73,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             } else {
                 Snackbar.make(findViewById(R.id.cadastro_usuario_id), "Por favor informe todos os campos!", Snackbar.LENGTH_SHORT).show();
             }
-
         });
+        loginBtn.setOnClickListener(v -> finish());
     }
 
     private void cadastrarUsuario() {
@@ -112,9 +117,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         finish();
     }
 
-    public void abrirLogin(View view) {
-        finish();
-    }
 
     private void bloqueiaCampos() {
         nomeField.setEnabled(false);
@@ -122,6 +124,10 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         senhaField.setEnabled(false);
         confirmarsenhaField.setEnabled(false);
         telefoneField.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+        loginBtn.setOnClickListener(v -> {
+            return;
+        });
     }
 
     private void desbloqueiaCampos() {
@@ -130,5 +136,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         nomeField.setEnabled(true);
         confirmarsenhaField.setEnabled(true);
         telefoneField.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
+        loginBtn.setOnClickListener(v -> {
+            finish();
+        });
     }
 }

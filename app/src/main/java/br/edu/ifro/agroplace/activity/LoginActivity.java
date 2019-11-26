@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -46,9 +47,11 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText senhaField;
     private Button loginBtn;
     private TextView forgotPassBtn;
+    private TextView cadastrarBtn;
     private DocumentReference instance;
     private Usuario usuario;
     private String identificadorUsuarioLogado;
+    private ProgressBar progressBar;
 
     //google sign in
     public static int RC_SIGN_IN = 101;
@@ -71,7 +74,8 @@ public class LoginActivity extends AppCompatActivity {
         senhaField = findViewById(R.id.login_password);
         loginBtn = findViewById(R.id.login_btn);
         forgotPassBtn = findViewById(R.id.login_forgot_password);
-
+        progressBar = findViewById(R.id.login_progressbar);
+        cadastrarBtn = findViewById(R.id.login_btn_cad);
         googleBtn = findViewById(R.id.sign_in_button);
 
         loginBtn.setOnClickListener(v -> {
@@ -90,6 +94,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        cadastrarBtn.setOnClickListener(v -> {
+            abrirCadastroUsuario();
+        });
+
         //google sigin
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -104,17 +112,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
     private void verficarUsuarioLogado() {
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         if(autenticacao.getCurrentUser() != null)
             abrirMain();
     }
-
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
 
@@ -229,7 +231,7 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void abrirCadastroUsuario(View view) {
+    public void abrirCadastroUsuario() {
         Intent intent = new Intent(LoginActivity.this, CadastroUsuarioActivity.class);
         startActivity(intent);
     }
@@ -237,10 +239,29 @@ public class LoginActivity extends AppCompatActivity {
     private void bloqueiaCampos() {
         emailField.setEnabled(false);
         senhaField.setEnabled(false);
+        loginBtn.setClickable(false);
+        googleBtn.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+        cadastrarBtn.setOnClickListener(v -> {
+            return;
+        });
+        forgotPassBtn.setOnClickListener(v -> {
+            return;
+        });
     }
 
     private void desbloqueiaCampos() {
         emailField.setEnabled(true);
         senhaField.setEnabled(true);
+        loginBtn.setClickable(true);
+        googleBtn.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
+        cadastrarBtn.setOnClickListener(v -> {
+            abrirCadastroUsuario();
+        });
+        forgotPassBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, EsqueceuASenhaActivity.class);
+            startActivity(intent);
+        });
     }
 }
