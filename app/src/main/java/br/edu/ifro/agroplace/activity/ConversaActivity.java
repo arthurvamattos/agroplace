@@ -321,9 +321,9 @@ public class ConversaActivity extends AppCompatActivity {
                 userRef.get().addOnSuccessListener(documentSnapshot -> {
                     Usuario usuarioContato = documentSnapshot.toObject(Usuario.class);
 
-                    if (usuarioContato.getTelefone() != null)
+                    if (!usuarioContato.getTelefone().equals("")) {
                         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(WhatsAppHelper.gerarLinkAPI(usuarioContato.getTelefone()))));
-                    else
+                    } else
                         Snackbar.make(findViewById(R.id.conversa_id), "Este contato ainda não cadastrou o whatsapp, por favor use este chat para entrar em contato", Snackbar.LENGTH_SHORT).show();
                 });
                 return true;
