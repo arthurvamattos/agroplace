@@ -2,20 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/menu_main_ajuda"
+        android:title="@string/item_ajuda"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 
     <item android:id="@+id/menu_main_nova_venda"
         android:title="@string/item_nova_venda"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         app:showAsAction="never"/>
 
     <item android:id="@+id/menu_main_perfil"
         android:title="Meu Perfil"
-        android:orderInCategory="100"
+        android:orderInCategory="300"
         app:showAsAction="never"/>
 
     <item android:id="@+id/menu_main_sair"
         android:title="@string/item_sair"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         app:showAsAction="never"/>
 
     <item android:id="@+id/menu_main_pesquisa"

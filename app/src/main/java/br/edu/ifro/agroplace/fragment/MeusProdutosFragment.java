@@ -40,6 +40,7 @@ import br.edu.ifro.agroplace.R;
 import br.edu.ifro.agroplace.activity.ConversasActivity;
 import br.edu.ifro.agroplace.activity.FormularioUsuarioActivity;
 import br.edu.ifro.agroplace.activity.FormularioVendaActivity;
+import br.edu.ifro.agroplace.activity.IntroActivity;
 import br.edu.ifro.agroplace.activity.LoginActivity;
 import br.edu.ifro.agroplace.activity.MainActivity;
 import br.edu.ifro.agroplace.adapter.ProductsAdapter;
@@ -234,6 +235,9 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
             case R.id.menu_main_conversas:
                 irParaConversas();
                 return true;
+            case R.id.menu_main_ajuda:
+                irParaIntro();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -273,6 +277,14 @@ public class MeusProdutosFragment extends Fragment implements CategoriaObserver 
             productsRef.addSnapshotListener(eventListener);
             handler.postDelayed(() -> productsAdapter.getFilterCategory().filter(categoria), 100);
         }
+    }
+
+    private void irParaIntro() {
+        Preferencias preferencias = new Preferencias(getActivity());
+        preferencias.setIntroUnopenend();
+        Intent intent = new Intent(getContext(), IntroActivity.class);
+        startActivity(intent);
+        getActivity().finish();
     }
 
     public static void adicionarObserver(SearchViewObserver obs) {

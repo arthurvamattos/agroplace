@@ -2,6 +2,7 @@
     <string name="app_name">AGROPLACE</string>
     <string name="item_nova_venda">Nova Venda</string>
     <string name="item_sair">Sair</string>
+    <string name="item_ajuda">Ajuda</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="noProducts">Oops, nenhum produto encontrado</string>

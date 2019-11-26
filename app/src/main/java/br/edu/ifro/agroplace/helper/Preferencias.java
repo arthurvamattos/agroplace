@@ -29,6 +29,11 @@ public class Preferencias {
         editor.commit();
     }
 
+    public void setIntroUnopenend() {
+        editor.putBoolean(CHAVE_INTRO, false);
+        editor.commit();
+    }
+
     public void salvarDados(String identificadorUsuario, String nomeUsuarioLogado){
         editor.putString(CHAVE_IDENTIFICADOR, identificadorUsuario);
         editor.putString(CHAVE_NOME, nomeUsuarioLogado);
