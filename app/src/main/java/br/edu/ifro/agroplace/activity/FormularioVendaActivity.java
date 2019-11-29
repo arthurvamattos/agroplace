@@ -118,11 +118,21 @@ public class FormularioVendaActivity extends AppCompatActivity {
             nomeField.setText(produto.getNome());
             valorField.setText(produto.getValor());
             descricaoField.setText(produto.getDescricao());
+            categoriasSpinner.setSelection(getCategory());
             CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
             collapsingToolbarLayout.setTitle(produto.getNome());
         }
         getSellerData();
 
+    }
+
+    private int getCategory() {
+        int category = 0;
+        for (String comparing : Categorias.getCategoriasCasdastro()) {
+            if (comparing.equals(produto.getCategoria())) return category;
+            category++;
+        }
+        return category--;
     }
 
     private void abrirCamera() {
